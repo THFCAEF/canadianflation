@@ -200,16 +200,6 @@ const ChartTip = ({ active, payload, label }) => {
   );
 };
 
-function Tile({ label, value, color, sub }) {
-  return (
-    <div style={{ background: C.surface2, border: `1px solid ${C.border}`, borderRadius: 12, padding: "18px 20px" }}>
-      <div style={{ fontSize: 10, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: 8 }}>{label}</div>
-      <div style={{ fontSize: 26, fontWeight: 700, color: color || C.textPrimary, fontFamily: "'Barlow Condensed', sans-serif", letterSpacing: "-.5px", lineHeight: 1 }}>{value}</div>
-      {sub && <div style={{ fontSize: 11, color: C.textMuted, marginTop: 5, fontWeight: 500 }}>{sub}</div>}
-    </div>
-  );
-}
-
 function MapleLeaf({ size = 22, color = C.maple }) {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
