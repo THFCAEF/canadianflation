@@ -1,7 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, BarChart, Bar, Cell, Legend
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine
 } from "recharts";
 
 (function injectHead() {
@@ -328,7 +334,7 @@ function FilterPill({ label, color, active, onClick }) {
 export default function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [src, setSrc] = useState("loading");
+  const [, setSrc] = useState("loading");
   const [range, setRange] = useState("10Y");
   const [vis, setVis] = useState(false);
   const [activeCats, setActiveCats] = useState(Object.fromEntries(Object.keys(CAT_COLORS).map(k=>[k,true])));
