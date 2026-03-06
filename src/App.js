@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, AreaChart, Area } from "recharts";
 
-// ── Favicon: real maple leaf PNG via canvas ───────────────────────────────────
 (function setFavicon() {
   if (typeof document === "undefined") return;
   document.title = "Canadianflation — Canadian CPI Tracker";
@@ -74,6 +73,46 @@ function valColor(v) { return v > 2 ? C.red : v > 0 ? C.yellow : C.green; }
 function valBg(v)    { return v > 2 ? C.redBg : v > 0 ? C.yellowBg : C.greenBg; }
 function cumColor(v) { return v > 50 ? C.red : v > 20 ? C.yellow : C.green; }
 function cumBg(v)    { return v > 50 ? C.redBg : v > 20 ? C.yellowBg : C.greenBg; }
+
+const CAT_VECTORS = {
+  "Food":              41690974,
+  "Shelter":           41691050,
+  "Household":         41691067,
+  "Clothing":          41691108,
+  "Transport":         41691128,
+  "Health":            41691153,
+  "Recreation":        41691170,
+  "Alcohol & Tobacco": 41691206,
+};
+const PROV_VECTORS = {
+  NL:41691244, PE:41691379, NS:41691513, NB:41691648,
+  QC:41691783, ON:41691919, MB:41692055, SK:41692191,
+  AB:41692327, BC:41692462,
+};
+
+function buildAnnualHistory(rawMap, keys, vectorMap) {
+  const seriesMap = {};
+  keys.forEach(k => {
+    const raw = rawMap[vectorMap[k]];
+    if (!raw) return;
+    const byMonth = {};
+    raw.forEach(([d,v]) => { byMonth[d.slice(0,7)] = v; });
+    seriesMap[k] = {};
+    Object.keys(byMonth).sort().forEach(ym => {
+      const [y,m] = ym.split("-").map(Number);
+      if (m !== 1) return;
+      const prev = `${y-1}-01`;
+      if (byMonth[prev] != null && byMonth[prev] !== 0)
+        seriesMap[k][y] = +((byMonth[ym]-byMonth[prev])/byMonth[prev]*100).toFixed(2);
+    });
+  });
+  const allYears = [...new Set(keys.flatMap(k=>Object.keys(seriesMap[k]||{})))].sort();
+  return allYears.map(y => {
+    const row = { year: String(y) };
+    keys.forEach(k => { if (seriesMap[k]?.[y] != null) row[k] = seriesMap[k][y]; });
+    return row;
+  }).filter(row => keys.some(k => row[k] != null));
+}
 
 const CAT_HISTORY = [
   { year:"2000", Shelter:2.2, Food:1.8, Transport:4.1,  Health:3.0, Recreation:1.5, Household:1.2, Clothing:-1.0,"Alcohol & Tobacco":2.0 },
@@ -148,8 +187,6 @@ function computeCumulative(history, keys) {
 
 const CAT_KEYS  = ["Shelter","Food","Transport","Health","Recreation","Household","Clothing","Alcohol & Tobacco"];
 const PROV_KEYS = ["BC","AB","SK","MB","ON","QC","NB","NS","PE","NL"];
-const CAT_CUM_HISTORY  = computeCumulative(CAT_HISTORY,  CAT_KEYS);
-const PROV_CUM_HISTORY = computeCumulative(PROV_HISTORY, PROV_KEYS);
 
 const CAT_COLORS = {
   "Shelter":"#E05A4A","Food":"#F5C842","Transport":"#3ECFA0",
@@ -162,28 +199,27 @@ const PROV_COLORS = {
   PE:"#A0C878",NL:"#E87AB0",
 };
 
-const COMPONENTS = [
-  {label:"Shelter",           key:"Shelter",           value:4.5,  cumValue:68.2, icon:"🏠"},
-  {label:"Health & Personal", key:"Health",            value:3.4,  cumValue:55.1, icon:"💊"},
-  {label:"Food",              key:"Food",              value:3.1,  cumValue:71.4, icon:"🥦"},
-  {label:"Alcohol & Tobacco", key:"Alcohol & Tobacco", value:3.0,  cumValue:82.3, icon:"🍺"},
-  {label:"Recreation",        key:"Recreation",        value:1.2,  cumValue:28.6, icon:"📚"},
-  {label:"Household",         key:"Household",         value:0.8,  cumValue:22.1, icon:"🛋️"},
-  {label:"Clothing",          key:"Clothing",          value:-0.9, cumValue:-8.4, icon:"👗"},
-  {label:"Transport",         key:"Transport",         value:-3.2, cumValue:31.2, icon:"🚗"},
-];
-
-const PROVINCES = [
-  {code:"BC",name:"British Columbia", key:"BC", value:2.5, cumValue:58.4},
-  {code:"AB",name:"Alberta",          key:"AB", value:2.8, cumValue:65.2},
-  {code:"SK",name:"Saskatchewan",     key:"SK", value:1.8, cumValue:47.8},
-  {code:"MB",name:"Manitoba",         key:"MB", value:3.3, cumValue:70.1},
-  {code:"ON",name:"Ontario",          key:"ON", value:2.4, cumValue:56.9},
-  {code:"QC",name:"Québec",           key:"QC", value:2.1, cumValue:51.3},
-  {code:"NB",name:"New Brunswick",    key:"NB", value:2.0, cumValue:49.6},
-  {code:"NS",name:"Nova Scotia",      key:"NS", value:2.2, cumValue:52.1},
-  {code:"PE",name:"P.E.I.",           key:"PE", value:1.8, cumValue:44.7},
-  {code:"NL",name:"Newfoundland",     key:"NL", value:2.6, cumValue:61.3},
+const CAT_META = {
+  "Shelter":          {label:"Shelter",           icon:"🏠"},
+  "Food":             {label:"Food",              icon:"🥦"},
+  "Transport":        {label:"Transport",         icon:"🚗"},
+  "Health":           {label:"Health & Personal", icon:"💊"},
+  "Recreation":       {label:"Recreation",        icon:"📚"},
+  "Household":        {label:"Household",         icon:"🛋️"},
+  "Clothing":         {label:"Clothing",          icon:"👗"},
+  "Alcohol & Tobacco":{label:"Alcohol & Tobacco", icon:"🍺"},
+};
+const PROV_META = [
+  {code:"BC",name:"British Columbia", key:"BC"},
+  {code:"AB",name:"Alberta",          key:"AB"},
+  {code:"SK",name:"Saskatchewan",     key:"SK"},
+  {code:"MB",name:"Manitoba",         key:"MB"},
+  {code:"ON",name:"Ontario",          key:"ON"},
+  {code:"QC",name:"Québec",           key:"QC"},
+  {code:"NB",name:"New Brunswick",    key:"NB"},
+  {code:"NS",name:"Nova Scotia",      key:"NS"},
+  {code:"PE",name:"P.E.I.",           key:"PE"},
+  {code:"NL",name:"Newfoundland",     key:"NL"},
 ];
 
 const STATCAN_BASE = "https://www150.statcan.gc.ca/t1/wds/rest";
@@ -221,6 +257,19 @@ function parseWDS(json) {
     if (!pts?.length) return null;
     return pts.map(p => [p.refPer, p.value]);
   } catch { return null; }
+}
+function parseBatchWDS(json) {
+  const out = {};
+  if (!Array.isArray(json)) return out;
+  json.forEach(item => {
+    try {
+      const vid = item.object?.vectorId;
+      const pts  = item.object?.vectorDataPoint;
+      if (vid && pts?.length)
+        out[vid] = pts.map(p => [p.refPer, p.value]);
+    } catch {}
+  });
+  return out;
 }
 
 const FALLBACK_CPI_RAW = [
@@ -346,10 +395,17 @@ const SingleTip = ({active, payload, label, prefix="", suffix="%", note}) => {
   );
 };
 
-function RatesTab({data, vis}) {
-  const [range, setRange] = useState("10Y");
-  const [activeCats,  setActiveCats]  = useState(Object.fromEntries(CAT_KEYS.map(k=>[k,true])));
+function RatesTab({data, vis, catHistory, provHistory}) {
+  const [range, setRange]       = useState("10Y");
+  const [activeCats, setActiveCats] = useState(Object.fromEntries(CAT_KEYS.map(k=>[k,true])));
   const [activeProvs, setActiveProvs] = useState(Object.fromEntries(PROV_KEYS.map(k=>[k,true])));
+
+  const latestCatRow  = catHistory?.[catHistory.length-1]  || {};
+  const latestProvRow = provHistory?.[provHistory.length-1] || {};
+  const COMPONENTS = CAT_KEYS.map(k=>({
+    key:k, label:CAT_META[k].label, icon:CAT_META[k].icon, value:latestCatRow[k]??0,
+  })).sort((a,b)=>b.value-a.value);
+  const PROVINCES = PROV_META.map(p=>({...p, value:latestProvRow[p.key]??0})).sort((a,b)=>b.value-a.value);
 
   const chart   = data ? data.slice(-Math.min(RANGES[range], data.length)) : [];
   const cur     = data?.[data.length-1];
@@ -361,7 +417,6 @@ function RatesTab({data, vis}) {
   const startYr = data?.[0]?.iso?new Date(data[0].iso).getFullYear():"—";
   const delta   = cur&&prev?+(cur.value-prev.value).toFixed(1):0;
   const ti      = range==="2Y"?2:range==="5Y"?5:range==="10Y"?11:range==="25Y"?28:Math.max(1,Math.floor(chart.length/11));
-  const sortedProvs = [...PROVINCES].sort((a,b)=>b.value-a.value);
 
   return (<>
     <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,marginBottom:16,overflow:"hidden"}}>
@@ -455,7 +510,7 @@ function RatesTab({data, vis}) {
       <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",transitionDelay:".15s"}}>
         <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>By Province</div>
         <div style={{fontSize:10,color:C.textSecondary,marginBottom:14}}>Year-over-year · {cur?.date}</div>
-        {sortedProvs.map((p,i)=>{
+        {PROVINCES.map((p,i)=>{
           const clr=valColor(p.value);
           return (
             <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:i<PROVINCES.length-1?`1px solid ${C.border}`:"none"}}>
@@ -474,12 +529,12 @@ function RatesTab({data, vis}) {
 
     <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",marginBottom:16,transitionDelay:".18s"}}>
       <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Category Trends</div>
-      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Year-over-year % · Annual · 2000–2025</div>
+      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Year-over-year % · Annual · {catHistory?.[0]?.year}–{catHistory?.[catHistory.length-1]?.year}</div>
       <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:16}}>
         {CAT_KEYS.map(k=><FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={()=>setActiveCats(p=>({...p,[k]:!p[k]}))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
-        <LineChart data={CAT_HISTORY} margin={{top:4,right:8,left:-24,bottom:0}}>
+        <LineChart data={catHistory} margin={{top:4,right:8,left:-24,bottom:0}}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
           <XAxis dataKey="year" tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={{stroke:C.border}} tickLine={false}/>
           <YAxis tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
@@ -493,12 +548,12 @@ function RatesTab({data, vis}) {
 
     <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",marginBottom:4,transitionDelay:".22s"}}>
       <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Provincial Trends</div>
-      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Year-over-year % · Annual · 2000–2025</div>
+      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Year-over-year % · Annual · {provHistory?.[0]?.year}–{provHistory?.[provHistory.length-1]?.year}</div>
       <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:16}}>
         {PROVINCES.map(p=><FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={()=>setActiveProvs(prev=>({...prev,[p.key]:!prev[p.key]}))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
-        <LineChart data={PROV_HISTORY} margin={{top:4,right:8,left:-24,bottom:0}}>
+        <LineChart data={provHistory} margin={{top:4,right:8,left:-24,bottom:0}}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
           <XAxis dataKey="year" tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={{stroke:C.border}} tickLine={false}/>
           <YAxis tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
@@ -511,19 +566,25 @@ function RatesTab({data, vis}) {
   </>);
 }
 
-function CumulativeTab({data, vis}) {
+function CumulativeTab({data, vis, catHistory, provHistory}) {
   const [range, setRange]         = useState("All");
-  const [activeCats,  setActiveCats]  = useState(Object.fromEntries(CAT_KEYS.map(k=>[k,true])));
+  const [activeCats, setActiveCats]   = useState(Object.fromEntries(CAT_KEYS.map(k=>[k,true])));
   const [activeProvs, setActiveProvs] = useState(Object.fromEntries(PROV_KEYS.map(k=>[k,true])));
 
-  const cadData  = useMemo(()=> data ? computeCadDevaluation(data) : [], [data]);
-  const chart    = cadData.slice(-Math.min(RANGES[range], cadData.length));
-  const latest   = cadData[cadData.length-1];
-  const startYr  = data?.[0]?.iso ? new Date(data[0].iso).getFullYear() : "1914";
+  const catCumHistory  = useMemo(()=>computeCumulative(catHistory,  CAT_KEYS),  [catHistory]);
+  const provCumHistory = useMemo(()=>computeCumulative(provHistory, PROV_KEYS), [provHistory]);
+
+  const cadData = useMemo(()=> data ? computeCadDevaluation(data) : [], [data]);
+  const chart   = cadData.slice(-Math.min(RANGES[range], cadData.length));
+  const latest  = cadData[cadData.length-1];
+  const startYr = data?.[0]?.iso?new Date(data[0].iso).getFullYear():"1914";
   const totalLost = latest ? latest.lostPct : 0;
   const ti = range==="2Y"?2:range==="5Y"?5:range==="10Y"?11:range==="25Y"?28:Math.max(1,Math.floor(chart.length/11));
-  const sortedCat  = [...COMPONENTS].sort((a,b)=>b.cumValue-a.cumValue);
-  const sortedProv = [...PROVINCES].sort((a,b)=>b.cumValue-a.cumValue);
+
+  const latestCatCum  = catCumHistory[catCumHistory.length-1]   || {};
+  const latestProvCum = provCumHistory[provCumHistory.length-1]  || {};
+  const sortedCat  = CAT_KEYS.map(k=>({key:k,label:CAT_META[k].label,icon:CAT_META[k].icon,cumValue:latestCatCum[k]??0})).sort((a,b)=>b.cumValue-a.cumValue);
+  const sortedProv = PROV_META.map(p=>({...p,cumValue:latestProvCum[p.key]??0})).sort((a,b)=>b.cumValue-a.cumValue);
   const multiplier = latest ? (1/latest.cadValue).toFixed(2) : "—";
   const cagr = latest ? ((Math.pow(1/latest.cadValue, 1/((data?.length||12)/12))-1)*100).toFixed(1) : "—";
 
@@ -595,7 +656,7 @@ function CumulativeTab({data, vis}) {
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14,marginBottom:16}}>
       <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",transitionDelay:".11s"}}>
         <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Cumulative by Category</div>
-        <div style={{fontSize:10,color:C.textSecondary,marginBottom:14}}>Compound total since 2000</div>
+        <div style={{fontSize:10,color:C.textSecondary,marginBottom:14}}>Compound total since {catCumHistory?.[0]?.year}</div>
         {sortedCat.map((c,i)=>(
           <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:i<sortedCat.length-1?`1px solid ${C.border}`:"none"}}>
             <div style={{display:"flex",alignItems:"center",gap:9}}>
@@ -610,7 +671,7 @@ function CumulativeTab({data, vis}) {
       </div>
       <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",transitionDelay:".15s"}}>
         <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Cumulative by Province</div>
-        <div style={{fontSize:10,color:C.textSecondary,marginBottom:14}}>Compound total since 2000</div>
+        <div style={{fontSize:10,color:C.textSecondary,marginBottom:14}}>Compound total since {provCumHistory?.[0]?.year}</div>
         {sortedProv.map((p,i)=>{
           const clr=cumColor(p.cumValue);
           return (
@@ -630,12 +691,12 @@ function CumulativeTab({data, vis}) {
 
     <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",marginBottom:16,transitionDelay:".18s"}}>
       <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Cumulative Category Inflation</div>
-      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Compounded total % since 2000</div>
+      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Compounded total since {catCumHistory?.[0]?.year} · each year builds on the last</div>
       <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:16}}>
         {CAT_KEYS.map(k=><FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={()=>setActiveCats(p=>({...p,[k]:!p[k]}))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
-        <LineChart data={CAT_CUM_HISTORY} margin={{top:4,right:8,left:-10,bottom:0}}>
+        <LineChart data={catCumHistory} margin={{top:4,right:8,left:-10,bottom:0}}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
           <XAxis dataKey="year" tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={{stroke:C.border}} tickLine={false}/>
           <YAxis tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
@@ -648,12 +709,12 @@ function CumulativeTab({data, vis}) {
 
     <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",marginBottom:4,transitionDelay:".22s"}}>
       <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Cumulative Provincial Inflation</div>
-      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Compounded total % since 2000</div>
+      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Compounded total since {provCumHistory?.[0]?.year} · each year builds on the last</div>
       <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:16}}>
-        {PROVINCES.map(p=><FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={()=>setActiveProvs(prev=>({...prev,[p.key]:!prev[p.key]}))}/>)}
+        {PROV_META.map(p=><FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={()=>setActiveProvs(prev=>({...prev,[p.key]:!prev[p.key]}))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
-        <LineChart data={PROV_CUM_HISTORY} margin={{top:4,right:8,left:-10,bottom:0}}>
+        <LineChart data={provCumHistory} margin={{top:4,right:8,left:-10,bottom:0}}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
           <XAxis dataKey="year" tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={{stroke:C.border}} tickLine={false}/>
           <YAxis tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
@@ -666,25 +727,35 @@ function CumulativeTab({data, vis}) {
 }
 
 export default function App() {
-  const [data,    setData]    = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [vis,     setVis]     = useState(false);
-  const [tab,     setTab]     = useState(0);
+  const [data,       setData]       = useState(null);
+  const [catHistory, setCatHistory] = useState(CAT_HISTORY);
+  const [provHistory,setProvHistory]= useState(PROV_HISTORY);
+  const [loading,    setLoading]    = useState(true);
+  const [vis,        setVis]        = useState(false);
+  const [tab,        setTab]        = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true); setVis(false);
     try {
+      const allVectorIds = [CPI_VECTOR, ...Object.values(CAT_VECTORS), ...Object.values(PROV_VECTORS)];
       const res = await fetch(`${STATCAN_BASE}/getDataFromVectorsAndLatestNPeriods`,{
         method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify([{vectorId:CPI_VECTOR,latestN:1500}]),
+        body:JSON.stringify(allVectorIds.map(id=>({vectorId:id,latestN:600}))),
       });
       if (!res.ok) throw new Error();
       const json = await res.json();
-      const raw  = parseWDS(json);
-      if (!raw||raw.length<24) throw new Error();
-      setData(computeYoY(raw));
+      const rawMap = parseBatchWDS(json);
+      const mainRaw = rawMap[CPI_VECTOR];
+      if (!mainRaw || mainRaw.length < 24) throw new Error();
+      setData(computeYoY(mainRaw));
+      const catH  = buildAnnualHistory(rawMap, CAT_KEYS,  CAT_VECTORS);
+      const provH = buildAnnualHistory(rawMap, PROV_KEYS, PROV_VECTORS);
+      if (catH.length  > 5) setCatHistory(catH);
+      if (provH.length > 5) setProvHistory(provH);
     } catch {
       setData(computeYoY(FALLBACK_CPI_RAW));
+      setCatHistory(CAT_HISTORY);
+      setProvHistory(PROV_HISTORY);
     } finally {
       setLoading(false); setTimeout(()=>setVis(true), 60);
     }
@@ -722,7 +793,7 @@ export default function App() {
             background:"none",border:"none",borderBottom:`2px solid ${tab===i?C.yellow:"transparent"}`,
             color:tab===i?C.yellow:C.textSecondary,
             padding:"12px 16px",fontSize:13,fontWeight:600,cursor:"pointer",
-            fontFamily:"inherit",transition:"all .15s",
+            fontFamily:"inherit",transition:"all .15s",WebkitTapHighlightColor:"transparent",
           }}>{t}</button>
         ))}
       </div>
@@ -734,7 +805,9 @@ export default function App() {
             <p style={{color:C.textMuted,fontSize:12,fontWeight:500}}>Fetching historical CPI data…</p>
           </div>
         ) : (
-          tab===0 ? <RatesTab data={data} vis={vis}/> : <CumulativeTab data={data} vis={vis}/>
+          tab===0
+            ? <RatesTab data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/>
+            : <CumulativeTab data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/>
         )}
         <div style={{textAlign:"center",fontSize:10,color:C.textMuted,fontWeight:500,marginTop:32,paddingTop:20,borderTop:`1px solid ${C.border}`}}>
           © 2026 Canadianflation.ca · Data: Statistics Canada · Not an official government product
