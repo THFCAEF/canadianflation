@@ -1,62 +1,79 @@
-import { useState, useEffect, useCallback } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine
-} from "recharts";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, AreaChart, Area } from "recharts";
 
-(function injectHead() {
+// ── Favicon: real maple leaf PNG via canvas ───────────────────────────────────
+(function setFavicon() {
   if (typeof document === "undefined") return;
   document.title = "Canadianflation — Canadian CPI Tracker";
-  const existingFavicon = document.querySelector("link[rel~='icon']");
-  if (existingFavicon) existingFavicon.remove();
-  const faviconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 110'><path d='M50 2 L54 18 L62 12 L58 26 L72 20 L66 34 L82 30 L74 44 L90 44 L80 54 L88 66 L72 60 L74 76 L60 68 L58 88 L50 78 L42 88 L40 68 L26 76 L28 60 L12 66 L20 54 L10 44 L26 44 L18 30 L34 34 L28 20 L42 26 L38 12 L46 18 Z' fill='%23E05A4A'/><rect x='45' y='78' width='10' height='28' rx='3' fill='%23E05A4A'/></svg>`;
-  const link = document.createElement("link");
-  link.rel = "icon"; link.type = "image/svg+xml";
-  link.href = `data:image/svg+xml,${faviconSvg}`;
-  document.head.appendChild(link);
-  const metas = [
-    { property:"og:title",       content:"Canadianflation — Canadian CPI Tracker" },
-    { property:"og:description", content:"Track Canadian inflation in real time. Historical CPI data from 1914 to present, sourced from Statistics Canada." },
-    { property:"og:image",       content:"https://www.canadianflation.ca/social-preview.png" },
-    { property:"og:url",         content:"https://www.canadianflation.ca" },
-    { name:"twitter:card",       content:"summary_large_image" },
-  ];
-  metas.forEach(attrs => {
-    const existing = document.querySelector(`meta[property="${attrs.property}"],meta[name="${attrs.name}"]`);
-    if (existing) existing.remove();
-    const m = document.createElement("meta");
-    Object.entries(attrs).forEach(([k,v]) => m.setAttribute(k,v));
-    document.head.appendChild(m);
+  try {
+    const sz = 64, c = document.createElement("canvas");
+    c.width = c.height = sz;
+    const ctx = c.getContext("2d");
+    const p = new Path2D();
+    const sc = sz / 100, ox = 0, oy = -5;
+    p.moveTo((50+ox)*sc, (5+oy)*sc);
+    p.lineTo((53+ox)*sc, (20+oy)*sc); p.lineTo((62+ox)*sc, (13+oy)*sc);
+    p.lineTo((57+ox)*sc, (28+oy)*sc); p.lineTo((73+ox)*sc, (22+oy)*sc);
+    p.lineTo((66+ox)*sc, (36+oy)*sc); p.lineTo((83+ox)*sc, (33+oy)*sc);
+    p.lineTo((74+ox)*sc, (46+oy)*sc); p.lineTo((90+ox)*sc, (47+oy)*sc);
+    p.lineTo((79+ox)*sc, (56+oy)*sc); p.lineTo((87+ox)*sc, (67+oy)*sc);
+    p.lineTo((71+ox)*sc, (61+oy)*sc); p.lineTo((73+ox)*sc, (77+oy)*sc);
+    p.lineTo((59+ox)*sc, (69+oy)*sc); p.lineTo((57+ox)*sc, (88+oy)*sc);
+    p.lineTo((50+ox)*sc, (79+oy)*sc); p.lineTo((43+ox)*sc, (88+oy)*sc);
+    p.lineTo((41+ox)*sc, (69+oy)*sc); p.lineTo((27+ox)*sc, (77+oy)*sc);
+    p.lineTo((29+ox)*sc, (61+oy)*sc); p.lineTo((13+ox)*sc, (67+oy)*sc);
+    p.lineTo((21+ox)*sc, (56+oy)*sc); p.lineTo((10+ox)*sc, (47+oy)*sc);
+    p.lineTo((26+ox)*sc, (46+oy)*sc); p.lineTo((17+ox)*sc, (33+oy)*sc);
+    p.lineTo((34+ox)*sc, (36+oy)*sc); p.lineTo((27+ox)*sc, (22+oy)*sc);
+    p.lineTo((43+ox)*sc, (28+oy)*sc); p.lineTo((38+ox)*sc, (13+oy)*sc);
+    p.lineTo((47+ox)*sc, (20+oy)*sc); p.closePath();
+    ctx.fillStyle = "#E05A4A"; ctx.fill(p);
+    ctx.fillRect(29, 68, 7, 20);
+    const ico = document.querySelector("link[rel~='icon']") || document.createElement("link");
+    ico.rel = "icon"; ico.href = c.toDataURL();
+    if (!ico.parentNode) document.head.appendChild(ico);
+  } catch(e) {
+    const ico = document.querySelector("link[rel~='icon']") || document.createElement("link");
+    ico.rel = "icon"; ico.type = "image/svg+xml";
+    ico.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 112'%3E%3Cpath d='M50 5 L53 20 L62 13 L57 28 L73 22 L66 36 L83 33 L74 46 L90 47 L79 56 L87 67 L71 61 L73 77 L59 69 L57 88 L50 79 L43 88 L41 69 L27 77 L29 61 L13 67 L21 56 L10 47 L26 46 L17 33 L34 36 L27 22 L43 28 L38 13 L47 20 Z' fill='%23E05A4A'/%3E%3Crect x='46' y='79' width='8' height='22' rx='2' fill='%23E05A4A'/%3E%3C/svg%3E";
+    if (!ico.parentNode) document.head.appendChild(ico);
+  }
+  [
+    {property:"og:title",       content:"Canadianflation — Canadian CPI Tracker"},
+    {property:"og:description", content:"Track Canadian inflation in real time. Historical CPI data from 1914 to present, sourced from Statistics Canada."},
+    {property:"og:image",       content:"https://www.canadianflation.ca/social-preview.png"},
+    {property:"og:url",         content:"https://www.canadianflation.ca"},
+    {name:"twitter:card",       content:"summary_large_image"},
+  ].forEach(attrs => {
+    const sel = attrs.property ? `meta[property="${attrs.property}"]` : `meta[name="${attrs.name}"]`;
+    const el = document.querySelector(sel) || document.createElement("meta");
+    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k,v));
+    if (!el.parentNode) document.head.appendChild(el);
   });
 })();
 
 const C = {
-  bg:           "#080E1A",
-  surface:      "#0D1626",
-  surface2:     "#111E30",
-  border:       "#1A2C45",
-  border2:      "#203452",
-  textPrimary:  "#F4F8FF",
-  textSecondary:"#6E88AA",
-  textMuted:    "#334D6E",
+  bg:           "#000000",
+  surface:      "#0F0F0F",
+  surface2:     "#1A1A1A",
+  border:       "#222222",
+  border2:      "#2E2E2E",
+  textPrimary:  "#F5F5F5",
+  textSecondary:"#888888",
+  textMuted:    "#444444",
   red:          "#E05A4A",
-  redBg:        "rgba(224,90,74,0.12)",
+  redBg:        "rgba(224,90,74,0.13)",
   yellow:       "#F5C842",
-  yellowBg:     "rgba(245,200,66,0.11)",
+  yellowBg:     "rgba(245,200,66,0.12)",
   green:        "#3ECFA0",
-  greenBg:      "rgba(62,207,160,0.10)",
-  white:        "#F4F8FF",
-  black:        "#080E1A",
+  greenBg:      "rgba(62,207,160,0.11)",
+  white:        "#F5F5F5",
 };
 
 function valColor(v) { return v > 2 ? C.red : v > 0 ? C.yellow : C.green; }
 function valBg(v)    { return v > 2 ? C.redBg : v > 0 ? C.yellowBg : C.greenBg; }
+function cumColor(v) { return v > 50 ? C.red : v > 20 ? C.yellow : C.green; }
+function cumBg(v)    { return v > 50 ? C.redBg : v > 20 ? C.yellowBg : C.greenBg; }
 
 const CAT_HISTORY = [
   { year:"2000", Shelter:2.2, Food:1.8, Transport:4.1,  Health:3.0, Recreation:1.5, Household:1.2, Clothing:-1.0,"Alcohol & Tobacco":2.0 },
@@ -116,19 +133,95 @@ const PROV_HISTORY = [
   { year:"2025", BC:2.5, AB:2.8, SK:1.8, MB:3.3, ON:2.4, QC:2.1, NB:2.0, NS:2.2, PE:1.8, NL:2.6 },
 ];
 
+function computeCumulative(history, keys) {
+  const acc = {};
+  keys.forEach(k => acc[k] = 1.0);
+  return history.map(row => {
+    const out = { year: row.year };
+    keys.forEach(k => {
+      if (row[k] != null) acc[k] *= (1 + row[k] / 100);
+      out[k] = +((acc[k] - 1) * 100).toFixed(1);
+    });
+    return out;
+  });
+}
+
+const CAT_KEYS  = ["Shelter","Food","Transport","Health","Recreation","Household","Clothing","Alcohol & Tobacco"];
+const PROV_KEYS = ["BC","AB","SK","MB","ON","QC","NB","NS","PE","NL"];
+const CAT_CUM_HISTORY  = computeCumulative(CAT_HISTORY,  CAT_KEYS);
+const PROV_CUM_HISTORY = computeCumulative(PROV_HISTORY, PROV_KEYS);
+
 const CAT_COLORS = {
   "Shelter":"#E05A4A","Food":"#F5C842","Transport":"#3ECFA0",
-  "Health":"#5B8FD4","Recreation":"#B07FE8","Household":"#F0814A",
+  "Health":"#6B9FE4","Recreation":"#B07FE8","Household":"#F0814A",
   "Clothing":"#4AC8E8","Alcohol & Tobacco":"#E8A23A",
 };
 const PROV_COLORS = {
-  BC:"#E05A4A",AB:"#F5C842",SK:"#3ECFA0",MB:"#5B8FD4",
+  BC:"#E05A4A",AB:"#F5C842",SK:"#3ECFA0",MB:"#6B9FE4",
   ON:"#B07FE8",QC:"#F0814A",NB:"#4AC8E8",NS:"#E8A23A",
   PE:"#A0C878",NL:"#E87AB0",
 };
 
+const COMPONENTS = [
+  {label:"Shelter",           key:"Shelter",           value:4.5,  cumValue:68.2, icon:"🏠"},
+  {label:"Health & Personal", key:"Health",            value:3.4,  cumValue:55.1, icon:"💊"},
+  {label:"Food",              key:"Food",              value:3.1,  cumValue:71.4, icon:"🥦"},
+  {label:"Alcohol & Tobacco", key:"Alcohol & Tobacco", value:3.0,  cumValue:82.3, icon:"🍺"},
+  {label:"Recreation",        key:"Recreation",        value:1.2,  cumValue:28.6, icon:"📚"},
+  {label:"Household",         key:"Household",         value:0.8,  cumValue:22.1, icon:"🛋️"},
+  {label:"Clothing",          key:"Clothing",          value:-0.9, cumValue:-8.4, icon:"👗"},
+  {label:"Transport",         key:"Transport",         value:-3.2, cumValue:31.2, icon:"🚗"},
+];
+
+const PROVINCES = [
+  {code:"BC",name:"British Columbia", key:"BC", value:2.5, cumValue:58.4},
+  {code:"AB",name:"Alberta",          key:"AB", value:2.8, cumValue:65.2},
+  {code:"SK",name:"Saskatchewan",     key:"SK", value:1.8, cumValue:47.8},
+  {code:"MB",name:"Manitoba",         key:"MB", value:3.3, cumValue:70.1},
+  {code:"ON",name:"Ontario",          key:"ON", value:2.4, cumValue:56.9},
+  {code:"QC",name:"Québec",           key:"QC", value:2.1, cumValue:51.3},
+  {code:"NB",name:"New Brunswick",    key:"NB", value:2.0, cumValue:49.6},
+  {code:"NS",name:"Nova Scotia",      key:"NS", value:2.2, cumValue:52.1},
+  {code:"PE",name:"P.E.I.",           key:"PE", value:1.8, cumValue:44.7},
+  {code:"NL",name:"Newfoundland",     key:"NL", value:2.6, cumValue:61.3},
+];
+
 const STATCAN_BASE = "https://www150.statcan.gc.ca/t1/wds/rest";
-const CPI_VECTOR = 41690973;
+const CPI_VECTOR   = 41690973;
+const BOC = 2.0;
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const RANGES = {"2Y":24,"5Y":60,"10Y":120,"25Y":300,"All":99999};
+
+function fmtDate(iso) {
+  const d = new Date(iso.slice(0,10)+"T12:00:00");
+  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+function computeYoY(raw) {
+  const map = {};
+  raw.forEach(([d,v]) => { map[d.slice(0,7)] = v; });
+  return Object.keys(map).sort().reduce((acc,k) => {
+    const [y,m] = k.split("-").map(Number);
+    const pk = `${y-1}-${String(m).padStart(2,"0")}`;
+    if (map[pk] != null)
+      acc.push({date:fmtDate(k+"-01"), iso:k+"-01", value:+((map[k]-map[pk])/map[pk]*100).toFixed(2)});
+    return acc;
+  }, []);
+}
+function computeCadDevaluation(yoyData) {
+  let val = 1.0;
+  return yoyData.map(pt => {
+    const monthlyRate = pt.value / 100 / 12;
+    val = val / (1 + monthlyRate);
+    return {...pt, cadValue: +Math.max(val, 0.001).toFixed(4), lostPct: +((1 - Math.max(val,0))*100).toFixed(1)};
+  });
+}
+function parseWDS(json) {
+  try {
+    const pts = json[0]?.object?.vectorDataPoint;
+    if (!pts?.length) return null;
+    return pts.map(p => [p.refPer, p.value]);
+  } catch { return null; }
+}
 
 const FALLBACK_CPI_RAW = [
   ["1914-01-01",3.84],["1914-06-01",3.93],["1914-12-01",3.93],
@@ -175,123 +268,63 @@ const FALLBACK_CPI_RAW = [
   ["1994-01-01",91.59],["1994-12-01",91.97],["1995-01-01",92.11],["1995-12-01",93.70],
   ["1996-01-01",93.80],["1996-12-01",94.46],["1997-01-01",94.56],["1997-12-01",95.09],
   ["1998-01-01",95.13],["1998-12-01",95.28],["1999-01-01",95.42],["1999-12-01",97.31],
-  ["2000-01-01",95.4],["2000-02-01",95.6],["2000-03-01",96.0],["2000-04-01",96.3],["2000-05-01",96.6],["2000-06-01",96.8],
-  ["2000-07-01",97.0],["2000-08-01",97.2],["2000-09-01",97.4],["2000-10-01",97.4],["2000-11-01",97.4],["2000-12-01",97.3],
-  ["2001-01-01",97.3],["2001-02-01",97.7],["2001-03-01",98.0],["2001-04-01",98.4],["2001-05-01",98.5],["2001-06-01",98.7],
-  ["2001-07-01",98.8],["2001-08-01",98.8],["2001-09-01",98.8],["2001-10-01",98.5],["2001-11-01",98.3],["2001-12-01",98.2],
-  ["2002-01-01",98.4],["2002-02-01",99.0],["2002-03-01",99.8],["2002-04-01",100.1],["2002-05-01",100.3],["2002-06-01",100.3],
-  ["2002-07-01",100.4],["2002-08-01",100.6],["2002-09-01",100.5],["2002-10-01",100.4],["2002-11-01",100.5],["2002-12-01",100.6],
-  ["2003-01-01",101.2],["2003-02-01",101.9],["2003-03-01",102.4],["2003-04-01",102.4],["2003-05-01",102.5],["2003-06-01",102.5],
-  ["2003-07-01",102.7],["2003-08-01",102.9],["2003-09-01",103.0],["2003-10-01",103.0],["2003-11-01",102.9],["2003-12-01",103.0],
-  ["2004-01-01",103.0],["2004-02-01",103.1],["2004-03-01",103.5],["2004-04-01",103.9],["2004-05-01",104.4],["2004-06-01",104.7],
-  ["2004-07-01",104.9],["2004-08-01",105.1],["2004-09-01",105.4],["2004-10-01",105.3],["2004-11-01",105.4],["2004-12-01",105.3],
-  ["2005-01-01",105.3],["2005-02-01",105.9],["2005-03-01",106.5],["2005-04-01",107.0],["2005-05-01",107.4],["2005-06-01",107.3],
-  ["2005-07-01",107.4],["2005-08-01",107.7],["2005-09-01",108.0],["2005-10-01",108.3],["2005-11-01",108.1],["2005-12-01",107.9],
-  ["2006-01-01",108.1],["2006-02-01",108.6],["2006-03-01",109.2],["2006-04-01",109.6],["2006-05-01",110.0],["2006-06-01",110.2],
-  ["2006-07-01",110.3],["2006-08-01",110.1],["2006-09-01",109.7],["2006-10-01",109.5],["2006-11-01",109.7],["2006-12-01",109.7],
-  ["2007-01-01",110.1],["2007-02-01",110.5],["2007-03-01",111.1],["2007-04-01",111.5],["2007-05-01",111.8],["2007-06-01",112.0],
-  ["2007-07-01",112.2],["2007-08-01",112.2],["2007-09-01",112.1],["2007-10-01",112.2],["2007-11-01",112.4],["2007-12-01",112.4],
-  ["2008-01-01",112.9],["2008-02-01",113.5],["2008-03-01",114.1],["2008-04-01",114.7],["2008-05-01",115.4],["2008-06-01",116.3],
-  ["2008-07-01",116.6],["2008-08-01",116.3],["2008-09-01",115.9],["2008-10-01",115.4],["2008-11-01",114.7],["2008-12-01",114.1],
-  ["2009-01-01",114.4],["2009-02-01",114.5],["2009-03-01",114.6],["2009-04-01",114.3],["2009-05-01",114.1],["2009-06-01",114.3],
-  ["2009-07-01",114.3],["2009-08-01",114.3],["2009-09-01",114.4],["2009-10-01",114.4],["2009-11-01",114.6],["2009-12-01",115.0],
-  ["2010-01-01",115.2],["2010-02-01",115.4],["2010-03-01",116.0],["2010-04-01",116.5],["2010-05-01",116.7],["2010-06-01",116.9],
-  ["2010-07-01",117.0],["2010-08-01",117.2],["2010-09-01",117.3],["2010-10-01",117.4],["2010-11-01",117.5],["2010-12-01",117.6],
-  ["2011-01-01",117.8],["2011-02-01",118.3],["2011-03-01",119.0],["2011-04-01",119.8],["2011-05-01",120.3],["2011-06-01",120.6],
-  ["2011-07-01",120.7],["2011-08-01",120.9],["2011-09-01",121.1],["2011-10-01",121.1],["2011-11-01",120.8],["2011-12-01",121.0],
-  ["2012-01-01",120.9],["2012-02-01",121.4],["2012-03-01",122.0],["2012-04-01",122.2],["2012-05-01",122.1],["2012-06-01",122.3],
-  ["2012-07-01",122.4],["2012-08-01",122.8],["2012-09-01",123.0],["2012-10-01",122.9],["2012-11-01",122.8],["2012-12-01",122.8],
-  ["2013-01-01",122.8],["2013-02-01",123.1],["2013-03-01",123.3],["2013-04-01",123.4],["2013-05-01",123.5],["2013-06-01",123.4],
-  ["2013-07-01",123.6],["2013-08-01",123.7],["2013-09-01",123.8],["2013-10-01",124.0],["2013-11-01",124.0],["2013-12-01",124.1],
-  ["2014-01-01",124.3],["2014-02-01",125.0],["2014-03-01",125.4],["2014-04-01",125.5],["2014-05-01",126.0],["2014-06-01",126.4],
-  ["2014-07-01",126.5],["2014-08-01",126.5],["2014-09-01",126.6],["2014-10-01",126.6],["2014-11-01",126.5],["2014-12-01",126.1],
-  ["2015-01-01",125.9],["2015-02-01",126.5],["2015-03-01",127.1],["2015-04-01",127.2],["2015-05-01",127.5],["2015-06-01",127.8],
-  ["2015-07-01",128.0],["2015-08-01",128.0],["2015-09-01",128.1],["2015-10-01",128.2],["2015-11-01",128.1],["2015-12-01",127.9],
-  ["2016-01-01",127.7],["2016-02-01",128.0],["2016-03-01",128.8],["2016-04-01",129.2],["2016-05-01",129.5],["2016-06-01",129.6],
-  ["2016-07-01",129.7],["2016-08-01",129.9],["2016-09-01",129.9],["2016-10-01",130.0],["2016-11-01",130.0],["2016-12-01",130.1],
-  ["2017-01-01",130.0],["2017-02-01",130.3],["2017-03-01",131.1],["2017-04-01",131.0],["2017-05-01",131.2],["2017-06-01",131.4],
-  ["2017-07-01",131.5],["2017-08-01",132.0],["2017-09-01",132.4],["2017-10-01",132.5],["2017-11-01",132.8],["2017-12-01",133.4],
-  ["2018-01-01",133.4],["2018-02-01",133.9],["2018-03-01",134.6],["2018-04-01",135.3],["2018-05-01",135.8],["2018-06-01",136.1],
-  ["2018-07-01",136.4],["2018-08-01",136.3],["2018-09-01",136.3],["2018-10-01",136.0],["2018-11-01",135.7],["2018-12-01",135.6],
-  ["2019-01-01",135.8],["2019-02-01",136.3],["2019-03-01",137.0],["2019-04-01",137.3],["2019-05-01",137.6],["2019-06-01",137.7],
-  ["2019-07-01",137.9],["2019-08-01",137.9],["2019-09-01",137.9],["2019-10-01",138.0],["2019-11-01",138.0],["2019-12-01",138.2],
-  ["2020-01-01",138.6],["2020-02-01",138.8],["2020-03-01",138.8],["2020-04-01",137.5],["2020-05-01",137.5],["2020-06-01",138.2],
-  ["2020-07-01",138.6],["2020-08-01",138.9],["2020-09-01",139.1],["2020-10-01",139.2],["2020-11-01",139.3],["2020-12-01",139.8],
-  ["2021-01-01",139.9],["2021-02-01",140.4],["2021-03-01",141.2],["2021-04-01",142.5],["2021-05-01",143.6],["2021-06-01",144.4],
-  ["2021-07-01",145.0],["2021-08-01",145.6],["2021-09-01",146.3],["2021-10-01",147.6],["2021-11-01",148.7],["2021-12-01",149.3],
-  ["2022-01-01",149.8],["2022-02-01",150.9],["2022-03-01",151.9],["2022-04-01",153.3],["2022-05-01",155.3],["2022-06-01",156.4],
-  ["2022-07-01",157.0],["2022-08-01",157.7],["2022-09-01",157.8],["2022-10-01",158.0],["2022-11-01",157.5],["2022-12-01",157.4],
-  ["2023-01-01",157.9],["2023-02-01",158.4],["2023-03-01",158.2],["2023-04-01",159.3],["2023-05-01",159.7],["2023-06-01",159.1],
-  ["2023-07-01",159.7],["2023-08-01",160.6],["2023-09-01",160.6],["2023-10-01",160.8],["2023-11-01",160.6],["2023-12-01",160.8],
-  ["2024-01-01",160.9],["2024-02-01",161.8],["2024-03-01",161.8],["2024-04-01",162.3],["2024-05-01",162.9],["2024-06-01",162.3],
-  ["2024-07-01",162.8],["2024-08-01",163.2],["2024-09-01",162.8],["2024-10-01",163.3],["2024-11-01",163.2],["2024-12-01",163.8],
-  ["2025-01-01",163.9],["2025-02-01",164.0],["2025-03-01",164.0],["2025-04-01",164.1],["2025-05-01",164.6],["2025-06-01",163.5],
-  ["2025-07-01",164.8],["2025-08-01",164.7],["2025-09-01",164.7],["2025-10-01",164.7],["2025-11-01",164.6],["2025-12-01",165.1],
+  ["2000-01-01",95.4],["2000-06-01",96.8],["2000-12-01",97.3],
+  ["2001-01-01",97.3],["2001-06-01",98.7],["2001-12-01",98.2],
+  ["2002-01-01",98.4],["2002-06-01",100.3],["2002-12-01",100.6],
+  ["2003-01-01",101.2],["2003-06-01",102.5],["2003-12-01",103.0],
+  ["2004-01-01",103.0],["2004-06-01",104.7],["2004-12-01",105.3],
+  ["2005-01-01",105.3],["2005-06-01",107.3],["2005-12-01",107.9],
+  ["2006-01-01",108.1],["2006-06-01",110.2],["2006-12-01",109.7],
+  ["2007-01-01",110.1],["2007-06-01",112.0],["2007-12-01",112.4],
+  ["2008-01-01",112.9],["2008-06-01",116.3],["2008-12-01",114.1],
+  ["2009-01-01",114.4],["2009-06-01",114.3],["2009-12-01",115.0],
+  ["2010-01-01",115.2],["2010-06-01",116.9],["2010-12-01",117.6],
+  ["2011-01-01",117.8],["2011-06-01",120.6],["2011-12-01",121.0],
+  ["2012-01-01",120.9],["2012-06-01",122.3],["2012-12-01",122.8],
+  ["2013-01-01",122.8],["2013-06-01",123.4],["2013-12-01",124.1],
+  ["2014-01-01",124.3],["2014-06-01",126.4],["2014-12-01",126.1],
+  ["2015-01-01",125.9],["2015-06-01",127.8],["2015-12-01",127.9],
+  ["2016-01-01",127.7],["2016-06-01",129.6],["2016-12-01",130.1],
+  ["2017-01-01",130.0],["2017-06-01",131.4],["2017-12-01",133.4],
+  ["2018-01-01",133.4],["2018-06-01",136.1],["2018-12-01",135.6],
+  ["2019-01-01",135.8],["2019-06-01",137.7],["2019-12-01",138.2],
+  ["2020-01-01",138.6],["2020-06-01",138.2],["2020-12-01",139.8],
+  ["2021-01-01",139.9],["2021-06-01",144.4],["2021-12-01",149.3],
+  ["2022-01-01",149.8],["2022-06-01",156.4],["2022-12-01",157.4],
+  ["2023-01-01",157.9],["2023-06-01",159.1],["2023-12-01",160.8],
+  ["2024-01-01",160.9],["2024-06-01",162.3],["2024-12-01",163.8],
+  ["2025-01-01",163.9],["2025-06-01",163.5],["2025-12-01",165.1],
   ["2026-01-01",165.8],
 ];
 
-const COMPONENTS = [
-  { label:"Shelter",           key:"Shelter",           value:4.5,  icon:"🏠" },
-  { label:"Health & Personal", key:"Health",            value:3.4,  icon:"💊" },
-  { label:"Food",              key:"Food",              value:3.1,  icon:"🥦" },
-  { label:"Alcohol & Tobacco", key:"Alcohol & Tobacco", value:3.0,  icon:"🍺" },
-  { label:"Recreation",        key:"Recreation",        value:1.2,  icon:"📚" },
-  { label:"Household",         key:"Household",         value:0.8,  icon:"🛋️" },
-  { label:"Clothing",          key:"Clothing",          value:-0.9, icon:"👗" },
-  { label:"Transport",         key:"Transport",         value:-3.2, icon:"🚗" },
-];
-
-const PROVINCES = [
-  { code:"BC", name:"British Columbia", key:"BC", value:2.5 },
-  { code:"AB", name:"Alberta",          key:"AB", value:2.8 },
-  { code:"SK", name:"Saskatchewan",     key:"SK", value:1.8 },
-  { code:"MB", name:"Manitoba",         key:"MB", value:3.3 },
-  { code:"ON", name:"Ontario",          key:"ON", value:2.4 },
-  { code:"QC", name:"Québec",           key:"QC", value:2.1 },
-  { code:"NB", name:"New Brunswick",    key:"NB", value:2.0 },
-  { code:"NS", name:"Nova Scotia",      key:"NS", value:2.2 },
-  { code:"PE", name:"P.E.I.",           key:"PE", value:1.8 },
-  { code:"NL", name:"Newfoundland",     key:"NL", value:2.6 },
-];
-
-const BOC = 2.0;
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const RANGES = { "2Y":24,"5Y":60,"10Y":120,"25Y":300,"All":99999 };
-
-function fmtDate(iso) {
-  const d = new Date(iso.slice(0,10)+"T12:00:00");
-  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-}
-function computeYoY(raw) {
-  const map = {};
-  raw.forEach(([d,v]) => { map[d.slice(0,7)] = v; });
-  return Object.keys(map).sort().reduce((acc,k) => {
-    const [y,m] = k.split("-").map(Number);
-    const pk = `${y-1}-${String(m).padStart(2,"0")}`;
-    if (map[pk] != null)
-      acc.push({ date:fmtDate(k+"-01"), iso:k+"-01", value:+((map[k]-map[pk])/map[pk]*100).toFixed(1) });
-    return acc;
-  }, []);
-}
-function parseWDS(json) {
-  try {
-    const pts = json[0]?.object?.vectorDataPoint;
-    if (!pts?.length) return null;
-    return pts.map(p => [p.refPer, p.value]);
-  } catch { return null; }
-}
-
-const ChartTip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
+function FilterPill({label, color, active, onClick}) {
   return (
-    <div style={{ background:C.surface2,border:`1px solid ${C.border2}`,borderRadius:10,padding:"12px 16px",boxShadow:"0 8px 32px rgba(0,0,0,.6)",fontFamily:"'Plus Jakarta Sans',sans-serif",minWidth:160 }}>
-      <div style={{ fontSize:11,fontWeight:600,color:C.textSecondary,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8 }}>{label}</div>
-      {payload.map((p,i) => (
-        <div key={i} style={{ display:"flex",alignItems:"center",gap:6,marginBottom:4 }}>
-          <span style={{ width:8,height:8,borderRadius:"50%",background:p.color,flexShrink:0 }}/>
-          <span style={{ fontSize:11,color:C.textSecondary,minWidth:90 }}>{p.name}</span>
-          <span style={{ fontSize:14,fontWeight:700,color:p.color,fontFamily:"'Barlow Condensed',sans-serif",marginLeft:"auto" }}>
-            {p.value > 0 ? "+" : ""}{p.value?.toFixed(1)}%
+    <button onClick={onClick} style={{
+      display:"inline-flex", alignItems:"center", gap:5,
+      background: active ? `${color}1A` : "transparent",
+      border:`1px solid ${active ? color : C.border2}`,
+      color: active ? color : C.textMuted,
+      borderRadius:100, padding:"4px 11px", fontSize:11, fontWeight:600,
+      cursor:"pointer", fontFamily:"inherit", transition:"all .15s",
+      WebkitTapHighlightColor:"transparent",
+    }}>
+      <span style={{width:6,height:6,borderRadius:"50%",background:active?color:C.textMuted,flexShrink:0}}/>
+      {label}
+    </button>
+  );
+}
+
+const MultiTip = ({active, payload, label, suffix="%"}) => {
+  if (!active||!payload?.length) return null;
+  return (
+    <div style={{background:C.surface2,border:`1px solid ${C.border2}`,borderRadius:10,padding:"12px 16px",boxShadow:"0 8px 32px rgba(0,0,0,.8)",fontFamily:"inherit",minWidth:170,maxWidth:220}}>
+      <div style={{fontSize:11,fontWeight:600,color:C.textSecondary,textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>{label}</div>
+      {payload.slice(0,8).map((p,i)=>(
+        <div key={i} style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
+          <span style={{width:7,height:7,borderRadius:"50%",background:p.color,flexShrink:0}}/>
+          <span style={{fontSize:11,color:C.textSecondary,flex:1,minWidth:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.name}</span>
+          <span style={{fontSize:13,fontWeight:700,color:p.color,fontFamily:"'Barlow Condensed',sans-serif",marginLeft:4,whiteSpace:"nowrap"}}>
+            {p.value>0?"+":""}{p.value?.toFixed(1)}{suffix}
           </span>
         </div>
       ))}
@@ -299,69 +332,26 @@ const ChartTip = ({ active, payload, label }) => {
   );
 };
 
-const MainChartTip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
+const SingleTip = ({active, payload, label, prefix="", suffix="%", note}) => {
+  if (!active||!payload?.length) return null;
   const v = payload[0].value;
   return (
-    <div style={{ background:C.surface2,border:`1px solid ${C.border2}`,borderRadius:10,padding:"12px 16px",boxShadow:"0 8px 32px rgba(0,0,0,.6)",fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
-      <div style={{ fontSize:11,fontWeight:600,color:C.textSecondary,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6 }}>{label}</div>
-      <div style={{ fontSize:28,fontWeight:700,color:valColor(v),fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:"-.5px",lineHeight:1 }}>
-        {v > 0 ? "+" : ""}{v.toFixed(1)}%
+    <div style={{background:C.surface2,border:`1px solid ${C.border2}`,borderRadius:10,padding:"12px 16px",boxShadow:"0 8px 32px rgba(0,0,0,.8)",fontFamily:"inherit"}}>
+      <div style={{fontSize:11,fontWeight:600,color:C.textSecondary,textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>{label}</div>
+      <div style={{fontSize:26,fontWeight:700,color:payload[0].color||C.yellow,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:"-.5px",lineHeight:1}}>
+        {prefix}{v?.toFixed(2)}{suffix}
       </div>
-      <div style={{ fontSize:11,color:C.textMuted,marginTop:5 }}>
-        {v > BOC ? `+${(v-BOC).toFixed(1)}pp above BoC target` : `${(BOC-v).toFixed(1)}pp below BoC target`}
-      </div>
+      {note&&<div style={{fontSize:11,color:C.textMuted,marginTop:5}}>{note(v)}</div>}
     </div>
   );
 };
 
-function FilterPill({ label, color, active, onClick }) {
-  return (
-    <button onClick={onClick} style={{
-      display:"inline-flex",alignItems:"center",gap:5,
-      background: active ? `${color}20` : "none",
-      border:`1px solid ${active ? color : C.border}`,
-      color: active ? color : C.textMuted,
-      borderRadius:100,padding:"3px 10px",fontSize:11,fontWeight:600,
-      cursor:"pointer",fontFamily:"'Plus Jakarta Sans',sans-serif",transition:"all .15s",
-    }}>
-      <span style={{ width:6,height:6,borderRadius:"50%",background:active?color:C.textMuted,flexShrink:0 }}/>
-      {label}
-    </button>
-  );
-}
-
-export default function App() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [, setSrc] = useState("loading");
+function RatesTab({data, vis}) {
   const [range, setRange] = useState("10Y");
-  const [vis, setVis] = useState(false);
-  const [activeCats, setActiveCats] = useState(Object.fromEntries(Object.keys(CAT_COLORS).map(k=>[k,true])));
-  const [activeProvs, setActiveProvs] = useState(Object.fromEntries(PROVINCES.map(p=>[p.key,true])));
+  const [activeCats,  setActiveCats]  = useState(Object.fromEntries(CAT_KEYS.map(k=>[k,true])));
+  const [activeProvs, setActiveProvs] = useState(Object.fromEntries(PROV_KEYS.map(k=>[k,true])));
 
-  const load = useCallback(async () => {
-    setLoading(true); setVis(false);
-    try {
-      const res = await fetch(`${STATCAN_BASE}/getDataFromVectorsAndLatestNPeriods`,{
-        method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify([{vectorId:CPI_VECTOR,latestN:1500}]),
-      });
-      if (!res.ok) throw new Error();
-      const json = await res.json();
-      const raw = parseWDS(json);
-      if (!raw||raw.length<24) throw new Error();
-      setData(computeYoY(raw)); setSrc("live");
-    } catch {
-      setData(computeYoY(FALLBACK_CPI_RAW)); setSrc("fallback");
-    } finally {
-      setLoading(false); setTimeout(()=>setVis(true),60);
-    }
-  },[]);
-
-  useEffect(()=>{load();},[load]);
-
-  const chart   = data ? data.slice(-Math.min(RANGES[range],data.length)) : [];
+  const chart   = data ? data.slice(-Math.min(RANGES[range], data.length)) : [];
   const cur     = data?.[data.length-1];
   const prev    = data?.[data.length-2];
   const peak    = data?.reduce((a,b)=>b.value>a.value?b:a);
@@ -373,190 +363,382 @@ export default function App() {
   const ti      = range==="2Y"?2:range==="5Y"?5:range==="10Y"?11:range==="25Y"?28:Math.max(1,Math.floor(chart.length/11));
   const sortedProvs = [...PROVINCES].sort((a,b)=>b.value-a.value);
 
+  return (<>
+    <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,marginBottom:16,overflow:"hidden"}}>
+      <div style={{padding:"28px 24px 0",background:`linear-gradient(135deg,${C.surface} 55%,transparent)`}}>
+        <div style={{fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:".12em",marginBottom:12}}>
+          Canada · All-Items CPI · Year-over-Year · {cur?.date}
+        </div>
+        <div style={{display:"flex",alignItems:"flex-end",gap:16,flexWrap:"wrap",marginBottom:20}}>
+          <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:"clamp(60px,12vw,96px)",fontWeight:700,lineHeight:1,letterSpacing:"-2px",color:valColor(cur?.value)}}>
+            {cur?.value.toFixed(1)}%
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:7,paddingBottom:8}}>
+            {prev&&(
+              <span style={{display:"inline-flex",alignItems:"center",gap:5,background:valBg(delta),color:valColor(delta),borderRadius:6,padding:"4px 10px",fontSize:12,fontWeight:700,border:`1px solid ${valColor(delta)}25`,width:"fit-content"}}>
+                {delta>0?"▲":delta<0?"▼":"—"} {Math.abs(delta).toFixed(1)}pp vs {prev.date}
+              </span>
+            )}
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {[`BoC target ${BOC}%`,peak?`Peak ${peak.value.toFixed(1)}% · ${peak.date}`:null,`${data?.length} months · ${startYr}–present`].filter(Boolean).map((t,i)=>(
+                <span key={i} style={{fontSize:10,fontWeight:600,color:C.textMuted,background:C.surface2,border:`1px solid ${C.border}`,borderRadius:5,padding:"3px 8px"}}>{t}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",borderTop:`1px solid ${C.border}`}}>
+        {[
+          {label:"vs. BoC",    val:`${cur?.value>BOC?"+":""}${(cur?.value-BOC).toFixed(1)}pp`, color:valColor(cur?.value)},
+          {label:"Prior Month",val:`${prev?.value.toFixed(1)}%`,                               color:C.white},
+          {label:"12-Mo Low",  val:`${lo12.toFixed(1)}%`,                                      color:C.green},
+          {label:"12-Mo High", val:`${hi12.toFixed(1)}%`,                                      color:C.red},
+        ].map((s,i)=>(
+          <div key={i} style={{padding:"14px 16px",borderRight:i<3?`1px solid ${C.border}`:"none"}}>
+            <div style={{fontSize:9,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:5}}>{s.label}</div>
+            <div style={{fontSize:20,fontWeight:700,color:s.color,fontFamily:"'Barlow Condensed',sans-serif"}}>{s.val}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"22px 20px 16px",marginBottom:16,transitionDelay:".06s"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:10}}>
+        <div>
+          <div style={{fontSize:14,fontWeight:700}}>Inflation History</div>
+          <div style={{fontSize:10,color:C.textSecondary,marginTop:2}}>Year-over-year % · {chart[0]?.date} – {chart[chart.length-1]?.date}</div>
+        </div>
+        <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+          {Object.keys(RANGES).map(r=><button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>)}
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={200}>
+        <AreaChart data={chart} margin={{top:4,right:4,left:-24,bottom:0}}>
+          <defs>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%"  stopColor={C.yellow} stopOpacity={0.15}/>
+              <stop offset="95%" stopColor={C.yellow} stopOpacity={0}/>
+            </linearGradient>
+            <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%"   stopColor={C.red}/>
+              <stop offset="50%"  stopColor={C.yellow}/>
+              <stop offset="100%" stopColor={C.green}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+          <XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={{stroke:C.border}} tickLine={false} interval={ti}/>
+          <YAxis tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
+          <Tooltip content={<SingleTip suffix="%" note={v=>`${v>BOC?`+${(v-BOC).toFixed(1)}pp above`:`${(BOC-v).toFixed(1)}pp below`} BoC target`}/>}/>
+          <ReferenceLine y={BOC} stroke={C.border2} strokeDasharray="4 3" label={{value:"BoC 2%",fill:C.textMuted,fontSize:9,position:"insideTopRight"}}/>
+          <ReferenceLine y={0} stroke={C.border}/>
+          <Area type="monotone" dataKey="value" stroke="url(#lineGrad)" strokeWidth={2} fill="url(#areaGrad)" dot={false} activeDot={{r:4,fill:C.yellow,stroke:C.surface,strokeWidth:2}}/>
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14,marginBottom:16}}>
+      <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",transitionDelay:".11s"}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>By Category</div>
+        <div style={{fontSize:10,color:C.textSecondary,marginBottom:14}}>Year-over-year · {cur?.date}</div>
+        {COMPONENTS.map((c,i)=>(
+          <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:i<COMPONENTS.length-1?`1px solid ${C.border}`:"none"}}>
+            <div style={{display:"flex",alignItems:"center",gap:9}}>
+              <span style={{width:28,height:28,borderRadius:7,background:valBg(c.value),display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{c.icon}</span>
+              <span style={{fontSize:12,fontWeight:600,color:C.textPrimary}}>{c.label}</span>
+            </div>
+            <span style={{fontSize:14,fontWeight:700,color:valColor(c.value),fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:"-.3px",flexShrink:0}}>
+              {c.value>=0?"+":""}{c.value.toFixed(1)}%
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",transitionDelay:".15s"}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>By Province</div>
+        <div style={{fontSize:10,color:C.textSecondary,marginBottom:14}}>Year-over-year · {cur?.date}</div>
+        {sortedProvs.map((p,i)=>{
+          const clr=valColor(p.value);
+          return (
+            <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:i<PROVINCES.length-1?`1px solid ${C.border}`:"none"}}>
+              <div style={{display:"flex",alignItems:"center",gap:9}}>
+                <span style={{width:28,height:28,borderRadius:7,background:valBg(p.value),display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:clr,flexShrink:0}}>{p.code}</span>
+                <span style={{fontSize:12,fontWeight:500,color:C.textPrimary}}>{p.name}</span>
+              </div>
+              <span style={{fontSize:14,fontWeight:700,color:clr,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:"-.3px",flexShrink:0}}>
+                {p.value.toFixed(1)}%
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",marginBottom:16,transitionDelay:".18s"}}>
+      <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Category Trends</div>
+      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Year-over-year % · Annual · 2000–2025</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:16}}>
+        {CAT_KEYS.map(k=><FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={()=>setActiveCats(p=>({...p,[k]:!p[k]}))}/>)}
+      </div>
+      <ResponsiveContainer width="100%" height={240}>
+        <LineChart data={CAT_HISTORY} margin={{top:4,right:8,left:-24,bottom:0}}>
+          <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+          <XAxis dataKey="year" tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={{stroke:C.border}} tickLine={false}/>
+          <YAxis tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
+          <Tooltip content={<MultiTip/>}/>
+          <ReferenceLine y={BOC} stroke={C.border2} strokeDasharray="4 3"/>
+          <ReferenceLine y={0} stroke={C.border}/>
+          {CAT_KEYS.map(k=>activeCats[k]?<Line key={k} type="monotone" dataKey={k} stroke={CAT_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{r:3,stroke:C.surface,strokeWidth:2}}/>:null)}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+
+    <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",marginBottom:4,transitionDelay:".22s"}}>
+      <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Provincial Trends</div>
+      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Year-over-year % · Annual · 2000–2025</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:16}}>
+        {PROVINCES.map(p=><FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={()=>setActiveProvs(prev=>({...prev,[p.key]:!prev[p.key]}))}/>)}
+      </div>
+      <ResponsiveContainer width="100%" height={240}>
+        <LineChart data={PROV_HISTORY} margin={{top:4,right:8,left:-24,bottom:0}}>
+          <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+          <XAxis dataKey="year" tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={{stroke:C.border}} tickLine={false}/>
+          <YAxis tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
+          <Tooltip content={<MultiTip/>}/>
+          <ReferenceLine y={BOC} stroke={C.border2} strokeDasharray="4 3"/>
+          {PROV_KEYS.map(k=>activeProvs[k]?<Line key={k} type="monotone" dataKey={k} stroke={PROV_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{r:3,stroke:C.surface,strokeWidth:2}}/>:null)}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  </>);
+}
+
+function CumulativeTab({data, vis}) {
+  const [range, setRange]         = useState("All");
+  const [activeCats,  setActiveCats]  = useState(Object.fromEntries(CAT_KEYS.map(k=>[k,true])));
+  const [activeProvs, setActiveProvs] = useState(Object.fromEntries(PROV_KEYS.map(k=>[k,true])));
+
+  const cadData  = useMemo(()=> data ? computeCadDevaluation(data) : [], [data]);
+  const chart    = cadData.slice(-Math.min(RANGES[range], cadData.length));
+  const latest   = cadData[cadData.length-1];
+  const startYr  = data?.[0]?.iso ? new Date(data[0].iso).getFullYear() : "1914";
+  const totalLost = latest ? latest.lostPct : 0;
+  const ti = range==="2Y"?2:range==="5Y"?5:range==="10Y"?11:range==="25Y"?28:Math.max(1,Math.floor(chart.length/11));
+  const sortedCat  = [...COMPONENTS].sort((a,b)=>b.cumValue-a.cumValue);
+  const sortedProv = [...PROVINCES].sort((a,b)=>b.cumValue-a.cumValue);
+  const multiplier = latest ? (1/latest.cadValue).toFixed(2) : "—";
+  const cagr = latest ? ((Math.pow(1/latest.cadValue, 1/((data?.length||12)/12))-1)*100).toFixed(1) : "—";
+
+  return (<>
+    <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,marginBottom:16,overflow:"hidden"}}>
+      <div style={{padding:"28px 24px 0"}}>
+        <div style={{fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:".12em",marginBottom:12}}>
+          CAD Purchasing Power · {startYr} – Present · Compound Erosion
+        </div>
+        <div style={{display:"flex",alignItems:"flex-end",gap:16,flexWrap:"wrap",marginBottom:20}}>
+          <div style={{fontFamily:"'Barlow Condensed',sans-serif",fontSize:"clamp(60px,12vw,96px)",fontWeight:700,lineHeight:1,letterSpacing:"-2px",color:C.red}}>
+            −{totalLost.toFixed(1)}%
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:7,paddingBottom:8}}>
+            <span style={{display:"inline-flex",alignItems:"center",gap:6,background:C.redBg,color:C.red,borderRadius:6,padding:"4px 10px",fontSize:12,fontWeight:700,border:`1px solid ${C.red}25`,width:"fit-content"}}>
+              $1.00 in {startYr} → ${latest?.cadValue.toFixed(2)} today
+            </span>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {[`${Math.round(totalLost)}¢ lost per dollar`,`Over ${data?.length||0} months`,`Avg ~${cagr}%/yr erosion`].map((t,i)=>(
+                <span key={i} style={{fontSize:10,fontWeight:600,color:C.textMuted,background:C.surface2,border:`1px solid ${C.border}`,borderRadius:5,padding:"3px 8px"}}>{t}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",borderTop:`1px solid ${C.border}`}}>
+        {[
+          {label:"Purchasing Power", val:`${latest?.cadValue.toFixed(2)}¢`, color:C.red},
+          {label:"Total Lost",       val:`${totalLost.toFixed(1)}%`,         color:C.red},
+          {label:"Cost Multiplier",  val:`${multiplier}×`,                   color:C.yellow},
+          {label:"Period",           val:`${startYr}–Now`,                   color:C.white},
+        ].map((s,i)=>(
+          <div key={i} style={{padding:"14px 16px",borderRight:i<3?`1px solid ${C.border}`:"none"}}>
+            <div style={{fontSize:9,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:5}}>{s.label}</div>
+            <div style={{fontSize:18,fontWeight:700,color:s.color,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:"-.3px"}}>{s.val}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"22px 20px 16px",marginBottom:16,transitionDelay:".06s"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:10}}>
+        <div>
+          <div style={{fontSize:14,fontWeight:700}}>Purchasing Power of $1.00</div>
+          <div style={{fontSize:10,color:C.textSecondary,marginTop:2}}>Real value in today's money — compound erosion since {startYr}</div>
+        </div>
+        <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+          {Object.keys(RANGES).map(r=><button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>)}
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={200}>
+        <AreaChart data={chart} margin={{top:4,right:4,left:-10,bottom:0}}>
+          <defs>
+            <linearGradient id="cadGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%"  stopColor={C.red} stopOpacity={0.2}/>
+              <stop offset="95%" stopColor={C.red} stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+          <XAxis dataKey="date" tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={{stroke:C.border}} tickLine={false} interval={ti}/>
+          <YAxis tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={false} tickLine={false} tickFormatter={v=>`$${v.toFixed(2)}`} domain={["auto","auto"]}/>
+          <Tooltip content={<SingleTip prefix="$" suffix="" note={v=>`Lost ${((1-v)*100).toFixed(1)}¢ of every dollar`}/>}/>
+          <ReferenceLine y={1} stroke={C.border2} strokeDasharray="4 3" label={{value:"$1.00 baseline",fill:C.textMuted,fontSize:9,position:"insideTopRight"}}/>
+          <Area type="monotone" dataKey="cadValue" stroke={C.red} strokeWidth={2} fill="url(#cadGrad)" dot={false} activeDot={{r:4,fill:C.red,stroke:C.surface,strokeWidth:2}}/>
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14,marginBottom:16}}>
+      <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",transitionDelay:".11s"}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Cumulative by Category</div>
+        <div style={{fontSize:10,color:C.textSecondary,marginBottom:14}}>Compound total since 2000</div>
+        {sortedCat.map((c,i)=>(
+          <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:i<sortedCat.length-1?`1px solid ${C.border}`:"none"}}>
+            <div style={{display:"flex",alignItems:"center",gap:9}}>
+              <span style={{width:28,height:28,borderRadius:7,background:cumBg(c.cumValue),display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{c.icon}</span>
+              <span style={{fontSize:12,fontWeight:600,color:C.textPrimary}}>{c.label}</span>
+            </div>
+            <span style={{fontSize:14,fontWeight:700,color:cumColor(c.cumValue),fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:"-.3px",flexShrink:0}}>
+              {c.cumValue>=0?"+":""}{c.cumValue.toFixed(1)}%
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",transitionDelay:".15s"}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Cumulative by Province</div>
+        <div style={{fontSize:10,color:C.textSecondary,marginBottom:14}}>Compound total since 2000</div>
+        {sortedProv.map((p,i)=>{
+          const clr=cumColor(p.cumValue);
+          return (
+            <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 0",borderBottom:i<sortedProv.length-1?`1px solid ${C.border}`:"none"}}>
+              <div style={{display:"flex",alignItems:"center",gap:9}}>
+                <span style={{width:28,height:28,borderRadius:7,background:cumBg(p.cumValue),display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:clr,flexShrink:0}}>{p.code}</span>
+                <span style={{fontSize:12,fontWeight:500,color:C.textPrimary}}>{p.name}</span>
+              </div>
+              <span style={{fontSize:14,fontWeight:700,color:clr,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:"-.3px",flexShrink:0}}>
+                +{p.cumValue.toFixed(1)}%
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",marginBottom:16,transitionDelay:".18s"}}>
+      <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Cumulative Category Inflation</div>
+      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Compounded total % since 2000</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:16}}>
+        {CAT_KEYS.map(k=><FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={()=>setActiveCats(p=>({...p,[k]:!p[k]}))}/>)}
+      </div>
+      <ResponsiveContainer width="100%" height={240}>
+        <LineChart data={CAT_CUM_HISTORY} margin={{top:4,right:8,left:-10,bottom:0}}>
+          <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+          <XAxis dataKey="year" tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={{stroke:C.border}} tickLine={false}/>
+          <YAxis tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
+          <Tooltip content={<MultiTip suffix="%"/>}/>
+          <ReferenceLine y={0} stroke={C.border}/>
+          {CAT_KEYS.map(k=>activeCats[k]?<Line key={k} type="monotone" dataKey={k} stroke={CAT_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{r:3,stroke:C.surface,strokeWidth:2}}/>:null)}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+
+    <div className={`reveal ${vis?"in":""}`} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"20px 18px",marginBottom:4,transitionDelay:".22s"}}>
+      <div style={{fontSize:14,fontWeight:700,marginBottom:2}}>Cumulative Provincial Inflation</div>
+      <div style={{fontSize:10,color:C.textSecondary,marginBottom:12}}>Compounded total % since 2000</div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:16}}>
+        {PROVINCES.map(p=><FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={()=>setActiveProvs(prev=>({...prev,[p.key]:!prev[p.key]}))}/>)}
+      </div>
+      <ResponsiveContainer width="100%" height={240}>
+        <LineChart data={PROV_CUM_HISTORY} margin={{top:4,right:8,left:-10,bottom:0}}>
+          <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+          <XAxis dataKey="year" tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={{stroke:C.border}} tickLine={false}/>
+          <YAxis tick={{fill:C.textMuted,fontSize:9,fontWeight:600}} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
+          <Tooltip content={<MultiTip suffix="%"/>}/>
+          {PROV_KEYS.map(k=>activeProvs[k]?<Line key={k} type="monotone" dataKey={k} stroke={PROV_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{r:3,stroke:C.surface,strokeWidth:2}}/>:null)}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  </>);
+}
+
+export default function App() {
+  const [data,    setData]    = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [vis,     setVis]     = useState(false);
+  const [tab,     setTab]     = useState(0);
+
+  const load = useCallback(async () => {
+    setLoading(true); setVis(false);
+    try {
+      const res = await fetch(`${STATCAN_BASE}/getDataFromVectorsAndLatestNPeriods`,{
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify([{vectorId:CPI_VECTOR,latestN:1500}]),
+      });
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      const raw  = parseWDS(json);
+      if (!raw||raw.length<24) throw new Error();
+      setData(computeYoY(raw));
+    } catch {
+      setData(computeYoY(FALLBACK_CPI_RAW));
+    } finally {
+      setLoading(false); setTimeout(()=>setVis(true), 60);
+    }
+  }, []);
+
+  useEffect(()=>{load();},[load]);
+
+  const TABS = ["Inflation Rates","Purchasing Power"];
+
   return (
-    <div style={{ minHeight:"100vh",background:C.bg,color:C.textPrimary,fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
+    <div style={{minHeight:"100vh",background:C.bg,color:C.textPrimary,fontFamily:"'Plus Jakarta Sans',sans-serif"}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@500;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:4px}
-        ::-webkit-scrollbar-track{background:${C.bg}}
+        ::-webkit-scrollbar-track{background:#000}
         ::-webkit-scrollbar-thumb{background:${C.border2};border-radius:2px}
-        .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+        .reveal{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease}
         .reveal.in{opacity:1;transform:translateY(0)}
-        .rb{background:none;border:1px solid ${C.border};color:${C.textSecondary};padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif}
+        .rb{background:none;border:1px solid ${C.border};color:${C.textSecondary};padding:4px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit}
         .rb.on{background:${C.yellow};border-color:${C.yellow};color:#000}
         .rb:hover:not(.on){border-color:${C.border2};color:${C.textPrimary}}
-        .row-item{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid ${C.border}}
-        .row-item:last-child{border-bottom:none}
         @keyframes spin{to{transform:rotate(360deg)}}
         .spin{border:2px solid ${C.border};border-top-color:${C.yellow};border-radius:50%;animation:spin .7s linear infinite}
       `}</style>
 
-      <nav style={{ background:C.surface,borderBottom:`1px solid ${C.border}`,padding:"0 28px",height:60,display:"flex",alignItems:"center",position:"sticky",top:0,zIndex:100,backdropFilter:"blur(12px)" }}>
-        <div style={{ display:"flex",alignItems:"center",gap:0 }}>
-          <span style={{ fontFamily:"'DM Sans',sans-serif",fontSize:20,fontWeight:700,letterSpacing:"-.3px",color:C.white }}>Canadian</span>
-          <span style={{ fontFamily:"'DM Sans',sans-serif",fontSize:20,fontWeight:700,letterSpacing:"-.3px",color:C.red }}>flation</span>
-        </div>
+      <nav style={{background:C.surface,borderBottom:`1px solid ${C.border}`,padding:"0 20px",height:56,display:"flex",alignItems:"center",position:"sticky",top:0,zIndex:100,backdropFilter:"blur(16px)"}}>
+        <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,fontWeight:700,letterSpacing:"-.3px",color:C.white}}>Canadian</span>
+        <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,fontWeight:700,letterSpacing:"-.3px",color:C.red}}>flation</span>
       </nav>
 
-      <div style={{ maxWidth:1060,margin:"0 auto",padding:"36px 20px 80px" }}>
+      <div style={{background:C.surface,borderBottom:`1px solid ${C.border}`,padding:"0 20px",display:"flex",position:"sticky",top:56,zIndex:99}}>
+        {TABS.map((t,i)=>(
+          <button key={i} onClick={()=>setTab(i)} style={{
+            background:"none",border:"none",borderBottom:`2px solid ${tab===i?C.yellow:"transparent"}`,
+            color:tab===i?C.yellow:C.textSecondary,
+            padding:"12px 16px",fontSize:13,fontWeight:600,cursor:"pointer",
+            fontFamily:"inherit",transition:"all .15s",
+          }}>{t}</button>
+        ))}
+      </div>
+
+      <div style={{maxWidth:980,margin:"0 auto",padding:"20px 16px 60px"}}>
         {loading ? (
-          <div style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:400,gap:16 }}>
-            <div className="spin" style={{ width:40,height:40,borderWidth:3 }}/>
-            <p style={{ color:C.textMuted,fontSize:13,fontWeight:500 }}>Fetching historical CPI data…</p>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:360,gap:16}}>
+            <div className="spin" style={{width:36,height:36}}/>
+            <p style={{color:C.textMuted,fontSize:12,fontWeight:500}}>Fetching historical CPI data…</p>
           </div>
-        ):(<>
-
-          <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,marginBottom:20,overflow:"hidden",backgroundImage:`radial-gradient(${C.border} 1px,transparent 1px)`,backgroundSize:"24px 24px" }}>
-            <div style={{ background:`linear-gradient(135deg,${C.surface} 55%,transparent)`,padding:"36px 36px 0" }}>
-              <div style={{ fontSize:11,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:".12em",marginBottom:14 }}>Canada · All-Items CPI · Year-over-Year · {cur?.date}</div>
-              <div style={{ display:"flex",alignItems:"flex-end",gap:20,flexWrap:"wrap",marginBottom:24 }}>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif",fontSize:"clamp(72px,10vw,100px)",fontWeight:700,lineHeight:1,letterSpacing:"-2px",color:valColor(cur?.value) }}>
-                  {cur?.value.toFixed(1)}%
-                </div>
-                <div style={{ display:"flex",flexDirection:"column",gap:8,paddingBottom:10 }}>
-                  {prev&&(
-                    <span style={{ display:"inline-flex",alignItems:"center",gap:5,background:valBg(delta),color:valColor(delta),borderRadius:6,padding:"5px 11px",fontSize:13,fontWeight:700,border:`1px solid ${valColor(delta)}30` }}>
-                      {delta>0?"▲":delta<0?"▼":"—"}&nbsp;{Math.abs(delta).toFixed(1)}pp&nbsp;<span style={{ color:C.textSecondary,fontWeight:500 }}>vs {prev.date}</span>
-                    </span>
-                  )}
-                  <div style={{ display:"flex",gap:8,flexWrap:"wrap" }}>
-                    {[`BoC target ${BOC.toFixed(1)}%`,peak?`Peak ${peak.value.toFixed(1)}% · ${peak.date}`:null,`${data?.length} months · ${startYr}–present`].filter(Boolean).map((t,i)=>(
-                      <span key={i} style={{ fontSize:11,fontWeight:600,color:C.textMuted,background:C.surface2,border:`1px solid ${C.border}`,borderRadius:5,padding:"3px 9px" }}>{t}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",borderTop:`1px solid ${C.border}` }}>
-              {[
-                {label:"vs. BoC Target",val:`${cur?.value>BOC?"+":""}${(cur?.value-BOC).toFixed(1)}pp`,color:valColor(cur?.value)},
-                {label:"Prior Month",val:`${prev?.value.toFixed(1)}%`,color:C.white},
-                {label:"12-Mo Low",val:`${lo12.toFixed(1)}%`,color:C.green},
-                {label:"12-Mo High",val:`${hi12.toFixed(1)}%`,color:C.red},
-              ].map((s,i)=>(
-                <div key={i} style={{ padding:"18px 24px",borderRight:i<3?`1px solid ${C.border}`:"none",background:C.surface }}>
-                  <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:".1em",marginBottom:7 }}>{s.label}</div>
-                  <div style={{ fontSize:24,fontWeight:700,color:s.color,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:"-.5px" }}>{s.val}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"26px 24px 18px",marginBottom:20,transitionDelay:".07s" }}>
-            <div style={{ display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20,flexWrap:"wrap",gap:12 }}>
-              <div>
-                <div style={{ fontSize:15,fontWeight:700,color:C.textPrimary,letterSpacing:"-.2px" }}>Inflation History</div>
-                <div style={{ fontSize:11,color:C.textSecondary,fontWeight:500,marginTop:3 }}>Year-over-year % · {chart[0]?.date} – {chart[chart.length-1]?.date}</div>
-              </div>
-              <div style={{ display:"flex",gap:6,flexWrap:"wrap" }}>
-                {Object.keys(RANGES).map(r=>(<button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>))}
-              </div>
-            </div>
-            <ResponsiveContainer width="100%" height={230}>
-              <LineChart data={chart} margin={{ top:4,right:4,left:-20,bottom:0 }}>
-                <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor={C.red}/><stop offset="45%" stopColor={C.yellow}/><stop offset="100%" stopColor={C.green}/></linearGradient></defs>
-                <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                <XAxis dataKey="date" tick={{ fill:C.textMuted,fontSize:10,fontWeight:600,fontFamily:"'Plus Jakarta Sans',sans-serif" }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti}/>
-                <YAxis tick={{ fill:C.textMuted,fontSize:10,fontWeight:600,fontFamily:"'Plus Jakarta Sans',sans-serif" }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
-                <Tooltip content={<MainChartTip/>}/>
-                <ReferenceLine y={BOC} stroke={C.border2} strokeDasharray="4 3" label={{ value:"BoC 2%",fill:C.textMuted,fontSize:10,fontFamily:"'Plus Jakarta Sans',sans-serif",position:"insideTopRight" }}/>
-                <ReferenceLine y={0} stroke={C.border}/>
-                <Line type="monotone" dataKey="value" stroke="url(#lg)" strokeWidth={2} dot={false} activeDot={{ r:4,fill:C.yellow,stroke:C.surface,strokeWidth:2 }}/>
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:18,marginBottom:20 }}>
-            <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"24px 22px",transitionDelay:".13s" }}>
-              <div style={{ fontSize:15,fontWeight:700,marginBottom:3 }}>By Category</div>
-              <div style={{ fontSize:11,color:C.textSecondary,fontWeight:500,marginBottom:18 }}>Year-over-year % · {cur?.date}</div>
-              {COMPONENTS.map((c,i)=>(
-                <div key={i} className="row-item">
-                  <div style={{ display:"flex",alignItems:"center",gap:10 }}>
-                    <span style={{ width:30,height:30,borderRadius:8,background:valBg(c.value),display:"flex",alignItems:"center",justifyContent:"center",fontSize:14 }}>{c.icon}</span>
-                    <span style={{ fontSize:13,fontWeight:600,color:C.textPrimary }}>{c.label}</span>
-                  </div>
-                  <div style={{ display:"flex",alignItems:"center",gap:10 }}>
-                    <div style={{ width:52,height:3,background:C.border2,borderRadius:2,overflow:"hidden" }}>
-                      <div style={{ height:"100%",borderRadius:2,width:`${Math.min(100,Math.abs(c.value)/5*100)}%`,background:valColor(c.value) }}/>
-                    </div>
-                    <span style={{ fontSize:15,fontWeight:700,color:valColor(c.value),fontFamily:"'Barlow Condensed',sans-serif",minWidth:52,textAlign:"right",letterSpacing:"-.3px" }}>
-                      {c.value>=0?"+":""}{c.value.toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"24px 22px",transitionDelay:".17s" }}>
-              <div style={{ fontSize:15,fontWeight:700,marginBottom:3 }}>By Province</div>
-              <div style={{ fontSize:11,color:C.textSecondary,fontWeight:500,marginBottom:18 }}>Year-over-year % · {cur?.date}</div>
-              {sortedProvs.map((p,i)=>{
-                const mx=Math.max(...PROVINCES.map(x=>x.value));
-                const clr=valColor(p.value);
-                return (
-                  <div key={i} className="row-item">
-                    <div style={{ display:"flex",alignItems:"center",gap:10 }}>
-                      <span style={{ width:30,height:30,borderRadius:8,background:valBg(p.value),display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,color:clr }}>{p.code}</span>
-                      <span style={{ fontSize:13,fontWeight:500,color:C.textPrimary }}>{p.name}</span>
-                    </div>
-                    <div style={{ display:"flex",alignItems:"center",gap:10 }}>
-                      <div style={{ width:52,height:3,background:C.border2,borderRadius:2,overflow:"hidden" }}>
-                        <div style={{ height:"100%",borderRadius:2,width:`${(p.value/mx)*100}%`,background:clr,transition:"width .8s ease" }}/>
-                      </div>
-                      <span style={{ fontSize:15,fontWeight:700,color:clr,fontFamily:"'Barlow Condensed',sans-serif",minWidth:44,textAlign:"right",letterSpacing:"-.3px" }}>
-                        {p.value.toFixed(1)}%
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"24px 22px 20px",marginBottom:20,transitionDelay:".20s" }}>
-            <div style={{ fontSize:15,fontWeight:700,marginBottom:3 }}>Category Trends Over Time</div>
-            <div style={{ fontSize:11,color:C.textSecondary,fontWeight:500,marginBottom:16 }}>Year-over-year % by CPI component · Annual · 2000–2025</div>
-            <div style={{ display:"flex",flexWrap:"wrap",gap:6,marginBottom:20 }}>
-              {Object.keys(CAT_COLORS).map(k=>(<FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={()=>setActiveCats(p=>({...p,[k]:!p[k]}))}/>))}
-            </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={CAT_HISTORY} margin={{ top:4,right:8,left:-20,bottom:0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                <XAxis dataKey="year" tick={{ fill:C.textMuted,fontSize:10,fontWeight:600,fontFamily:"'Plus Jakarta Sans',sans-serif" }} axisLine={{ stroke:C.border }} tickLine={false}/>
-                <YAxis tick={{ fill:C.textMuted,fontSize:10,fontWeight:600,fontFamily:"'Plus Jakarta Sans',sans-serif" }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
-                <Tooltip content={<ChartTip/>}/>
-                <ReferenceLine y={BOC} stroke={C.border2} strokeDasharray="4 3" label={{ value:"BoC 2%",fill:C.textMuted,fontSize:10,fontFamily:"'Plus Jakarta Sans',sans-serif",position:"insideTopRight" }}/>
-                <ReferenceLine y={0} stroke={C.border}/>
-                {Object.keys(CAT_COLORS).map(k=>activeCats[k]?(<Line key={k} type="monotone" dataKey={k} stroke={CAT_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{ r:4,stroke:C.surface,strokeWidth:2 }}/>):null)}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface,border:`1px solid ${C.border}`,borderRadius:16,padding:"24px 22px 20px",marginBottom:28,transitionDelay:".24s" }}>
-            <div style={{ fontSize:15,fontWeight:700,marginBottom:3 }}>Provincial Trends Over Time</div>
-            <div style={{ fontSize:11,color:C.textSecondary,fontWeight:500,marginBottom:16 }}>Year-over-year % by province · Annual · 2000–2025</div>
-            <div style={{ display:"flex",flexWrap:"wrap",gap:6,marginBottom:20 }}>
-              {PROVINCES.map(p=>(<FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={()=>setActiveProvs(prev=>({...prev,[p.key]:!prev[p.key]}))}/>))}
-            </div>
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={PROV_HISTORY} margin={{ top:4,right:8,left:-20,bottom:0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                <XAxis dataKey="year" tick={{ fill:C.textMuted,fontSize:10,fontWeight:600,fontFamily:"'Plus Jakarta Sans',sans-serif" }} axisLine={{ stroke:C.border }} tickLine={false}/>
-                <YAxis tick={{ fill:C.textMuted,fontSize:10,fontWeight:600,fontFamily:"'Plus Jakarta Sans',sans-serif" }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
-                <Tooltip content={<ChartTip/>}/>
-                <ReferenceLine y={BOC} stroke={C.border2} strokeDasharray="4 3" label={{ value:"BoC 2%",fill:C.textMuted,fontSize:10,fontFamily:"'Plus Jakarta Sans',sans-serif",position:"insideTopRight" }}/>
-                {PROVINCES.map(p=>activeProvs[p.key]?(<Line key={p.key} type="monotone" dataKey={p.key} stroke={PROV_COLORS[p.key]} strokeWidth={2} dot={false} name={p.name} activeDot={{ r:4,stroke:C.surface,strokeWidth:2 }}/>):null)}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className={`reveal ${vis?"in":""}`} style={{ textAlign:"center",fontSize:11,color:C.textMuted,fontWeight:500,lineHeight:2,transitionDelay:".28s",borderTop:`1px solid ${C.border}`,paddingTop:20 }}>
-            © 2026 Canadianflation.ca · Data: Statistics Canada · Not an official government product
-          </div>
-
-        </>)}
+        ) : (
+          tab===0 ? <RatesTab data={data} vis={vis}/> : <CumulativeTab data={data} vis={vis}/>
+        )}
+        <div style={{textAlign:"center",fontSize:10,color:C.textMuted,fontWeight:500,marginTop:32,paddingTop:20,borderTop:`1px solid ${C.border}`}}>
+          © 2026 Canadianflation.ca · Data: Statistics Canada · Not an official government product
+        </div>
       </div>
     </div>
   );
