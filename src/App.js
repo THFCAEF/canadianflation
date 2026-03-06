@@ -244,13 +244,6 @@ function computeYoY(raw) {
   }, []);
 }
 function computeCadDevaluation(yoyData) {
-  let val = 1.0;
-  return yoyData.map(pt => {
-    const monthlyRate = pt.value / 100 / 12;
-    val = val / (1 + monthlyRate);
-    return {...pt, cadValue: +Math.max(val, 0.001).toFixed(4), lostPct: +((1 - Math.max(val,0))*100).toFixed(1)};
-  });
-}
 function parseWDS(json) {
   try {
     const pts = json[0]?.object?.vectorDataPoint;
