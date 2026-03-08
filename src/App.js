@@ -771,7 +771,6 @@ function TaylorTab({ data, vis, rateData }) {
 
   const sliced  = chartData.slice(-Math.min(RANGES[range], chartData.length));
   const latest  = chartData[chartData.length - 1];
-  const gap     = latest?.gap;
   const ti = range==="2Y"?2:range==="5Y"?5:range==="10Y"?11:range==="25Y"?28:Math.max(1,Math.floor(sliced.length/11));
 
   const noRateData = rateData.length === 0;
