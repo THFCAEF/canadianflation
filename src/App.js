@@ -272,105 +272,7 @@ function taylorRate(inflation) {
   return +(1.5 * inflation + 1.0).toFixed(2);
 }
 
-// ── Fallback data (used only if StatCan API fails) ────────────────────────────
-// NOTE: Category and province data from StatCan only goes back to ~1979.
-// Before 1979, only the national all-items CPI (v41690973) has data.
-// The fallback below covers years from 2000 onward as a degraded placeholder.
-const CAT_HISTORY_FALLBACK = [
-  { year:"2000", Shelter:2.2, Food:1.8, Transport:4.1,  Health:3.0, "Recreation & Education":1.5, Household:1.2, Clothing:-1.0, "Alcohol & Tobacco":2.0 },
-  { year:"2005", Shelter:3.0, Food:1.5, Transport:3.8,  Health:2.4, "Recreation & Education":0.9, Household:0.4, Clothing:-0.5, "Alcohol & Tobacco":2.5 },
-  { year:"2010", Shelter:2.0, Food:1.4, Transport:2.8,  Health:2.2, "Recreation & Education":0.6, Household:0.2, Clothing:-0.8, "Alcohol & Tobacco":2.0 },
-  { year:"2015", Shelter:3.1, Food:3.8, Transport:-0.5, Health:2.1, "Recreation & Education":1.0, Household:0.5, Clothing:0.3,  "Alcohol & Tobacco":2.5 },
-  { year:"2020", Shelter:2.4, Food:2.8, Transport:-4.2, Health:2.5, "Recreation & Education":-0.8,Household:0.2, Clothing:-2.1, "Alcohol & Tobacco":2.7 },
-  { year:"2022", Shelter:6.9, Food:8.9, Transport:9.2,  Health:3.4, "Recreation & Education":4.1, Household:5.8, Clothing:3.2,  "Alcohol & Tobacco":4.1 },
-  { year:"2023", Shelter:6.1, Food:9.1, Transport:-1.4, Health:3.8, "Recreation & Education":2.9, Household:2.1, Clothing:0.4,  "Alcohol & Tobacco":4.3 },
-  { year:"2024", Shelter:5.4, Food:2.8, Transport:-2.1, Health:3.5, "Recreation & Education":1.5, Household:1.2, Clothing:-0.4, "Alcohol & Tobacco":3.5 },
-];
-const PROV_HISTORY_FALLBACK = [
-  { year:"2000", BC:2.1, AB:2.8, SK:1.9, MB:2.4, ON:2.3, QC:2.0, NB:1.8, NS:1.7, PE:1.6, NL:2.2 },
-  { year:"2005", BC:2.3, AB:2.9, SK:2.0, MB:2.5, ON:2.2, QC:1.9, NB:1.8, NS:1.7, PE:1.6, NL:2.3 },
-  { year:"2010", BC:1.4, AB:1.2, SK:1.6, MB:1.8, ON:1.5, QC:1.2, NB:1.4, NS:1.3, PE:1.2, NL:1.6 },
-  { year:"2015", BC:1.1, AB:1.2, SK:1.0, MB:1.8, ON:1.3, QC:1.2, NB:0.9, NS:0.8, PE:0.7, NL:1.4 },
-  { year:"2020", BC:1.4, AB:0.6, SK:0.9, MB:1.4, ON:0.8, QC:0.9, NB:0.8, NS:0.7, PE:0.6, NL:1.0 },
-  { year:"2022", BC:7.6, AB:8.2, SK:7.4, MB:8.0, ON:7.9, QC:7.1, NB:7.3, NS:7.0, PE:6.9, NL:7.5 },
-  { year:"2023", BC:4.1, AB:5.2, SK:4.0, MB:4.8, ON:4.3, QC:3.8, NB:3.9, NS:3.7, PE:3.6, NL:4.4 },
-  { year:"2024", BC:2.8, AB:3.1, SK:2.2, MB:3.6, ON:2.7, QC:2.4, NB:2.3, NS:2.5, PE:2.1, NL:2.9 },
-];
 
-// Sparse national all-items CPI index going back to 1914 for purchasing power chart
-const FALLBACK_CPI_RAW = [
-  ["1914-01-01",3.84],["1914-06-01",3.93],["1914-12-01",3.93],
-  ["1915-01-01",3.93],["1915-12-01",4.31],["1916-01-01",4.36],["1916-12-01",5.08],
-  ["1917-01-01",5.27],["1917-12-01",6.67],["1918-01-01",6.81],["1918-12-01",8.01],
-  ["1919-01-01",8.05],["1919-12-01",9.54],["1920-01-01",9.77],["1920-12-01",9.88],
-  ["1921-01-01",9.59],["1921-12-01",8.05],["1922-01-01",7.86],["1922-12-01",7.67],
-  ["1923-01-01",7.72],["1923-12-01",7.81],["1924-01-01",7.77],["1924-12-01",7.72],
-  ["1925-01-01",7.77],["1925-12-01",7.86],["1926-01-01",7.86],["1926-12-01",7.91],
-  ["1927-01-01",7.81],["1927-12-01",7.72],["1928-01-01",7.77],["1928-12-01",7.81],
-  ["1929-01-01",7.86],["1929-12-01",7.77],["1930-01-01",7.67],["1930-12-01",7.19],
-  ["1931-01-01",6.95],["1931-12-01",6.38],["1932-01-01",6.18],["1932-12-01",5.85],
-  ["1933-01-01",5.75],["1933-12-01",5.85],["1934-01-01",5.90],["1934-12-01",5.99],
-  ["1935-01-01",5.99],["1935-12-01",6.04],["1936-01-01",6.09],["1936-12-01",6.18],
-  ["1937-01-01",6.28],["1937-12-01",6.42],["1938-01-01",6.42],["1938-12-01",6.33],
-  ["1939-01-01",6.28],["1939-12-01",6.33],["1940-01-01",6.42],["1940-12-01",6.76],
-  ["1941-01-01",6.86],["1941-12-01",7.19],["1942-01-01",7.29],["1942-12-01",7.43],
-  ["1943-01-01",7.43],["1943-12-01",7.48],["1944-01-01",7.48],["1944-12-01",7.53],
-  ["1945-01-01",7.53],["1945-12-01",7.62],["1946-01-01",7.72],["1946-12-01",8.15],
-  ["1947-01-01",8.34],["1947-12-01",9.06],["1948-01-01",9.35],["1948-12-01",10.06],
-  ["1949-01-01",10.11],["1949-12-01",10.02],["1950-01-01",10.06],["1950-12-01",10.73],
-  ["1951-01-01",11.17],["1951-12-01",11.94],["1952-01-01",11.84],["1952-12-01",11.79],
-  ["1953-01-01",11.69],["1953-12-01",11.60],["1954-01-01",11.55],["1954-12-01",11.60],
-  ["1955-01-01",11.60],["1955-12-01",11.69],["1956-01-01",11.75],["1956-12-01",11.94],
-  ["1957-01-01",12.03],["1957-12-01",12.32],["1958-01-01",12.37],["1958-12-01",12.56],
-  ["1959-01-01",12.56],["1959-12-01",12.66],["1960-01-01",12.70],["1960-12-01",12.85],
-  ["1961-01-01",12.85],["1961-12-01",12.94],["1962-01-01",12.94],["1962-12-01",13.09],
-  ["1963-01-01",13.14],["1963-12-01",13.38],["1964-01-01",13.42],["1964-12-01",13.66],
-  ["1965-01-01",13.76],["1965-12-01",14.09],["1966-01-01",14.23],["1966-12-01",14.86],
-  ["1967-01-01",15.00],["1967-12-01",15.53],["1968-01-01",15.67],["1968-12-01",16.30],
-  ["1969-01-01",16.49],["1969-12-01",17.31],["1970-01-01",17.50],["1970-12-01",18.27],
-  ["1971-01-01",18.36],["1971-12-01",18.89],["1972-01-01",19.08],["1972-12-01",20.09],
-  ["1973-01-01",20.37],["1973-12-01",22.91],["1974-01-01",23.49],["1974-12-01",27.43],
-  ["1975-01-01",28.20],["1975-12-01",30.68],["1976-01-01",31.21],["1976-12-01",32.83],
-  ["1977-01-01",33.47],["1977-12-01",36.28],["1978-01-01",36.92],["1978-12-01",40.27],
-  ["1979-01-01",40.99],["1979-12-01",45.50],["1980-01-01",46.41],["1980-12-01",51.84],
-  ["1981-01-01",52.99],["1981-12-01",57.62],["1982-01-01",58.44],["1982-12-01",61.47],
-  ["1983-01-01",61.56],["1983-12-01",63.52],["1984-01-01",63.81],["1984-12-01",65.70],
-  ["1985-01-01",65.97],["1985-12-01",67.93],["1986-01-01",68.17],["1986-12-01",69.40],
-  ["1987-01-01",69.94],["1987-12-01",72.81],["1988-01-01",73.31],["1988-12-01",76.61],
-  ["1989-01-01",77.44],["1989-12-01",81.41],["1990-01-01",82.23],["1990-12-01",86.01],
-  ["1991-01-01",86.87],["1991-12-01",88.78],["1992-01-01",88.93],["1992-12-01",90.07],
-  ["1993-01-01",90.31],["1993-12-01",91.54],["1994-01-01",91.59],["1994-12-01",91.97],
-  ["1995-01-01",92.11],["1995-12-01",93.70],["1996-01-01",93.80],["1996-12-01",94.46],
-  ["1997-01-01",94.56],["1997-12-01",95.09],["1998-01-01",95.13],["1998-12-01",95.28],
-  ["1999-01-01",95.42],["1999-12-01",97.31],
-  ["2000-01-01",95.4], ["2000-06-01",96.8], ["2000-12-01",97.3],
-  ["2001-01-01",97.3], ["2001-06-01",98.7], ["2001-12-01",98.2],
-  ["2002-01-01",98.4], ["2002-06-01",100.3],["2002-12-01",100.6],
-  ["2003-01-01",101.2],["2003-06-01",102.5],["2003-12-01",103.0],
-  ["2004-01-01",103.0],["2004-06-01",104.7],["2004-12-01",105.3],
-  ["2005-01-01",105.3],["2005-06-01",107.3],["2005-12-01",107.9],
-  ["2006-01-01",108.1],["2006-06-01",110.2],["2006-12-01",109.7],
-  ["2007-01-01",110.1],["2007-06-01",112.0],["2007-12-01",112.4],
-  ["2008-01-01",112.9],["2008-06-01",116.3],["2008-12-01",114.1],
-  ["2009-01-01",114.4],["2009-06-01",114.3],["2009-12-01",115.0],
-  ["2010-01-01",115.2],["2010-06-01",116.9],["2010-12-01",117.6],
-  ["2011-01-01",117.8],["2011-06-01",120.6],["2011-12-01",121.0],
-  ["2012-01-01",120.9],["2012-06-01",122.3],["2012-12-01",122.8],
-  ["2013-01-01",122.8],["2013-06-01",123.4],["2013-12-01",124.1],
-  ["2014-01-01",124.3],["2014-06-01",126.4],["2014-12-01",126.1],
-  ["2015-01-01",125.9],["2015-06-01",127.8],["2015-12-01",127.9],
-  ["2016-01-01",127.7],["2016-06-01",129.6],["2016-12-01",130.1],
-  ["2017-01-01",130.0],["2017-06-01",131.4],["2017-12-01",133.4],
-  ["2018-01-01",133.4],["2018-06-01",136.1],["2018-12-01",135.6],
-  ["2019-01-01",135.8],["2019-06-01",137.7],["2019-12-01",138.2],
-  ["2020-01-01",138.6],["2020-06-01",138.2],["2020-12-01",139.8],
-  ["2021-01-01",139.9],["2021-06-01",144.4],["2021-12-01",149.3],
-  ["2022-01-01",149.8],["2022-06-01",156.4],["2022-12-01",157.4],
-  ["2023-01-01",157.9],["2023-06-01",159.1],["2023-12-01",160.8],
-  ["2024-01-01",160.9],["2024-06-01",162.3],["2024-12-01",163.8],
-  ["2025-01-01",163.9],["2025-06-01",163.5],["2025-12-01",165.1],
-  ["2026-01-01",165.8],
-];
 
 // ── Shared UI ─────────────────────────────────────────────────────────────────
 function FilterPill({ label, color, active, onClick }) {
@@ -618,7 +520,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
 
   const catCumHistory  = useMemo(() => computeCumulative(catHistory,  CAT_KEYS),  [catHistory]);
   const provCumHistory = useMemo(() => computeCumulative(provHistory, PROV_KEYS), [provHistory]);
-  const cadData  = useMemo(() => computeCadDevaluation(rawCpi || FALLBACK_CPI_RAW), [rawCpi]);
+  const cadData  = useMemo(() => computeCadDevaluation(rawCpi), [rawCpi]);
   const chart    = cadData.slice(-Math.min(RANGES[range], cadData.length));
   const latest   = cadData[cadData.length - 1];
   const startYr  = cadData[0]?.iso ? new Date(cadData[0].iso).getFullYear() : "1914";
@@ -886,11 +788,12 @@ function TaylorTab({ data, vis, rateData }) {
 // ── Root App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [data,        setData]        = useState(null);
-  const [rawCpi,      setRawCpi]      = useState(FALLBACK_CPI_RAW);
-  const [catHistory,  setCatHistory]  = useState(CAT_HISTORY_FALLBACK);
-  const [provHistory, setProvHistory] = useState(PROV_HISTORY_FALLBACK);
+  const [rawCpi,      setRawCpi]      = useState([]);
+  const [catHistory,  setCatHistory]  = useState([]);
+  const [provHistory, setProvHistory] = useState([]);
   const [rateData,    setRateData]    = useState([]);
   const [loading,     setLoading]     = useState(true);
+  const [error,       setError]       = useState(false);
   const [vis,         setVis]         = useState(false);
   const [tab,         setTab]         = useState(0);
 
@@ -912,19 +815,17 @@ export default function App() {
       const mainRaw = rawMap[CPI_VECTOR];
       if (!mainRaw || mainRaw.length < 24) throw new Error("Insufficient CPI data");
       setData(computeYoY(mainRaw));
-      // Merge API data with fallback to get 1914–present
-      const fallbackMap = {};
-      FALLBACK_CPI_RAW.forEach(([d, v]) => { fallbackMap[d.slice(0,7)] = [d, v]; });
-      mainRaw.forEach(([d, v]) => { fallbackMap[d.slice(0,7)] = [d, v]; });
-      const mergedRaw = Object.keys(fallbackMap).sort().map(k => fallbackMap[k]);
-      setRawCpi(mergedRaw);
+      // Seed rawCpi with live monthly data; annual fetch (step 3) will prepend 1914+
+      setRawCpi(mainRaw.map(([d, v]) => [d, v]));
 
       const catH  = buildAnnualHistory(rawMap, CAT_KEYS,  CAT_VECTORS);
       const provH = buildAnnualHistory(rawMap, PROV_KEYS, PROV_VECTORS);
       if (catH.length  > 2) setCatHistory(catH);
       if (provH.length > 2) setProvHistory(provH);
     } catch {
-      setData(computeYoY(FALLBACK_CPI_RAW));
+      setError(true);
+      setLoading(false);
+      return;
     }
 
     // ── 2. Bank of Canada overnight rate (JSON endpoint) ─────────────────────
@@ -958,7 +859,7 @@ export default function App() {
         });
       }
     } catch {
-      // Annual fetch failed — rawCpi already seeded with FALLBACK_CPI_RAW
+      // Annual fetch failed — purchasing power chart will use monthly data only (~1975+)
     }
 
     setLoading(false);
@@ -1010,7 +911,18 @@ export default function App() {
         {loading ? (
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:360, gap:16 }}>
             <div className="spin" style={{ width:36, height:36 }}/>
-            <p style={{ color:C.textMuted, fontSize:12, fontWeight:500 }}>Fetching live CPI & rate data…</p>
+            <p style={{ color:C.textMuted, fontSize:12, fontWeight:500 }}>Fetching live data from Statistics Canada…</p>
+          </div>
+        ) : error ? (
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:360, gap:20, textAlign:"center" }}>
+            <div style={{ fontSize:32 }}>📡</div>
+            <div style={{ fontSize:17, fontWeight:700, color:C.textPrimary }}>Statistics Canada is unavailable</div>
+            <div style={{ fontSize:13, color:C.textSecondary, maxWidth:380, lineHeight:1.6 }}>
+              We only display verified data from official sources. Please try again in a few minutes.
+            </div>
+            <button onClick={() => { setError(false); setLoading(true); load(); }} style={{ background:C.yellow, color:"#000", border:"none", borderRadius:8, padding:"10px 24px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+              Try again
+            </button>
           </div>
         ) : (
           tab === 0 ? <RatesTab      data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
