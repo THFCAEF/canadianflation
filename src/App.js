@@ -201,14 +201,23 @@ function computeCumulative(history, keys) {
   });
 }
 
-function computeCadDevaluation(yoyData) {
-  let val = 1.0;
-  return yoyData.map(pt => {
-    val = val / (1 + pt.value / 100 / 12);
+// Build purchasing power from raw CPI index values.
+// Merges fallback (1914+) with live API data, anchors $1.00 at first datapoint.
+function computeCadDevaluation(rawCpi) {
+  if (!rawCpi?.length) return [];
+  const map = {};
+  rawCpi.forEach(([d, v]) => { map[d.slice(0,7)] = v; });
+  const sorted = Object.keys(map).sort();
+  const base = map[sorted[0]];
+  if (!base) return [];
+  return sorted.map(ym => {
+    const v = map[ym];
+    const cadValue = +(base / v).toFixed(4);
     return {
-      ...pt,
-      cadValue: +Math.max(val, 0.001).toFixed(4),
-      lostPct:  +((1 - Math.max(val, 0)) * 100).toFixed(1),
+      date:     fmtDate(ym + "-01"),
+      iso:      ym + "-01",
+      cadValue: Math.max(cadValue, 0.001),
+      lostPct:  +((1 - Math.max(cadValue, 0)) * 100).toFixed(1),
     };
   });
 }
@@ -588,17 +597,17 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
 }
 
 // ── TAB 2: Purchasing Power ───────────────────────────────────────────────────
-function CumulativeTab({ data, vis, catHistory, provHistory }) {
+function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
   const [range, setRange]              = useState("All");
   const [activeCats, setActiveCats]    = useState(Object.fromEntries(CAT_KEYS.map(k => [k, true])));
   const [activeProvs, setActiveProvs]  = useState(Object.fromEntries(PROV_KEYS.map(k => [k, true])));
 
   const catCumHistory  = useMemo(() => computeCumulative(catHistory,  CAT_KEYS),  [catHistory]);
   const provCumHistory = useMemo(() => computeCumulative(provHistory, PROV_KEYS), [provHistory]);
-  const cadData  = useMemo(() => data ? computeCadDevaluation(data) : [], [data]);
+  const cadData  = useMemo(() => computeCadDevaluation(rawCpi || FALLBACK_CPI_RAW), [rawCpi]);
   const chart    = cadData.slice(-Math.min(RANGES[range], cadData.length));
   const latest   = cadData[cadData.length - 1];
-  const startYr  = data?.[0]?.iso ? new Date(data[0].iso).getFullYear() : "1914";
+  const startYr  = cadData[0]?.iso ? new Date(cadData[0].iso).getFullYear() : "1914";
   const totalLost = latest ? latest.lostPct : 0;
   const ti = range==="2Y"?2:range==="5Y"?5:range==="10Y"?11:range==="25Y"?28:Math.max(1,Math.floor(chart.length/11));
 
@@ -607,7 +616,7 @@ function CumulativeTab({ data, vis, catHistory, provHistory }) {
   const sortedCat  = CAT_KEYS.map(k => ({ key:k, label:CAT_META[k].label, icon:CAT_META[k].icon, cumValue:latestCatCum[k]??0 })).sort((a,b) => b.cumValue - a.cumValue);
   const sortedProv = PROV_META.map(p => ({ ...p, cumValue:latestProvCum[p.key]??0 })).sort((a,b) => b.cumValue - a.cumValue);
   const multiplier = latest ? (1 / latest.cadValue).toFixed(2) : "—";
-  const cagr = latest ? ((Math.pow(1/latest.cadValue, 1/((data?.length||12)/12))-1)*100).toFixed(1) : "—";
+  const cagr = latest ? ((Math.pow(1/latest.cadValue, 1/((cadData.length||12)/12))-1)*100).toFixed(1) : "—";
 
   return (<>
     <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, marginBottom:16, overflow:"hidden" }}>
@@ -863,6 +872,7 @@ function TaylorTab({ data, vis, rateData }) {
 // ── Root App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [data,        setData]        = useState(null);
+  const [rawCpi,      setRawCpi]      = useState(FALLBACK_CPI_RAW);
   const [catHistory,  setCatHistory]  = useState(CAT_HISTORY_FALLBACK);
   const [provHistory, setProvHistory] = useState(PROV_HISTORY_FALLBACK);
   const [rateData,    setRateData]    = useState([]);
@@ -888,6 +898,12 @@ export default function App() {
       const mainRaw = rawMap[CPI_VECTOR];
       if (!mainRaw || mainRaw.length < 24) throw new Error("Insufficient CPI data");
       setData(computeYoY(mainRaw));
+      // Merge API data with fallback to get 1914–present
+      const fallbackMap = {};
+      FALLBACK_CPI_RAW.forEach(([d, v]) => { fallbackMap[d.slice(0,7)] = [d, v]; });
+      mainRaw.forEach(([d, v]) => { fallbackMap[d.slice(0,7)] = [d, v]; });
+      const mergedRaw = Object.keys(fallbackMap).sort().map(k => fallbackMap[k]);
+      setRawCpi(mergedRaw);
 
       const catH  = buildAnnualHistory(rawMap, CAT_KEYS,  CAT_VECTORS);
       const provH = buildAnnualHistory(rawMap, PROV_KEYS, PROV_VECTORS);
@@ -961,7 +977,7 @@ export default function App() {
           </div>
         ) : (
           tab === 0 ? <RatesTab      data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
-          tab === 1 ? <CumulativeTab data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
+          tab === 1 ? <CumulativeTab data={data} vis={vis} rawCpi={rawCpi} catHistory={catHistory} provHistory={provHistory}/> :
                       <TaylorTab     data={data} vis={vis} rateData={rateData}/>
         )}
 
