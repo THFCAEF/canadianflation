@@ -132,6 +132,9 @@ const PROV_META = [
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const STATCAN_BASE = "https://www150.statcan.gc.ca/t1/wds/rest";
+// Annual CPI table 18-10-0005-01, Canada, All-items (coordinate 1.1)
+// Goes back to 1914 — used solely for purchasing power chart
+const STATCAN_ANNUAL_CPI_URL = `${STATCAN_BASE}/getDataFromCubePidCoord/18100005/1.1.0.0.0.0.0.0.0.0`;
 // BoC Valet JSON endpoint — more reliable than CSV
 const BOC_VALET_JSON = "https://www.bankofcanada.ca/valet/observations/STATIC_ATABLE_V39079/json?start_date=1994-01-01";
 const CPI_VECTOR   = 41690973;
@@ -235,6 +238,17 @@ function parseBatchWDS(json) {
     } catch {}
   });
   return out;
+}
+
+// Parse StatCan annual CPI cube response → [[dateStr, value], ...]
+function parseAnnualCPI(json) {
+  try {
+    const pts = json?.[0]?.object?.vectorDataPoint;
+    if (!Array.isArray(pts)) return [];
+    return pts
+      .map(p => [p.refPer, parseFloat(p.value)])
+      .filter(([, v]) => !isNaN(v));
+  } catch { return []; }
 }
 
 // Parse BoC Valet JSON response → [{ date, iso, rate }, ...]
@@ -922,6 +936,29 @@ export default function App() {
       if (parsed.length > 12) setRateData(parsed);
     } catch {
       // BoC unavailable — Taylor tab shows CPI-only mode
+    }
+
+    // ── 3. StatCan annual CPI 1914–present (table 18-10-0005-01) ─────────────
+    try {
+      const annRes = await fetch(STATCAN_ANNUAL_CPI_URL);
+      if (!annRes.ok) throw new Error("Annual CPI fetch failed");
+      const annJson = await annRes.json();
+      const annRaw  = parseAnnualCPI(annJson);
+      if (annRaw.length > 50) {
+        // Convert annual to monthly-style entries (use Jan 1 of each year)
+        // then merge with live monthly data so 1914 → present is complete
+        const annMonthly = annRaw.map(([d, v]) => [d.slice(0,4) + "-01-01", v]);
+        setRawCpi(prev => {
+          const map = {};
+          // Annual data first (lower priority)
+          annMonthly.forEach(([d, v]) => { map[d.slice(0,7)] = [d, v]; });
+          // Monthly live data overwrites (higher priority)
+          prev.forEach(([d, v]) => { map[d.slice(0,7)] = [d, v]; });
+          return Object.keys(map).sort().map(k => map[k]);
+        });
+      }
+    } catch {
+      // Annual fetch failed — rawCpi already seeded with FALLBACK_CPI_RAW
     }
 
     setLoading(false);
