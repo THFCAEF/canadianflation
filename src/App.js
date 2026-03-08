@@ -12,7 +12,7 @@ import {
     const sz = 64, cv = document.createElement("canvas");
     cv.width = cv.height = sz;
     const ctx = cv.getContext("2d");
-    ctx.fillStyle = "#3ECFA0";
+    ctx.fillStyle = "#E05A4A";
     ctx.beginPath(); ctx.arc(32, 32, 32, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = "#000000";
     ctx.font = "bold 40px Arial, sans-serif";
@@ -25,7 +25,7 @@ import {
   } catch(e) {
     const ico = document.querySelector("link[rel~='icon']") || document.createElement("link");
     ico.rel = "icon"; ico.type = "image/svg+xml";
-    ico.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%233ECFA0'/%3E%3Ctext x='32' y='46' font-size='42' font-weight='bold' text-anchor='middle' font-family='Arial' fill='%23000'%3E%24%3C/text%3E%3C/svg%3E";
+    ico.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23E05A4A'/%3E%3Ctext x='32' y='46' font-size='42' font-weight='bold' text-anchor='middle' font-family='Arial' fill='%23000'%3E%24%3C/text%3E%3C/svg%3E";
     if (!ico.parentNode) document.head.appendChild(ico);
   }
   [
@@ -781,58 +781,6 @@ function TaylorTab({ data, vis, rateData }) {
   const noRateData = rateData.length === 0;
 
   return (<>
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, marginBottom:16, overflow:"hidden" }}>
-      <div style={{ padding:"28px 24px 0" }}>
-        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:12 }}>
-          Taylor Rule vs BoC Overnight Rate · {latest?.date ?? "Loading…"}
-        </div>
-        {noRateData ? (
-          <div style={{ padding:"20px 0 28px", color:C.textSecondary, fontSize:13 }}>
-            ⚠ Bank of Canada rate data could not be fetched (CORS or network issue). The Taylor Rule prescription is still calculated from live CPI below.
-          </div>
-        ) : (
-          <div style={{ display:"flex", alignItems:"flex-end", gap:20, flexWrap:"wrap", marginBottom:20 }}>
-            <div>
-              <div style={{ fontSize:10, color:C.textMuted, fontWeight:600, marginBottom:4 }}>BOC ACTUAL</div>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,9vw,72px)", fontWeight:700, lineHeight:1, letterSpacing:"-2px", color:C.blue }}>
-                {bocRate?.toFixed(2) ?? "—"}%
-              </div>
-            </div>
-            <div style={{ fontSize:28, color:C.textMuted, paddingBottom:8 }}>vs</div>
-            <div>
-              <div style={{ fontSize:10, color:C.textMuted, fontWeight:600, marginBottom:4 }}>TAYLOR RULE</div>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,9vw,72px)", fontWeight:700, lineHeight:1, letterSpacing:"-2px", color:C.purple }}>
-                {trRate?.toFixed(2) ?? "—"}%
-              </div>
-            </div>
-            <div style={{ display:"flex", flexDirection:"column", gap:7, paddingBottom:8 }}>
-              <span style={{ display:"inline-flex", alignItems:"center", gap:6, background:`${gapColor}20`, color:gapColor, borderRadius:6, padding:"4px 10px", fontSize:12, fontWeight:700, border:`1px solid ${gapColor}30`, width:"fit-content" }}>
-                {gap != null ? (gap >= 0 ? "+" : "") + gap.toFixed(2) + "pp gap" : "—"} · {gapLabel}
-              </span>
-              <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-                {["Formula: i = 1.5π + 1.0", "Neutral r* ≈ 0.5%", "Output gap assumed neutral"].map((t,i) => (
-                  <span key={i} style={{ fontSize:10, fontWeight:600, color:C.textMuted, background:C.surface2, border:`1px solid ${C.border}`, borderRadius:5, padding:"3px 8px" }}>{t}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", borderTop:`1px solid ${C.border}` }}>
-        {[
-          { label:"BoC Rate",       val: noRateData ? "N/A" : `${bocRate?.toFixed(2)??"—"}%`,  color:C.blue   },
-          { label:"Taylor Prescr.", val:`${trRate?.toFixed(2)??"—"}%`,                          color:C.purple },
-          { label:"Current CPI",    val:`${latest?.cpi?.toFixed(2)??"—"}%`,                     color:valColor(latest?.cpi??0) },
-          { label:"Policy Stance",  val: noRateData ? "N/A" : gapLabel,                         color:gapColor },
-        ].map((s,i) => (
-          <div key={i} style={{ padding:"14px 16px", borderRight:i<3?`1px solid ${C.border}`:"none" }}>
-            <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:5 }}>{s.label}</div>
-            <div style={{ fontSize:18, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px" }}>{s.val}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-
     {/* Main comparison chart */}
     <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"22px 20px 16px", marginBottom:16, transitionDelay:".06s" }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:10 }}>
