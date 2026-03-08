@@ -771,12 +771,8 @@ function TaylorTab({ data, vis, rateData }) {
 
   const sliced  = chartData.slice(-Math.min(RANGES[range], chartData.length));
   const latest  = chartData[chartData.length - 1];
-  const bocRate = latest?.actual;
-  const trRate  = latest?.taylor;
   const gap     = latest?.gap;
   const ti = range==="2Y"?2:range==="5Y"?5:range==="10Y"?11:range==="25Y"?28:Math.max(1,Math.floor(sliced.length/11));
-  const gapColor = gap == null ? C.textMuted : gap > 1 ? C.green : gap < -1 ? C.red : C.yellow;
-  const gapLabel = gap == null ? "—" : gap > 1 ? "Tight" : gap < -1 ? "Easy (below Taylor)" : "Near neutral";
 
   const noRateData = rateData.length === 0;
 
