@@ -475,7 +475,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:10 }}>
         <div>
           <div style={{ fontSize:14, fontWeight:700 }}>Inflation History</div>
-          <div style={{ fontSize:10, color:C.textSecondary, marginTop:2 }}>Year-over-year % · {chart[0]?.date} – {chart[chart.length-1]?.date}</div>
+          <div style={{ fontSize:10, color:C.textSecondary, marginTop:2 }}>Year-over-year · {chart[0]?.date} – {chart[chart.length-1]?.date}</div>
         </div>
         <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
           {Object.keys(RANGES).map(r => <button key={r} className={`rb ${range===r?"on":""}`} onClick={() => setRange(r)}>{r}</button>)}
@@ -509,7 +509,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:14, marginBottom:16 }}>
       <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", transitionDelay:".11s" }}>
         <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>By Category</div>
-        <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>YoY · Jan {catEndYr} · StatCan table 18-10-0004-01</div>
+        <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>Year-over-year change · latest available data</div>
         {COMPONENTS.map((comp, i) => (
           <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"9px 0", borderBottom:i<COMPONENTS.length-1?`1px solid ${C.border}`:"none" }}>
             <div style={{ display:"flex", alignItems:"center", gap:9 }}>
@@ -524,7 +524,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
       </div>
       <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", transitionDelay:".15s" }}>
         <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>By Province</div>
-        <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>YoY · Jan {provEndYr} · StatCan table 18-10-0004-01</div>
+        <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>Year-over-year change · latest available data</div>
         {PROVINCES.map((p, i) => {
           const clr = valColor(p.value);
           return (
@@ -546,8 +546,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:16, transitionDelay:".18s" }}>
       <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Category Trends</div>
       <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>
-        Year-over-year % · Annual · {catStartYr}–{catEndYr} · Source: Statistics Canada
-        {catStartYr > "1979" ? "" : " (category data available from ~1979)"}
+        Annual year-over-year % · {catStartYr}–{catEndYr} · Data: Statistics Canada
       </div>
       <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:16 }}>
         {CAT_KEYS.map(k => <FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={() => setActiveCats(p => ({ ...p, [k]:!p[k] }))}/>)}
@@ -569,8 +568,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:4, transitionDelay:".22s" }}>
       <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Provincial Trends</div>
       <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>
-        Year-over-year % · Annual · {provStartYr}–{provEndYr} · Source: Statistics Canada
-        {provStartYr > "1979" ? "" : " (provincial data available from ~1979)"}
+        Annual year-over-year % · {provStartYr}–{provEndYr} · Data: Statistics Canada
       </div>
       <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:16 }}>
         {PROVINCES.map(p => <FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={() => setActiveProvs(prev => ({ ...prev, [p.key]:!prev[p.key] }))}/>)}
@@ -967,8 +965,12 @@ export default function App() {
                       <TaylorTab     data={data} vis={vis} rateData={rateData}/>
         )}
 
-        <div style={{ textAlign:"center", fontSize:10, color:C.textMuted, fontWeight:500, marginTop:32, paddingTop:20, borderTop:`1px solid ${C.border}` }}>
-          © 2026 Canadianflation.ca · CPI: Statistics Canada 18-10-0004-01 · Rate: Bank of Canada Valet API · Not an official government product
+        <div style={{ textAlign:"center", fontSize:11, color:C.textMuted, fontWeight:500, marginTop:32, paddingTop:20, borderTop:`1px solid ${C.border}`, lineHeight:1.8 }}>
+          <span style={{ color:C.textSecondary, fontWeight:600 }}>Canadianflation.ca</span>
+          <span style={{ margin:"0 8px", color:C.border2 }}>·</span>
+          CPI data from Statistics Canada · Interest rates from the Bank of Canada
+          <br/>
+          <span style={{ fontSize:10 }}>Not an official government product · For informational purposes only</span>
         </div>
       </div>
     </div>
