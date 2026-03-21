@@ -2,32 +2,22 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine, AreaChart, Area,
+  BarChart, Bar,
 } from "recharts";
 
-// ── Favicon: dollar sign ──────────────────────────────────────────────────────
+// ── Favicon: maple leaf ───────────────────────────────────────────────────────
 (function setFavicon() {
   if (typeof document === "undefined") return;
   document.title = "Canadianflation — Canadian CPI Tracker";
-  try {
-    const sz = 64, cv = document.createElement("canvas");
-    cv.width = cv.height = sz;
-    const ctx = cv.getContext("2d");
-    ctx.fillStyle = "#E05A4A";
-    ctx.beginPath(); ctx.arc(32, 32, 32, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#000000";
-    ctx.font = "bold 40px Arial, sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("$", 32, 33);
-    const ico = document.querySelector("link[rel~='icon']") || document.createElement("link");
-    ico.rel = "icon"; ico.href = cv.toDataURL();
-    if (!ico.parentNode) document.head.appendChild(ico);
-  } catch(e) {
-    const ico = document.querySelector("link[rel~='icon']") || document.createElement("link");
-    ico.rel = "icon"; ico.type = "image/svg+xml";
-    ico.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23E05A4A'/%3E%3Ctext x='32' y='46' font-size='42' font-weight='bold' text-anchor='middle' font-family='Arial' fill='%23000'%3E%24%3C/text%3E%3C/svg%3E";
-    if (!ico.parentNode) document.head.appendChild(ico);
-  }
+  // Maple leaf SVG — green to match brand
+  const leafSVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 110'>
+    <path d='M50 2 L54 18 L62 12 L58 26 L72 20 L66 34 L82 30 L74 44 L90 44 L80 54 L88 66 L72 60 L74 76 L60 68 L58 88 L50 78 L42 88 L40 68 L26 76 L28 60 L12 66 L20 54 L10 44 L26 44 L18 30 L34 34 L28 20 L42 26 L38 12 L46 18 Z' fill='%233ECFA0'/>
+    <rect x='45' y='78' width='10' height='28' rx='3' fill='%233ECFA0'/>
+  </svg>`;
+  const ico = document.querySelector("link[rel~='icon']") || document.createElement("link");
+  ico.rel = "icon"; ico.type = "image/svg+xml";
+  ico.href = "data:image/svg+xml," + leafSVG.replace(/\n\s*/g, "");
+  if (!ico.parentNode) document.head.appendChild(ico);
   [
     { property: "og:title",       content: "Canadianflation — Canadian CPI Tracker" },
     { property: "og:description", content: "Track Canadian inflation in real time. Historical CPI data from 1914 to present, sourced from Statistics Canada." },
@@ -40,6 +30,8 @@ import {
     Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
     if (!el.parentNode) document.head.appendChild(el);
   });
+  // Remove PWA manifest link to prevent "Install app" prompt
+  document.querySelectorAll("link[rel='manifest']").forEach(el => el.remove());
 })();
 
 // ── Colours ───────────────────────────────────────────────────────────────────
@@ -226,15 +218,18 @@ function computeCadDevaluation(rawCpi) {
 }
 
 // Parse StatCan batch WDS response → { vectorId -> [[date, val], ...] }
+// Security: validates structure, types, and value ranges before use
 function parseBatchWDS(json) {
   const out = {};
-  if (!Array.isArray(json)) return out;
+  if (!Array.isArray(json) || json.length > 200) return out;
   json.forEach(item => {
     try {
       const vid = item.object?.vectorId;
       const pts = item.object?.vectorDataPoint;
-      if (vid && pts?.length)
-        out[vid] = pts.map(p => [p.refPer, p.value]);
+      if (!Number.isInteger(vid) || !Array.isArray(pts)) return;
+      out[vid] = pts
+        .filter(p => typeof p.refPer === "string" && /^\d{4}-\d{2}/.test(p.refPer) && typeof p.value === "number" && isFinite(p.value) && Math.abs(p.value) < 100000)
+        .map(p => [p.refPer, p.value]);
     } catch {}
   });
   return out;
@@ -252,14 +247,16 @@ function parseAnnualCPI(json) {
 }
 
 // Parse BoC Valet JSON response → [{ date, iso, rate }, ...]
+// Security: validates date format and rate is a plausible interest rate
 function parseBoCValetJSON(json) {
   try {
     const obs = json.observations;
-    if (!Array.isArray(obs)) return [];
+    if (!Array.isArray(obs) || obs.length > 5000) return [];
     return obs.map(o => {
       const date = o.d;
       const rate = parseFloat(o.STATIC_ATABLE_V39079?.v);
-      if (!date || isNaN(rate)) return null;
+      if (!date || typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+      if (isNaN(rate) || rate < 0 || rate > 50) return null;
       return { date: fmtDate(date), iso: date, rate };
     }).filter(Boolean);
   } catch { return []; }
@@ -785,6 +782,563 @@ function TaylorTab({ data, vis, rateData }) {
   </>);
 }
 
+// ── TAB 4: Compound Interest Calculator ──────────────────────────────────────
+function CompoundTab({ vis }) {
+  const [principal,    setPrincipal]    = useState("");
+  const [monthly,      setMonthly]      = useState("");
+  const [years,        setYears]        = useState("");
+  const [rate,         setRate]         = useState("");
+  const [variance,     setVariance]     = useState("");
+  const [freq,         setFreq]         = useState(12);
+  const [result,       setResult]       = useState(null);
+
+  const FREQS = [
+    { label:"Annually",     n:1  },
+    { label:"Semi-annually",n:2  },
+    { label:"Quarterly",    n:4  },
+    { label:"Monthly",      n:12 },
+    { label:"Daily",        n:365},
+  ];
+
+  function compound(P, pmt, r, n, t) {
+    // Future value of lump sum + future value of annuity
+    const rn = r / n;
+    const periods = n * t;
+    const fvLump = P * Math.pow(1 + rn, periods);
+    const fvPmt  = pmt * ((Math.pow(1 + rn, periods) - 1) / rn);
+    return fvLump + fvPmt;
+  }
+
+  function calculate() {
+    const P = parseFloat(principal) || 0;
+    const pmt = parseFloat(monthly) || 0;
+    const t = parseFloat(years);
+    const r = parseFloat(rate) / 100;
+    const v = parseFloat(variance) || 0;
+    if (!t || !r) return;
+
+    const base = compound(P, pmt, r, freq, t);
+    const low  = v > 0 ? compound(P, pmt, Math.max(0.0001, r - v/100), freq, t) : null;
+    const high = v > 0 ? compound(P, pmt, r + v/100, freq, t) : null;
+    const totalContrib = P + pmt * 12 * t;
+    const interest = base - totalContrib;
+
+    // Year-by-year for chart
+    const chartData = Array.from({ length: Math.ceil(t) }, (_, i) => {
+      const yr = i + 1;
+      const fv = compound(P, pmt, r, freq, Math.min(yr, t));
+      const contrib = P + pmt * 12 * Math.min(yr, t);
+      return {
+        year: `Yr ${yr}`,
+        "Total Value":   +fv.toFixed(2),
+        "Contributions": +contrib.toFixed(2),
+        "Interest":      +(fv - contrib).toFixed(2),
+      };
+    });
+
+    setResult({ base, low, high, totalContrib, interest, chartData });
+  }
+
+  const fmt = v => "$" + Math.round(v).toLocaleString("en-CA");
+
+  function Field({ label, required, value, onChange, placeholder, hint }) {
+    return (
+      <div style={{ marginBottom:16 }}>
+        <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>
+          {label}{required && <span style={{ color:C.red }}> *</span>}
+        </div>
+        {hint && <div style={{ fontSize:11, color:C.textSecondary, marginBottom:6 }}>{hint}</div>}
+        <input
+          type="number" value={value} onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:14, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`reveal ${vis?"in":""}`}>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
+        {/* Input panel */}
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+          <div style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>Compound Interest Calculator</div>
+          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:20 }}>See how your money grows over time</div>
+
+          <div style={{ background:C.surface2, borderRadius:10, padding:"12px 16px", marginBottom:20, fontSize:11, color:C.textMuted }}>
+            <span style={{ color:C.red }}>*</span> Required field
+          </div>
+
+          <Field label="Initial Investment" required value={principal} onChange={setPrincipal} placeholder="e.g. 10000" hint="Amount you have available to invest today"/>
+          <Field label="Monthly Contribution" value={monthly} onChange={setMonthly} placeholder="e.g. 500" hint="Amount added every month (use negative to withdraw)"/>
+          <Field label="Length of Time (Years)" required value={years} onChange={setYears} placeholder="e.g. 20" hint="How long you plan to invest"/>
+          <Field label="Annual Interest Rate (%)" required value={rate} onChange={setRate} placeholder="e.g. 7" hint="Your estimated annual rate of return"/>
+          <Field label="Rate Variance (%)" value={variance} onChange={setVariance} placeholder="e.g. 2" hint="Shows low/high range above and below your rate"/>
+
+          <div style={{ marginBottom:20 }}>
+            <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Compound Frequency</div>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+              {FREQS.map(f => (
+                <button key={f.n} onClick={() => setFreq(f.n)} style={{
+                  background: freq===f.n ? C.yellow : C.surface2,
+                  color:      freq===f.n ? "#000" : C.textSecondary,
+                  border:     `1px solid ${freq===f.n ? C.yellow : C.border2}`,
+                  borderRadius:7, padding:"6px 12px", fontSize:11, fontWeight:600,
+                  cursor:"pointer", fontFamily:"inherit",
+                }}>{f.label}</button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display:"flex", gap:10 }}>
+            <button onClick={calculate} style={{ flex:1, background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+              Calculate
+            </button>
+            <button onClick={() => { setPrincipal(""); setMonthly(""); setYears(""); setRate(""); setVariance(""); setFreq(12); setResult(null); }} style={{ background:C.surface2, color:C.textSecondary, border:`1px solid ${C.border2}`, borderRadius:10, padding:"12px 18px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
+              Reset
+            </button>
+          </div>
+        </div>
+
+        {/* Results panel */}
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          {!result ? (
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:12, minHeight:200 }}>
+              <div style={{ fontSize:28 }}>📈</div>
+              <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Fill in the fields and hit Calculate to see your results</div>
+            </div>
+          ) : (<>
+            {/* Hero result */}
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>
+                Final Balance after {years} years
+              </div>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:14 }}>
+                {fmt(result.base)}
+              </div>
+              {result.low != null && (
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
+                  <span style={{ fontSize:11, background:C.redBg, color:C.red, border:`1px solid ${C.red}25`, borderRadius:6, padding:"4px 10px", fontWeight:600 }}>Low: {fmt(result.low)}</span>
+                  <span style={{ fontSize:11, background:C.greenBg, color:C.green, border:`1px solid ${C.green}25`, borderRadius:6, padding:"4px 10px", fontWeight:600 }}>High: {fmt(result.high)}</span>
+                </div>
+              )}
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:1, borderTop:`1px solid ${C.border}`, marginTop:8, paddingTop:16 }}>
+                {[
+                  { label:"Total Contributions", val:fmt(result.totalContrib), color:C.blue   },
+                  { label:"Total Interest",       val:fmt(result.interest),    color:C.yellow  },
+                  { label:"Return on Investment", val:`${((result.interest/Math.max(result.totalContrib,1))*100).toFixed(1)}%`, color:C.green },
+                  { label:"Interest/Contrib ratio",val:`${(result.interest/Math.max(result.totalContrib,1)).toFixed(2)}×`,     color:C.purple},
+                ].map((s,i) => (
+                  <div key={i} style={{ padding:"12px 0" }}>
+                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                    <div style={{ fontSize:18, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Growth chart */}
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
+              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Growth Over Time</div>
+              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Total value vs. your contributions each year</div>
+              <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
+                {[{color:C.green,label:"Total Value"},{color:C.blue,label:"Contributions"}].map((l,i)=>(
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSecondary }}>
+                    <span style={{ width:12, height:12, borderRadius:3, background:l.color, display:"inline-block" }}/>
+                    {l.label}
+                  </div>
+                ))}
+              </div>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false}/>
+                  <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v => "$"+Math.round(v/1000)+"k"}/>
+                  <Tooltip formatter={(v,n) => [fmt(v), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
+                  <Bar dataKey="Total Value"   fill={C.green} radius={[3,3,0,0]} opacity={0.85}/>
+                  <Bar dataKey="Contributions" fill={C.blue}  radius={[3,3,0,0]} opacity={0.7}/>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── TAB 5: Mortgage Calculators ───────────────────────────────────────────────
+function MortgageTab({ vis }) {
+  const [sub, setSub] = useState(0);
+
+  // ── Sub-tab 1: Mortgage Payment Calculator ─────────────────────────────────
+  function MortgagePayment() {
+    const [price,     setPrice]     = useState("");
+    const [down,      setDown]      = useState("");
+    const [downPct,   setDownPct]   = useState(true); // true = %, false = $
+    const [rate,      setRate]      = useState("");
+    const [amort,     setAmort]     = useState("");
+    const [payFreq,   setPayFreq]   = useState("monthly");
+    const [result,    setResult]    = useState(null);
+
+    const FREQS = { monthly:12, biweekly:26, weekly:52 };
+
+    function calc() {
+      const P = parseFloat(price);
+      const d = parseFloat(down) || 0;
+      const r = parseFloat(rate) / 100;
+      const a = parseFloat(amort);
+      if (!P || !r || !a) return;
+
+      const downAmt   = downPct ? P * (d/100) : d;
+      const principal = P - downAmt;
+      const n         = FREQS[payFreq];
+      const rn        = r / n;
+      const periods   = a * n;
+      const payment   = principal * (rn * Math.pow(1+rn,periods)) / (Math.pow(1+rn,periods)-1);
+      const totalPaid = payment * periods;
+      const totalInt  = totalPaid - principal;
+      const cmhc      = downPct && d < 20 ? principal * (d < 5 ? 0.04 : d < 10 ? 0.031 : 0.028) : 0;
+
+      // Amortization chart — yearly
+      let bal = principal;
+      const chartData = [];
+      for (let yr = 1; yr <= a; yr++) {
+        let intYr = 0, prinYr = 0;
+        for (let p = 0; p < n; p++) {
+          const intPmt = bal * rn;
+          const prinPmt = payment - intPmt;
+          intYr  += intPmt;
+          prinYr += prinPmt;
+          bal    -= prinPmt;
+        }
+        chartData.push({ year:`Yr ${yr}`, Balance:+Math.max(bal,0).toFixed(0), Interest:+intYr.toFixed(0), Principal:+prinYr.toFixed(0) });
+      }
+      setResult({ payment, totalPaid, totalInt, principal, downAmt, cmhc, chartData });
+    }
+
+    const fmt  = v => "$" + Math.round(v).toLocaleString("en-CA");
+    const fmtM = v => "$" + v.toFixed(2);
+
+    return (
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+          <div style={{ fontSize:14, fontWeight:700, marginBottom:16 }}>Calculate Mortgage Payments</div>
+
+          {[
+            { label:"Price of Property *", val:price, set:setPrice, ph:"e.g. 650000" },
+            { label:"Interest Rate (%) *",  val:rate,  set:setRate,  ph:"e.g. 4.5"   },
+            { label:"Amortization (Years) *",val:amort,set:setAmort, ph:"e.g. 25"    },
+          ].map(({label,val,set,ph},i) => (
+            <div key={i} style={{ marginBottom:14 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
+              <input type="number" value={val} onChange={e=>set(e.target.value)} placeholder={ph}
+                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}/>
+            </div>
+          ))}
+
+          <div style={{ marginBottom:14 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>Down Payment</div>
+            <div style={{ display:"flex", gap:6, marginBottom:8 }}>
+              {[["$",false],["%",true]].map(([lbl,val])=>(
+                <button key={lbl} onClick={()=>setDownPct(val)} style={{ flex:1, background:downPct===val?C.yellow:C.surface2, color:downPct===val?"#000":C.textSecondary, border:`1px solid ${downPct===val?C.yellow:C.border2}`, borderRadius:7, padding:"7px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>{lbl}</button>
+              ))}
+            </div>
+            <input type="number" value={down} onChange={e=>setDown(e.target.value)} placeholder={downPct?"e.g. 20":"e.g. 130000"}
+              style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}/>
+          </div>
+
+          <div style={{ marginBottom:20 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Payment Frequency</div>
+            <div style={{ display:"flex", gap:6 }}>
+              {["monthly","biweekly","weekly"].map(f=>(
+                <button key={f} onClick={()=>setPayFreq(f)} style={{ flex:1, background:payFreq===f?C.yellow:C.surface2, color:payFreq===f?"#000":C.textSecondary, border:`1px solid ${payFreq===f?C.yellow:C.border2}`, borderRadius:7, padding:"7px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit", textTransform:"capitalize" }}>{f}</button>
+              ))}
+            </div>
+          </div>
+
+          <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Calculate</button>
+        </div>
+
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          {!result ? (
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12 }}>
+              <div style={{ fontSize:28 }}>🏠</div>
+              <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your mortgage details to see your payment breakdown</div>
+            </div>
+          ) : (<>
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>
+                {payFreq.charAt(0).toUpperCase()+payFreq.slice(1)} Payment
+              </div>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.yellow, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
+                {fmtM(result.payment)}
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
+                {[
+                  { label:"Mortgage Amount", val:fmt(result.principal),  color:C.white  },
+                  { label:"Down Payment",    val:fmt(result.downAmt),    color:C.blue   },
+                  { label:"Total Interest",  val:fmt(result.totalInt),   color:C.red    },
+                  { label:"Total Cost",      val:fmt(result.totalPaid + result.downAmt), color:C.textPrimary },
+                  result.cmhc > 0 ? { label:"CMHC Insurance", val:fmt(result.cmhc), color:C.yellow } : null,
+                ].filter(Boolean).map((s,i)=>(
+                  <div key={i}>
+                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                    <div style={{ fontSize:16, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+                  </div>
+                ))}
+              </div>
+              {result.cmhc > 0 && <div style={{ marginTop:10, fontSize:10, color:C.textMuted, background:C.surface2, borderRadius:6, padding:"6px 10px" }}>⚠ CMHC mortgage insurance required (down payment under 20%)</div>}
+            </div>
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
+              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Amortization Schedule</div>
+              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Remaining balance by year</div>
+              <ResponsiveContainer width="100%" height={200}>
+                <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
+                  <defs>
+                    <linearGradient id="balGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%"  stopColor={C.blue} stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor={C.blue} stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9 }} axisLine={{ stroke:C.border }} tickLine={false}/>
+                  <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
+                  <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Balance"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
+                  <Area type="monotone" dataKey="Balance" stroke={C.blue} strokeWidth={2} fill="url(#balGrad)" dot={false}/>
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </>)}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Sub-tab 2: Property Transfer Tax ──────────────────────────────────────
+  function TransferTax() {
+    const [province, setProvince] = useState("QC");
+    const [price,    setPrice]    = useState("");
+    const [assess,   setAssess]   = useState("");
+    const [result,   setResult]   = useState(null);
+
+    // Simplified transfer tax rules by province (2024)
+    const PROV_TAX = {
+      QC:  { name:"Québec (Welcome Tax)", calc: p => {
+        const a = parseFloat(p)||0;
+        if (a <= 58900)     return a * 0.005;
+        if (a <= 294600)    return 58900*0.005 + (a-58900)*0.01;
+        if (a <= 552300)    return 58900*0.005 + (294600-58900)*0.01 + (a-294600)*0.015;
+        if (a <= 1104100)   return 58900*0.005 + (294600-58900)*0.01 + (552300-294600)*0.015 + (a-552300)*0.02;
+        if (a <= 2000000)   return 58900*0.005 + (294600-58900)*0.01 + (552300-294600)*0.015 + (1104100-552300)*0.02 + (a-1104100)*0.025;
+        return               58900*0.005 + (294600-58900)*0.01 + (552300-294600)*0.015 + (1104100-552300)*0.02 + (2000000-1104100)*0.025 + (a-2000000)*0.03;
+      }},
+      ON: { name:"Ontario Land Transfer Tax", calc: p => {
+        const a = parseFloat(p)||0;
+        if (a <= 55000)    return a * 0.005;
+        if (a <= 250000)   return 55000*0.005 + (a-55000)*0.01;
+        if (a <= 400000)   return 55000*0.005 + (250000-55000)*0.01 + (a-250000)*0.015;
+        if (a <= 2000000)  return 55000*0.005 + (250000-55000)*0.01 + (400000-250000)*0.015 + (a-400000)*0.02;
+        return              55000*0.005 + (250000-55000)*0.01 + (400000-250000)*0.015 + (2000000-400000)*0.02 + (a-2000000)*0.025;
+      }},
+      BC: { name:"BC Property Transfer Tax", calc: p => {
+        const a = parseFloat(p)||0;
+        if (a <= 200000)   return a * 0.01;
+        if (a <= 2000000)  return 200000*0.01 + (a-200000)*0.02;
+        if (a <= 3000000)  return 200000*0.01 + (2000000-200000)*0.02 + (a-2000000)*0.03;
+        return              200000*0.01 + (2000000-200000)*0.02 + (3000000-2000000)*0.03 + (a-3000000)*0.05;
+      }},
+      AB: { name:"Alberta (No transfer tax)", calc: () => 0 },
+      MB: { name:"Manitoba Land Transfer Tax", calc: p => {
+        const a = parseFloat(p)||0;
+        if (a <= 30000)    return 0;
+        if (a <= 90000)    return (a-30000)*0.005;
+        if (a <= 150000)   return (90000-30000)*0.005 + (a-90000)*0.01;
+        if (a <= 200000)   return (90000-30000)*0.005 + (150000-90000)*0.01 + (a-150000)*0.015;
+        return              (90000-30000)*0.005 + (150000-90000)*0.01 + (200000-150000)*0.015 + (a-200000)*0.02;
+      }},
+      SK: { name:"Saskatchewan (Title fee only)", calc: p => Math.min(parseFloat(p)||0, 1000000) * 0.003 },
+      NS: { name:"Nova Scotia Deed Transfer Tax", calc: p => (parseFloat(p)||0) * 0.015 },
+      NB: { name:"New Brunswick Transfer Tax", calc: p => (parseFloat(p)||0) * 0.01 },
+      PE: { name:"PEI Real Property Transfer Tax", calc: p => (parseFloat(p)||0) * 0.01 },
+      NL: { name:"Newfoundland (No provincial tax)", calc: () => 0 },
+    };
+
+    function calc() {
+      const p = parseFloat(price);
+      const a = parseFloat(assess) || p;
+      if (!p) return;
+      const base = PROV_TAX[province].calc(p.toString());
+      const onAssess = assess ? PROV_TAX[province].calc(a.toString()) : null;
+      setResult({ base, onAssess, prov: PROV_TAX[province].name });
+    }
+
+    const fmt = v => "$" + Math.round(v).toLocaleString("en-CA");
+
+    return (
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+          <div style={{ fontSize:14, fontWeight:700, marginBottom:16 }}>Estimated Transfer Tax</div>
+
+          <div style={{ marginBottom:14 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:6 }}>Province</div>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+              {Object.keys(PROV_TAX).map(p=>(
+                <button key={p} onClick={()=>setProvince(p)} style={{ background:province===p?C.yellow:C.surface2, color:province===p?"#000":C.textSecondary, border:`1px solid ${province===p?C.yellow:C.border2}`, borderRadius:7, padding:"5px 12px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
+              ))}
+            </div>
+          </div>
+
+          {[
+            { label:"Purchase Price *", val:price, set:setPrice, ph:"e.g. 650000" },
+            { label:"Municipal Assessment (optional)", val:assess, set:setAssess, ph:"Leave blank to use purchase price" },
+          ].map(({label,val,set,ph},i)=>(
+            <div key={i} style={{ marginBottom:14 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
+              <input type="number" value={val} onChange={e=>set(e.target.value)} placeholder={ph}
+                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}/>
+            </div>
+          ))}
+
+          <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Calculate</button>
+          <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>Estimates only — consult a notary for exact figures. Municipal surcharges (e.g. Montreal) not included.</div>
+        </div>
+
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+          {!result ? (
+            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", gap:12, minHeight:180 }}>
+              <div style={{ fontSize:28 }}>🏛️</div>
+              <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Select a province and enter a purchase price</div>
+            </div>
+          ) : (
+            <>
+              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>{result.prov}</div>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(36px,7vw,60px)", fontWeight:700, color:C.red, lineHeight:1, letterSpacing:"-1px", marginBottom:12 }}>
+                {fmt(result.base)}
+              </div>
+              {result.onAssess != null && result.onAssess !== result.base && (
+                <div style={{ fontSize:12, color:C.textSecondary, marginBottom:12 }}>On assessment value: <strong style={{ color:C.yellow }}>{fmt(result.onAssess)}</strong></div>
+              )}
+              <div style={{ fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 14px", lineHeight:1.6 }}>
+                This is an estimate based on provincial tax brackets only. Municipal taxes, first-time buyer rebates, and notary fees are not included.
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Sub-tab 3: Borrowing Capacity ─────────────────────────────────────────
+  function BorrowingCapacity() {
+    const [payment,  setPayment]  = useState("");
+    const [freq,     setFreq]     = useState("monthly");
+    const [rate,     setRate]     = useState("");
+    const [amort,    setAmort]    = useState("");
+    const [result,   setResult]   = useState(null);
+
+    const FREQS = { monthly:12, biweekly:26, weekly:52 };
+
+    function calc() {
+      const pmt  = parseFloat(payment);
+      const r    = parseFloat(rate) / 100;
+      const a    = parseFloat(amort);
+      if (!pmt || !r || !a) return;
+      const n       = FREQS[freq];
+      const rn      = r / n;
+      const periods = a * n;
+      // PV of annuity
+      const pv      = pmt * (1 - Math.pow(1+rn, -periods)) / rn;
+      setResult({ pv, totalPaid: pmt * periods, totalInt: pmt * periods - pv });
+    }
+
+    const fmt = v => "$" + Math.round(v).toLocaleString("en-CA");
+
+    return (
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+          <div style={{ fontSize:14, fontWeight:700, marginBottom:4 }}>Calculate Borrowing Capacity</div>
+          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>How much can you borrow based on your payment budget?</div>
+
+          {[
+            { label:"Payment Amount *", val:payment, set:setPayment, ph:"e.g. 2000" },
+            { label:"Annual Interest Rate (%) *", val:rate, set:setRate, ph:"e.g. 4.5" },
+            { label:"Amortization (Years) *", val:amort, set:setAmort, ph:"e.g. 25" },
+          ].map(({label,val,set,ph},i)=>(
+            <div key={i} style={{ marginBottom:14 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
+              <input type="number" value={val} onChange={e=>set(e.target.value)} placeholder={ph}
+                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}/>
+            </div>
+          ))}
+
+          <div style={{ marginBottom:20 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Payment Frequency</div>
+            <div style={{ display:"flex", gap:6 }}>
+              {["monthly","biweekly","weekly"].map(f=>(
+                <button key={f} onClick={()=>setFreq(f)} style={{ flex:1, background:freq===f?C.yellow:C.surface2, color:freq===f?"#000":C.textSecondary, border:`1px solid ${freq===f?C.yellow:C.border2}`, borderRadius:7, padding:"7px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit", textTransform:"capitalize" }}>{f}</button>
+              ))}
+            </div>
+          </div>
+
+          <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Calculate</button>
+        </div>
+
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+          {!result ? (
+            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", gap:12, minHeight:180 }}>
+              <div style={{ fontSize:28 }}>💰</div>
+              <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your budget to see your maximum mortgage</div>
+            </div>
+          ) : (
+            <>
+              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>Maximum Mortgage Amount</div>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
+                {fmt(result.pv)}
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
+                {[
+                  { label:"Total Payments",   val:fmt(result.totalPaid), color:C.white },
+                  { label:"Total Interest",   val:fmt(result.totalInt),  color:C.red   },
+                  { label:"Interest Share",   val:`${((result.totalInt/result.totalPaid)*100).toFixed(1)}%`, color:C.yellow },
+                  { label:"Payment Budget",   val:"$"+parseFloat(payment).toFixed(2)+"/"+freq.replace("biweekly","2wk"), color:C.blue },
+                ].map((s,i)=>(
+                  <div key={i}>
+                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                    <div style={{ fontSize:16, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop:14, fontSize:10, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"8px 12px" }}>
+                This is a mathematical estimate. Actual borrowing capacity depends on income, credit score, GDS/TDS ratios, and lender policies.
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const SUBS = ["Mortgage Payment", "Transfer Tax", "Borrowing Capacity"];
+
+  return (
+    <div className={`reveal ${vis?"in":""}`}>
+      <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
+        {SUBS.map((s,i) => (
+          <button key={i} onClick={()=>setSub(i)} style={{
+            background: sub===i ? C.surface2 : "transparent",
+            border:     `1px solid ${sub===i ? C.border2 : C.border}`,
+            color:      sub===i ? C.textPrimary : C.textMuted,
+            borderRadius:10, padding:"8px 18px", fontSize:12, fontWeight:600,
+            cursor:"pointer", fontFamily:"inherit", transition:"all .15s",
+          }}>{s}</button>
+        ))}
+      </div>
+      {sub===0 ? <MortgagePayment/> : sub===1 ? <TransferTax/> : <BorrowingCapacity/>}
+    </div>
+  );
+}
+
 // ── Root App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [data,        setData]        = useState(null);
@@ -868,7 +1422,7 @@ export default function App() {
 
   useEffect(() => { load(); }, [load]);
 
-  const TABS = ["Inflation Rates", "Purchasing Power", "Taylor Rule"];
+  const TABS = ["Inflation Rates", "Purchasing Power", "Taylor Rule", "Compound Interest", "Mortgage"];
 
   return (
     <div style={{ minHeight:"100vh", background:C.bg, color:C.textPrimary, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
@@ -925,9 +1479,11 @@ export default function App() {
             </button>
           </div>
         ) : (
-          tab === 0 ? <RatesTab      data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
-          tab === 1 ? <CumulativeTab data={data} vis={vis} rawCpi={rawCpi} catHistory={catHistory} provHistory={provHistory}/> :
-                      <TaylorTab     data={data} vis={vis} rateData={rateData}/>
+          tab === 0 ? <RatesTab         data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
+          tab === 1 ? <CumulativeTab    data={data} vis={vis} rawCpi={rawCpi} catHistory={catHistory} provHistory={provHistory}/> :
+          tab === 2 ? <TaylorTab        data={data} vis={vis} rateData={rateData}/> :
+          tab === 3 ? <CompoundTab      vis={vis}/> :
+                      <MortgageTab      vis={vis}/>
         )}
 
         <div style={{ textAlign:"center", fontSize:11, color:C.textMuted, fontWeight:500, marginTop:32, paddingTop:20, borderTop:`1px solid ${C.border}`, lineHeight:1.8 }}>
