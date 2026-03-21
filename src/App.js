@@ -810,7 +810,7 @@ function CalcField({ label, required, value, onChange, placeholder, hint }) {
   );
 }
 
-// ── TAB 4: Compound Interest Calculator ──────────────────────────────────────
+// ── TAB 4: Interest Calculator ──────────────────────────────────────
 const CI_FREQS = [
   { label:"Annually",     n:1   },
   { label:"Semi-annually",n:2   },
@@ -879,7 +879,7 @@ function CompoundTab({ vis }) {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
         {/* Input panel */}
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>Compound Interest Calculator</div>
+          <div style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>Interest Calculator</div>
           <div style={{ fontSize:11, color:C.textSecondary, marginBottom:20 }}>See how your money grows over time</div>
 
           <div style={{ background:C.surface2, borderRadius:10, padding:"12px 16px", marginBottom:20, fontSize:11, color:C.textMuted }}>
@@ -1439,7 +1439,7 @@ export default function App() {
 
   useEffect(() => { load(); }, [load]);
 
-  const TABS = ["Inflation Rates", "Purchasing Power", "Taylor Rule", "Compound Interest", "Mortgage"];
+  const TABS = ["Inflation Rates", "Purchasing Power", "Taylor Rule", "Interest Calculator", "Mortgage Calculator"];
 
   return (
     <div style={{ minHeight:"100vh", background:C.bg, color:C.textPrimary, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
