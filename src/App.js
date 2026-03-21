@@ -5,19 +5,30 @@ import {
   BarChart, Bar,
 } from "recharts";
 
-// ── Favicon: maple leaf ───────────────────────────────────────────────────────
+// ── Favicon: red dollar sign ─────────────────────────────────────────────────
 (function setFavicon() {
   if (typeof document === "undefined") return;
   document.title = "Canadianflation — Canadian CPI Tracker";
-  // Maple leaf SVG — green to match brand
-  const leafSVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 110'>
-    <path d='M50 2 L54 18 L62 12 L58 26 L72 20 L66 34 L82 30 L74 44 L90 44 L80 54 L88 66 L72 60 L74 76 L60 68 L58 88 L50 78 L42 88 L40 68 L26 76 L28 60 L12 66 L20 54 L10 44 L26 44 L18 30 L34 34 L28 20 L42 26 L38 12 L46 18 Z' fill='%233ECFA0'/>
-    <rect x='45' y='78' width='10' height='28' rx='3' fill='%233ECFA0'/>
-  </svg>`;
-  const ico = document.querySelector("link[rel~='icon']") || document.createElement("link");
-  ico.rel = "icon"; ico.type = "image/svg+xml";
-  ico.href = "data:image/svg+xml," + leafSVG.replace(/\n\s*/g, "");
-  if (!ico.parentNode) document.head.appendChild(ico);
+  try {
+    const sz = 64, cv = document.createElement("canvas");
+    cv.width = cv.height = sz;
+    const ctx = cv.getContext("2d");
+    ctx.fillStyle = "#E05A4A";
+    ctx.beginPath(); ctx.arc(32, 32, 32, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "bold 44px Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("$", 32, 34);
+    const ico = document.querySelector("link[rel~='icon']") || document.createElement("link");
+    ico.rel = "icon"; ico.href = cv.toDataURL();
+    if (!ico.parentNode) document.head.appendChild(ico);
+  } catch(e) {
+    const ico = document.querySelector("link[rel~='icon']") || document.createElement("link");
+    ico.rel = "icon"; ico.type = "image/svg+xml";
+    ico.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23E05A4A'/%3E%3Ctext x='32' y='46' font-size='42' font-weight='bold' text-anchor='middle' font-family='Arial' fill='%23fff'%3E%24%3C/text%3E%3C/svg%3E";
+    if (!ico.parentNode) document.head.appendChild(ico);
+  }
   [
     { property: "og:title",       content: "Canadianflation — Canadian CPI Tracker" },
     { property: "og:description", content: "Track Canadian inflation in real time. Historical CPI data from 1914 to present, sourced from Statistics Canada." },
@@ -782,57 +793,79 @@ function TaylorTab({ data, vis, rateData }) {
   </>);
 }
 
+// ── Shared input field (defined outside components to avoid remount glitch) ──
+function CalcField({ label, required, value, onChange, placeholder, hint }) {
+  return (
+    <div style={{ marginBottom:16 }}>
+      <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>
+        {label}{required && <span style={{ color:C.red }}> *</span>}
+      </div>
+      {hint && <div style={{ fontSize:11, color:C.textSecondary, marginBottom:6 }}>{hint}</div>}
+      <input
+        type="number" value={value} onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:14, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+      />
+    </div>
+  );
+}
+
 // ── TAB 4: Compound Interest Calculator ──────────────────────────────────────
+const CI_FREQS = [
+  { label:"Annually",     n:1   },
+  { label:"Semi-annually",n:2   },
+  { label:"Quarterly",    n:4   },
+  { label:"Monthly",      n:12  },
+  { label:"Daily",        n:365 },
+];
+
+// FV of lump sum + FV of monthly annuity compounded at freq n/yr
+// Guards against rn≈0 (zero rate edge case)
+function compoundFV(P, monthlyPmt, annualRate, n, years) {
+  const rn      = annualRate / n;
+  const periods = n * years;
+  const fvLump  = P * Math.pow(1 + rn, periods);
+  // Convert monthly payment to per-period payment
+  const pmtPerPeriod = monthlyPmt * (12 / n);
+  const fvPmt = Math.abs(rn) < 1e-10
+    ? pmtPerPeriod * periods                                        // r≈0: no compounding
+    : pmtPerPeriod * ((Math.pow(1 + rn, periods) - 1) / rn);
+  return fvLump + fvPmt;
+}
+
 function CompoundTab({ vis }) {
-  const [principal,    setPrincipal]    = useState("");
-  const [monthly,      setMonthly]      = useState("");
-  const [years,        setYears]        = useState("");
-  const [rate,         setRate]         = useState("");
-  const [variance,     setVariance]     = useState("");
-  const [freq,         setFreq]         = useState(12);
-  const [result,       setResult]       = useState(null);
-
-  const FREQS = [
-    { label:"Annually",     n:1  },
-    { label:"Semi-annually",n:2  },
-    { label:"Quarterly",    n:4  },
-    { label:"Monthly",      n:12 },
-    { label:"Daily",        n:365},
-  ];
-
-  function compound(P, pmt, r, n, t) {
-    // Future value of lump sum + future value of annuity
-    const rn = r / n;
-    const periods = n * t;
-    const fvLump = P * Math.pow(1 + rn, periods);
-    const fvPmt  = pmt * ((Math.pow(1 + rn, periods) - 1) / rn);
-    return fvLump + fvPmt;
-  }
+  const [principal, setPrincipal] = useState("");
+  const [monthly,   setMonthly]   = useState("");
+  const [years,     setYears]     = useState("");
+  const [rate,      setRate]      = useState("");
+  const [variance,  setVariance]  = useState("");
+  const [freq,      setFreq]      = useState(12);
+  const [result,    setResult]    = useState(null);
 
   function calculate() {
-    const P = parseFloat(principal) || 0;
-    const pmt = parseFloat(monthly) || 0;
-    const t = parseFloat(years);
-    const r = parseFloat(rate) / 100;
-    const v = parseFloat(variance) || 0;
-    if (!t || !r) return;
+    const P   = parseFloat(principal) || 0;
+    const pmt = parseFloat(monthly)   || 0;
+    const t   = parseFloat(years);
+    const r   = parseFloat(rate) / 100;
+    const v   = parseFloat(variance) || 0;
+    if (!t || t <= 0 || t > 100) return;
+    if (!r || r <= 0 || r > 5)   return; // guard: 0–500% range
 
-    const base = compound(P, pmt, r, freq, t);
-    const low  = v > 0 ? compound(P, pmt, Math.max(0.0001, r - v/100), freq, t) : null;
-    const high = v > 0 ? compound(P, pmt, r + v/100, freq, t) : null;
+    const base         = compoundFV(P, pmt, r, freq, t);
+    const low          = v > 0 ? compoundFV(P, pmt, Math.max(0.0001, r - v/100), freq, t) : null;
+    const high         = v > 0 ? compoundFV(P, pmt, r + v/100, freq, t) : null;
     const totalContrib = P + pmt * 12 * t;
-    const interest = base - totalContrib;
+    const interest     = base - totalContrib;
 
-    // Year-by-year for chart
-    const chartData = Array.from({ length: Math.ceil(t) }, (_, i) => {
-      const yr = i + 1;
-      const fv = compound(P, pmt, r, freq, Math.min(yr, t));
+    const chartData = Array.from({ length: Math.min(Math.ceil(t), 100) }, (_, i) => {
+      const yr     = i + 1;
+      const fv     = compoundFV(P, pmt, r, freq, Math.min(yr, t));
       const contrib = P + pmt * 12 * Math.min(yr, t);
       return {
-        year: `Yr ${yr}`,
+        year:            `Yr ${yr}`,
         "Total Value":   +fv.toFixed(2),
-        "Contributions": +contrib.toFixed(2),
-        "Interest":      +(fv - contrib).toFixed(2),
+        "Contributions": +Math.max(contrib, 0).toFixed(2),
+        "Interest":      +Math.max(fv - contrib, 0).toFixed(2),
       };
     });
 
@@ -840,22 +873,6 @@ function CompoundTab({ vis }) {
   }
 
   const fmt = v => "$" + Math.round(v).toLocaleString("en-CA");
-
-  function Field({ label, required, value, onChange, placeholder, hint }) {
-    return (
-      <div style={{ marginBottom:16 }}>
-        <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>
-          {label}{required && <span style={{ color:C.red }}> *</span>}
-        </div>
-        {hint && <div style={{ fontSize:11, color:C.textSecondary, marginBottom:6 }}>{hint}</div>}
-        <input
-          type="number" value={value} onChange={e => onChange(e.target.value)}
-          placeholder={placeholder}
-          style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:14, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className={`reveal ${vis?"in":""}`}>
@@ -869,16 +886,16 @@ function CompoundTab({ vis }) {
             <span style={{ color:C.red }}>*</span> Required field
           </div>
 
-          <Field label="Initial Investment" required value={principal} onChange={setPrincipal} placeholder="e.g. 10000" hint="Amount you have available to invest today"/>
-          <Field label="Monthly Contribution" value={monthly} onChange={setMonthly} placeholder="e.g. 500" hint="Amount added every month (use negative to withdraw)"/>
-          <Field label="Length of Time (Years)" required value={years} onChange={setYears} placeholder="e.g. 20" hint="How long you plan to invest"/>
-          <Field label="Annual Interest Rate (%)" required value={rate} onChange={setRate} placeholder="e.g. 7" hint="Your estimated annual rate of return"/>
-          <Field label="Rate Variance (%)" value={variance} onChange={setVariance} placeholder="e.g. 2" hint="Shows low/high range above and below your rate"/>
+          <CalcField label="Initial Investment" required value={principal} onChange={setPrincipal} placeholder="e.g. 10000" hint="Amount you have available to invest today"/>
+          <CalcField label="Monthly Contribution" value={monthly} onChange={setMonthly} placeholder="e.g. 500" hint="Amount added every month (use negative to withdraw)"/>
+          <CalcField label="Length of Time (Years)" required value={years} onChange={setYears} placeholder="e.g. 20" hint="How long you plan to invest"/>
+          <CalcField label="Annual Interest Rate (%)" required value={rate} onChange={setRate} placeholder="e.g. 7" hint="Your estimated annual rate of return"/>
+          <CalcField label="Rate Variance (%)" value={variance} onChange={setVariance} placeholder="e.g. 2" hint="Shows low/high range above and below your rate"/>
 
           <div style={{ marginBottom:20 }}>
             <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Compound Frequency</div>
             <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
-              {FREQS.map(f => (
+              {CI_FREQS.map(f => (
                 <button key={f.n} onClick={() => setFreq(f.n)} style={{
                   background: freq===f.n ? C.yellow : C.surface2,
                   color:      freq===f.n ? "#000" : C.textSecondary,
