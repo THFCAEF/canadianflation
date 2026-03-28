@@ -362,7 +362,7 @@ function HomepageHero({ navigate, cur }) {
         </h1>
 
         <p style={{ fontSize:15, color:C.textSecondary, lineHeight:1.7, maxWidth:580, margin:"0 0 28px" }}>
-          Canadianflation pulls live data directly from Statistics Canada and the Bank of Canada — no estimates, just the numbers.
+          Access live data from Statistics Canada and the Bank of Canada.
         </p>
 
         {rate != null && (
@@ -392,7 +392,7 @@ function HomepageHero({ navigate, cur }) {
         </h2>
         <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, maxWidth:680, margin:0 }}>
           Most Canadians experience inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no easy way to see the full picture. 
-          Canadianflation exists to change that. We built a free, source-cited tool that puts Statistics Canada's data in front of anyone who wants it, presented the way it deserves to be: clearly, honestly, and without spin.
+          Canadianflation exists to change that. We built a free, source-cited tool that puts real data in front of anyone who wants it, presented the way it deserves to be: clearly, honestly, and without spin.
         </p>
       </div>
 
@@ -879,13 +879,17 @@ function TaylorTab({ data, vis, rateData }) {
 }
 
 // ── Shared input field (defined outside components to avoid remount glitch) ──
+// Format number string progressively with commas as user types
+// Preserves trailing decimal point and decimal digits while typing
 function fmtInput(v) {
-  if (v === "" || v === undefined) return "";
-  const n = parseFloat(String(v).replace(/,/g, ""));
-  if (isNaN(n)) return v;
-  // Only add commas for values >= 1000, and only if no decimal being typed
-  if (String(v).slice(-1) === "." || String(v).endsWith(".0") || String(v).match(/\.\d*0$/)) return v;
-  return n >= 1000 ? n.toLocaleString("en-CA") : String(v);
+  if (v === "" || v == null) return "";
+  const s = String(v).replace(/,/g, "");
+  const trailingDot = s.endsWith(".");
+  const parts = s.split(".");
+  const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const decPart = parts.length > 1 ? "." + parts[1] : "";
+  const result = intPart + decPart + (trailingDot && parts.length === 1 ? "." : "");
+  return result;
 }
 
 function parseInput(v) {
@@ -893,8 +897,13 @@ function parseInput(v) {
 }
 
 function CalcField({ label, value, onChange, placeholder, hint, isRate }) {
-  const [focused, setFocused] = React.useState(false);
-  const displayVal = focused || isRate ? value : fmtInput(value);
+  const handleChange = e => {
+    const raw = e.target.value.replace(/,/g, "");
+    // Only allow digits and one decimal point
+    if (raw !== "" && !/^-?\d*\.?\d*$/.test(raw)) return;
+    onChange(raw);
+  };
+  const displayVal = isRate ? value : fmtInput(value);
   return (
     <div style={{ marginBottom:16 }}>
       <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>
@@ -905,9 +914,7 @@ function CalcField({ label, value, onChange, placeholder, hint, isRate }) {
         type="text"
         inputMode="decimal"
         value={displayVal}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        onChange={e => onChange(parseInput(e.target.value))}
+        onChange={handleChange}
         placeholder={placeholder}
         style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:14, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
       />
@@ -1087,42 +1094,19 @@ function CompoundTab({ vis }) {
 
 // ── Mortgage input field with comma formatting ────────────────────────────────
 function MortField({ label, value, set, ph, isSmall }) {
-  const [raw, setRaw] = React.useState(value);
-  const [focused, setFocused] = React.useState(false);
-
   const handleChange = e => {
-    const v = e.target.value.replace(/[^0-9.]/g, "");
-    setRaw(v);
-    set(v);
+    const raw = e.target.value.replace(/,/g, "");
+    if (raw !== "" && !/^\d*\.?\d*$/.test(raw)) return;
+    set(raw);
   };
-  const handleFocus = () => { setRaw(value); setFocused(true); };
-  const handleBlur  = () => {
-    setFocused(false);
-    const n = parseFloat(value);
-    if (!isNaN(n) && n >= 1000 && !isSmall) {
-      setRaw(n.toLocaleString("en-CA"));
-    } else {
-      setRaw(value);
-    }
-  };
-
-  // Sync if parent resets
-  React.useEffect(() => {
-    if (!focused) {
-      const n = parseFloat(value);
-      setRaw(!isNaN(n) && n >= 1000 && !isSmall ? n.toLocaleString("en-CA") : value);
-    }
-  }, [value, focused, isSmall]);
-
+  const displayVal = isSmall ? value : fmtInput(value);
   return (
     <div style={{ marginBottom:14 }}>
-      <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
+      {label && <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>}
       <input
         type="text" inputMode="decimal"
-        value={raw} placeholder={ph}
+        value={displayVal} placeholder={ph}
         onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
         style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
       />
     </div>
