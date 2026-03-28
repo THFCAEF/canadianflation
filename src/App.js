@@ -340,10 +340,10 @@ function HomepageHero({ navigate, cur }) {
 
   const LINKS = [
     { label:"Inflation Rates",    desc:"Track CPI by category and province in real time.",         path:"/inflation-rates",     idx:0, icon:"📊" },
-    { label:"Purchasing Power",   desc:"See how much your dollar has lost to inflation over time.",  path:"/purchasing-power",    idx:1, icon:"💸" },
+    { label:"Purchasing Power",   desc:"How much value has your dollar lost?",                        path:"/purchasing-power",    idx:1, icon:"💸" },
     { label:"Taylor Rule",        desc:"Is the Bank of Canada ahead or behind the curve?",          path:"/taylor-rule",         idx:2, icon:"📐" },
     { label:"Interest Calculator",desc:"Model how compound interest grows your savings.",           path:"/interest-calculator", idx:3, icon:"📈" },
-    { label:"Mortgage Calculator",desc:"Calculate payments, transfer tax, and borrowing power.",   path:"/mortgage-calculator", idx:4, icon:"🏠" },
+    { label:"Mortgage Calculator",desc:"Model payments, transfer tax, and borrowing power.",        path:"/mortgage-calculator", idx:4, icon:"🏠" },
   ];
 
   return (
@@ -377,10 +377,7 @@ function HomepageHero({ navigate, cur }) {
 
         <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
           <button onClick={() => navigate("/inflation-rates", 0)} style={{ background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px 24px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
-            View Live Inflation Data →
-          </button>
-          <button onClick={() => navigate("/purchasing-power", 1)} style={{ background:"transparent", color:C.textSecondary, border:`1px solid ${C.border2}`, borderRadius:10, padding:"12px 24px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
-            See Purchasing Power Over Time
+            View Live Inflation Data
           </button>
         </div>
       </div>
@@ -392,7 +389,8 @@ function HomepageHero({ navigate, cur }) {
         </h2>
         <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, maxWidth:680, margin:0 }}>
           Most Canadians experience inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no easy way to see the full picture. 
-          Canadianflation exists to change that. We built a free, source-cited tool that puts real data in front of anyone who wants it, presented the way it deserves to be: clearly, honestly, and without spin.
+          Canadianflation exists to change that. We built a free, source-cited tool that puts real data in front of anyone who wants it,
+          presented the way it deserves to be: clearly, honestly, and without spin.
         </p>
       </div>
 
