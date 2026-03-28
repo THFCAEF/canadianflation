@@ -1365,6 +1365,16 @@ const PAGE_META = [
   { path:"/mortgage-calculator", title:"Canadian Mortgage Calculator — Payment, Tax & Borrowing | Canadianflation",  description:"Calculate Canadian mortgage payments, provincial property transfer tax, and borrowing capacity. Covers all 10 provinces with 2024 tax brackets." },
 ];
 
+// ── Client-side routing map ───────────────────────────────────────────────────
+const ROUTES = {
+  "/":                    0,
+  "/inflation-rates":     0,
+  "/purchasing-power":    1,
+  "/taylor-rule":         2,
+  "/interest-calculator": 3,
+  "/mortgage-calculator": 4,
+};
+
 // ── Root App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [data,        setData]        = useState(null);
@@ -1448,33 +1458,16 @@ export default function App() {
   useEffect(() => { load(); }, [load]);
 
 
-  // ── Routing: read path → derive current page ──────────────────────────────
-  const ROUTES = {
-    "/":                    0,
-    "/inflation-rates":     0,
-    "/purchasing-power":    1,
-    "/taylor-rule":         2,
-    "/interest-calculator": 3,
-    "/mortgage-calculator": 4,
-  };
+  const [page, setPage] = useState(() => ROUTES[window.location.pathname.replace(/\/$/,"").replace(/^$/,"/")] ?? 0);
 
-  const pathToPage = () => {
-    const p = window.location.pathname.replace(/\/$/, "") || "/";
-    return ROUTES[p] ?? 0;
-  };
-
-  const [page, setPage] = useState(pathToPage);
-
-  // Navigate without full reload
   const navigate = (path, idx) => {
     window.history.pushState({}, "", path);
     setPage(idx);
     window.scrollTo({ top:0, behavior:"smooth" });
   };
 
-  // Handle browser back/forward
   useEffect(() => {
-    const handler = () => setPage(pathToPage());
+    const handler = () => setPage(ROUTES[window.location.pathname.replace(/\/$/,"").replace(/^$/,"/")] ?? 0);
     window.addEventListener("popstate", handler);
     return () => window.removeEventListener("popstate", handler);
   }, []);
