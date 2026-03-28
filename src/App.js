@@ -387,9 +387,11 @@ function HomepageHero({ navigate, cur }) {
         <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, fontWeight:700, color:C.white, marginBottom:10, letterSpacing:"-.3px" }}>
           Financial literacy is a right, not a privilege.
         </h2>
+        <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, maxWidth:680, margin:"0 0 12px" }}>
+          Most Canadians experience inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no easy way to see the full picture. Canadianflation exists to change that.
+        </p>
         <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, maxWidth:680, margin:0 }}>
-          Most Canadians experience inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no easy way to see the full picture. 
-          Canadianflation exists to change that. We built a free, source-cited tool that puts real data in front of anyone who wants it,
+          We built a free, source-cited tool that puts real data in front of anyone who wants it,
           presented the way it deserves to be: clearly, honestly, and without spin.
         </p>
       </div>
@@ -1742,7 +1744,7 @@ export default function App() {
         {loading ? (
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:360, gap:16 }}>
             <div className="spin" style={{ width:36, height:36 }}/>
-            <p style={{ color:C.textMuted, fontSize:12, fontWeight:500 }}>Fetching live data from Statistics Canada…</p>
+            <p style={{ color:C.textMuted, fontSize:12, fontWeight:500 }}>Retrieving live data.</p>
           </div>
         ) : error ? (
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:360, gap:20, textAlign:"center" }}>
