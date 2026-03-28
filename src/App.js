@@ -332,6 +332,92 @@ const SingleTip = ({ active, payload, label, prefix="", suffix="%", note }) => {
   );
 };
 
+// ── Homepage Hero ─────────────────────────────────────────────────────────────
+function HomepageHero({ navigate, cur }) {
+  const rate = cur?.value;
+  const rateColor = rate != null ? valColor(rate) : C.yellow;
+  const rateBg    = rate != null ? valBg(rate)    : C.yellowBg;
+
+  const LINKS = [
+    { label:"Inflation Rates",    desc:"Track CPI by category and province in real time.",         path:"/inflation-rates",     idx:0, icon:"📊" },
+    { label:"Purchasing Power",   desc:"See how much your dollar has lost since 1914.",             path:"/purchasing-power",    idx:1, icon:"💸" },
+    { label:"Taylor Rule",        desc:"Is the Bank of Canada ahead or behind the curve?",          path:"/taylor-rule",         idx:2, icon:"📐" },
+    { label:"Interest Calculator",desc:"Model how compound interest grows your savings.",           path:"/interest-calculator", idx:3, icon:"📈" },
+    { label:"Mortgage Calculator",desc:"Calculate payments, transfer tax, and borrowing power.",   path:"/mortgage-calculator", idx:4, icon:"🏠" },
+  ];
+
+  return (
+    <div style={{ marginBottom:32 }}>
+      {/* Hero headline */}
+      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:20, padding:"40px 32px 36px", marginBottom:16, position:"relative", overflow:"hidden" }}>
+        <div style={{ position:"absolute", top:0, right:0, width:300, height:300, background:`radial-gradient(circle at top right, ${rateColor}08, transparent 70%)`, pointerEvents:"none" }}/>
+        
+        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>
+          Canada's Independent Inflation Tracker
+        </div>
+
+        <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(36px,7vw,64px)", fontWeight:700, lineHeight:1.05, letterSpacing:"-1px", color:C.white, marginBottom:16, margin:"0 0 16px" }}>
+          Understand what inflation<br/>
+          <span style={{ color:rateColor }}>is actually doing</span> to your money.
+        </h1>
+
+        <p style={{ fontSize:15, color:C.textSecondary, lineHeight:1.7, maxWidth:580, margin:"0 0 28px" }}>
+          Canadianflation pulls live data directly from Statistics Canada and the Bank of Canada — no estimates, no editorializing, no agenda. 
+          Just the numbers, from 1914 to this morning, presented clearly so every Canadian can understand the economy they live in.
+        </p>
+
+        {rate != null && (
+          <div style={{ display:"flex", alignItems:"center", gap:12, flexWrap:"wrap", marginBottom:28 }}>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:10, background:rateBg, border:`1px solid ${rateColor}30`, borderRadius:12, padding:"10px 18px" }}>
+              <span style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em" }}>Current CPI</span>
+              <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:28, fontWeight:700, color:rateColor, letterSpacing:"-1px", lineHeight:1 }}>{rate.toFixed(1)}%</span>
+              <span style={{ fontSize:11, color:C.textMuted }}>year-over-year · {cur.date}</span>
+            </div>
+          </div>
+        )}
+
+        <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+          <button onClick={() => navigate("/inflation-rates", 0)} style={{ background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px 24px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+            View Live Inflation Data →
+          </button>
+          <button onClick={() => navigate("/purchasing-power", 1)} style={{ background:"transparent", color:C.textSecondary, border:`1px solid ${C.border2}`, borderRadius:10, padding:"12px 24px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
+            See Purchasing Power Since 1914
+          </button>
+        </div>
+      </div>
+
+      {/* Mission statement */}
+      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 28px", marginBottom:16 }}>
+        <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, fontWeight:700, color:C.white, marginBottom:10, letterSpacing:"-.3px" }}>
+          Financial literacy is a right, not a privilege.
+        </h2>
+        <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, maxWidth:680, margin:0 }}>
+          Most Canadians experience inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no easy way to see the full picture. 
+          Canadianflation exists to change that. We built a free, ad-free, source-cited tool that puts Statistics Canada's data in front of anyone who wants it, presented the way it deserves to be: clearly, honestly, and without spin.
+        </p>
+      </div>
+
+      {/* Navigation cards */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))", gap:12 }}>
+        {LINKS.map((link, i) => (
+          <button key={i} onClick={() => navigate(link.path, link.idx)} style={{
+            background:C.surface, border:`1px solid ${C.border}`, borderRadius:14,
+            padding:"20px 18px", cursor:"pointer", fontFamily:"inherit", textAlign:"left",
+            transition:"border-color .15s, background .15s", WebkitTapHighlightColor:"transparent",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = C.yellow; e.currentTarget.style.background = C.surface2; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.surface; }}>
+            <div style={{ fontSize:22, marginBottom:10 }}>{link.icon}</div>
+            <div style={{ fontSize:13, fontWeight:700, color:C.white, marginBottom:5 }}>{link.label}</div>
+            <div style={{ fontSize:11, color:C.textMuted, lineHeight:1.6 }}>{link.desc}</div>
+            <div style={{ fontSize:11, color:C.yellow, marginTop:10, fontWeight:600 }}>Explore →</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── TAB 1: Inflation Rates ────────────────────────────────────────────────────
 function RatesTab({ data, vis, catHistory, provHistory }) {
   const [range, setRange]            = useState("10Y");
@@ -882,14 +968,10 @@ function CompoundTab({ vis }) {
           <div style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>Interest Calculator</div>
           <div style={{ fontSize:11, color:C.textSecondary, marginBottom:20 }}>See how your money grows over time</div>
 
-          <div style={{ background:C.surface2, borderRadius:10, padding:"12px 16px", marginBottom:20, fontSize:11, color:C.textMuted }}>
-            <span style={{ color:C.red }}>*</span> Required field
-          </div>
-
-          <CalcField label="Initial Investment" required value={principal} onChange={setPrincipal} placeholder="e.g. 10000" hint="Amount you have available to invest today"/>
+          <CalcField label="Initial Investment" value={principal} onChange={setPrincipal} placeholder="e.g. 10000" hint="Amount you have available to invest today"/>
           <CalcField label="Monthly Contribution" value={monthly} onChange={setMonthly} placeholder="e.g. 500" hint="Amount added every month (use negative to withdraw)"/>
-          <CalcField label="Length of Time (Years)" required value={years} onChange={setYears} placeholder="e.g. 20" hint="How long you plan to invest"/>
-          <CalcField label="Annual Interest Rate (%)" required value={rate} onChange={setRate} placeholder="e.g. 7" hint="Your estimated annual rate of return"/>
+          <CalcField label="Length of Time (Years)" value={years} onChange={setYears} placeholder="e.g. 20" hint="How long you plan to invest"/>
+          <CalcField label="Annual Interest Rate (%)" value={rate} onChange={setRate} placeholder="e.g. 7" hint="Your estimated annual rate of return"/>
           <CalcField label="Rate Variance (%)" value={variance} onChange={setVariance} placeholder="e.g. 2" hint="Shows low/high range above and below your rate"/>
 
           <div style={{ marginBottom:20 }}>
@@ -1654,7 +1736,7 @@ export default function App() {
             </button>
           </div>
         ) : (
-          page === 0 ? <RatesTab      data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
+          page === 0 ? <><HomepageHero navigate={navigate} cur={data?.[data.length-1]}/><RatesTab data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/></> :
           page === 1 ? <CumulativeTab data={data} vis={vis} rawCpi={rawCpi} catHistory={catHistory} provHistory={provHistory}/> :
           page === 2 ? <TaylorTab     data={data} vis={vis} rateData={rateData}/> :
           page === 3 ? <CompoundTab   vis={vis}/> :
