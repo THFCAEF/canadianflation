@@ -1366,7 +1366,6 @@ export default function App() {
   const [loading,     setLoading]     = useState(true);
   const [error,       setError]       = useState(false);
   const [vis,         setVis]         = useState(false);
-  const [tab,         setTab]         = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true); setVis(false);
@@ -1439,10 +1438,106 @@ export default function App() {
 
   useEffect(() => { load(); }, [load]);
 
-  const TABS = ["Inflation Rates", "Purchasing Power", "Taylor Rule", "Interest Calculator", "Mortgage Calculator"];
+
+  // ── Routing: read path → derive current page ──────────────────────────────
+  const ROUTES = {
+    "/":                    0,
+    "/inflation-rates":     0,
+    "/purchasing-power":    1,
+    "/taylor-rule":         2,
+    "/interest-calculator": 3,
+    "/mortgage-calculator": 4,
+  };
+
+  const pathToPage = () => {
+    const p = window.location.pathname.replace(/\/$/, "") || "/";
+    return ROUTES[p] ?? 0;
+  };
+
+  const [page, setPage] = useState(pathToPage);
+
+  // Navigate without full reload
+  const navigate = (path, idx) => {
+    window.history.pushState({}, "", path);
+    setPage(idx);
+    window.scrollTo({ top:0, behavior:"smooth" });
+  };
+
+  // Handle browser back/forward
+  useEffect(() => {
+    const handler = () => setPage(pathToPage());
+    window.addEventListener("popstate", handler);
+    return () => window.removeEventListener("popstate", handler);
+  }, []);
+
+  // ── Per-page SEO meta update ───────────────────────────────────────────────
+  const PAGE_META = [
+    {
+      path:        "/inflation-rates",
+      title:       "Canadian Inflation Rates 2024 — CPI by Category & Province | Canadianflation",
+      description: "Live Canadian CPI data by category and province. Track year-over-year inflation rates for food, shelter, transport and more. Sourced directly from Statistics Canada.",
+    },
+    {
+      path:        "/purchasing-power",
+      title:       "Canadian Dollar Purchasing Power Since 1914 | Canadianflation",
+      description: "See how inflation has eroded the purchasing power of the Canadian dollar since 1914. Real data from Statistics Canada — no estimates.",
+    },
+    {
+      path:        "/taylor-rule",
+      title:       "Taylor Rule vs Bank of Canada Rate | Canadianflation",
+      description: "Compare the Bank of Canada overnight rate against the Taylor Rule prescription. Is Canadian monetary policy too tight or too easy?",
+    },
+    {
+      path:        "/interest-calculator",
+      title:       "Canadian Compound Interest Calculator | Canadianflation",
+      description: "Calculate how your savings or investments grow with compound interest. Adjust rate, frequency, contributions, and time horizon.",
+    },
+    {
+      path:        "/mortgage-calculator",
+      title:       "Canadian Mortgage Calculator — Payment, Tax & Borrowing | Canadianflation",
+      description: "Calculate Canadian mortgage payments, provincial property transfer tax, and borrowing capacity. Covers all 10 provinces with 2024 tax brackets.",
+    },
+  ];
+
+  useEffect(() => {
+    const m = PAGE_META[page];
+    if (!m) return;
+    document.title = m.title;
+    const setMeta = (sel, content) => {
+      const el = document.querySelector(sel);
+      if (el) el.setAttribute("content", content);
+    };
+    setMeta('meta[name="description"]',         m.description);
+    setMeta('meta[property="og:title"]',         m.title);
+    setMeta('meta[property="og:description"]',   m.description);
+    setMeta('meta[property="og:url"]',           "https://www.canadianflation.ca" + m.path);
+    setMeta('meta[name="twitter:title"]',        m.title);
+    setMeta('meta[name="twitter:description"]',  m.description);
+  }, [page]); // eslint-disable-line
+
+  // ── Nav state ─────────────────────────────────────────────────────────────
+  const [mobileOpen,   setMobileOpen]   = useState(false);
+  const [dataDropOpen, setDataDropOpen] = useState(false);
+  const [calcDropOpen, setCalcDropOpen] = useState(false);
+
+  const DATA_PAGES = [
+    { label:"Inflation Rates",   path:"/inflation-rates",  idx:0, desc:"CPI by category & province" },
+    { label:"Purchasing Power",  path:"/purchasing-power", idx:1, desc:"Dollar erosion since 1914"  },
+    { label:"Taylor Rule",       path:"/taylor-rule",      idx:2, desc:"BoC rate vs prescription"   },
+  ];
+  const CALC_PAGES = [
+    { label:"Interest Calculator", path:"/interest-calculator", idx:3, desc:"Compound growth calculator" },
+    { label:"Mortgage Calculator", path:"/mortgage-calculator", idx:4, desc:"Payments, tax & borrowing"  },
+  ];
+
+  const closeAll = () => { setDataDropOpen(false); setCalcDropOpen(false); setMobileOpen(false); };
+
+  const isDataActive = page <= 2;
+  const isCalcActive = page >= 3;
 
   return (
-    <div style={{ minHeight:"100vh", background:C.bg, color:C.textPrimary, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
+    <div style={{ minHeight:"100vh", background:C.bg, color:C.textPrimary, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
+      onClick={() => { setDataDropOpen(false); setCalcDropOpen(false); }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@500;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
@@ -1456,28 +1551,117 @@ export default function App() {
         .rb:hover:not(.on){border-color:${C.border2};color:${C.textPrimary}}
         @keyframes spin{to{transform:rotate(360deg)}}
         .spin{border:2px solid ${C.border};border-top-color:${C.yellow};border-radius:50%;animation:spin .7s linear infinite}
+        .nav-drop{position:absolute;top:calc(100% + 8px);left:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
+        .nav-drop-item{display:block;width:100%;padding:10px 14px;border-radius:8px;border:none;background:none;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s}
+        .nav-drop-item:hover{background:${C.surface2}}
+        .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
+        .hamburger span{display:block;width:22px;height:2px;background:${C.textSecondary};border-radius:2px;transition:all .2s}
+        .mobile-menu{display:none;position:fixed;inset:0;top:56px;background:${C.surface};z-index:150;overflow-y:auto;padding:20px 16px 40px}
+        @media(max-width:640px){
+          .hamburger{display:flex}
+          .nav-links{display:none!important}
+          .mobile-menu.open{display:block}
+        }
+        @media(max-width:480px){
+          .calc-grid{grid-template-columns:1fr!important}
+        }
       `}</style>
 
-      {/* Nav */}
-      <nav style={{ background:C.surface, borderBottom:`1px solid ${C.border}`, padding:"0 20px", height:56, display:"flex", alignItems:"center", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(16px)" }}>
-        <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:18, fontWeight:700, letterSpacing:"-.3px", color:C.white }}>Canadian</span>
-        <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:18, fontWeight:700, letterSpacing:"-.3px", color:C.red }}>flation</span>
+      {/* ── Nav ── */}
+      <nav style={{ background:C.surface, borderBottom:`1px solid ${C.border}`, padding:"0 20px", height:56, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(16px)" }}>
+        {/* Wordmark */}
+        <button onClick={() => { closeAll(); navigate("/inflation-rates", 0); }}
+          style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:0 }}>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:18, fontWeight:700, letterSpacing:"-.3px", color:C.white }}>Canadian</span>
+          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:18, fontWeight:700, letterSpacing:"-.3px", color:C.red }}>flation</span>
+        </button>
+
+        {/* Desktop nav links */}
+        <div className="nav-links" style={{ display:"flex", alignItems:"center", gap:4 }}>
+          {/* CPI Data dropdown */}
+          <div style={{ position:"relative" }} onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => { setDataDropOpen(v => !v); setCalcDropOpen(false); }}
+              style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
+                color: isDataActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
+                padding:"8px 12px", borderRadius:8, transition:"all .15s",
+              }}>
+              CPI &amp; Inflation Data
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ transform: dataDropOpen?"rotate(180deg)":"none", transition:"transform .2s" }}>
+                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+            {dataDropOpen && (
+              <div className="nav-drop">
+                {DATA_PAGES.map(p => (
+                  <button key={p.idx} className="nav-drop-item" onClick={() => { navigate(p.path, p.idx); closeAll(); }}>
+                    <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
+                    <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Calculators dropdown */}
+          <div style={{ position:"relative" }} onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => { setCalcDropOpen(v => !v); setDataDropOpen(false); }}
+              style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
+                color: isCalcActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
+                padding:"8px 12px", borderRadius:8, transition:"all .15s",
+              }}>
+              Financial Calculators
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ transform: calcDropOpen?"rotate(180deg)":"none", transition:"transform .2s" }}>
+                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+            {calcDropOpen && (
+              <div className="nav-drop">
+                {CALC_PAGES.map(p => (
+                  <button key={p.idx} className="nav-drop-item" onClick={() => { navigate(p.path, p.idx); closeAll(); }}>
+                    <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
+                    <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Hamburger */}
+        <button className="hamburger" onClick={e => { e.stopPropagation(); setMobileOpen(v => !v); setDataDropOpen(false); setCalcDropOpen(false); }} aria-label="Menu">
+          <span style={{ transform: mobileOpen?"rotate(45deg) translate(5px,5px)":"none" }}/>
+          <span style={{ opacity: mobileOpen?0:1 }}/>
+          <span style={{ transform: mobileOpen?"rotate(-45deg) translate(5px,-5px)":"none" }}/>
+        </button>
       </nav>
 
-      {/* Tabs */}
-      <div style={{ background:C.surface, borderBottom:`1px solid ${C.border}`, padding:"0 20px", display:"flex", position:"sticky", top:56, zIndex:99 }}>
-        {TABS.map((t, i) => (
-          <button key={i} onClick={() => setTab(i)} style={{
-            background:"none", border:"none",
-            borderBottom:`2px solid ${tab===i ? C.yellow : "transparent"}`,
-            color: tab===i ? C.yellow : C.textSecondary,
-            padding:"12px 16px", fontSize:13, fontWeight:600, cursor:"pointer",
-            fontFamily:"inherit", transition:"all .15s", WebkitTapHighlightColor:"transparent",
-          }}>{t}</button>
+      {/* ── Mobile menu ── */}
+      <div className={`mobile-menu${mobileOpen?" open":""}`}>
+        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>CPI &amp; Inflation Data</div>
+        {DATA_PAGES.map(p => (
+          <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
+            style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
+              border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:10, padding:"12px 14px",
+              marginBottom:6, cursor:"pointer", fontFamily:"inherit" }}>
+            <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
+            <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
+          </button>
+        ))}
+        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 10px" }}>Financial Calculators</div>
+        {CALC_PAGES.map(p => (
+          <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
+            style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
+              border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:10, padding:"12px 14px",
+              marginBottom:6, cursor:"pointer", fontFamily:"inherit" }}>
+            <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
+            <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
+          </button>
         ))}
       </div>
 
-      {/* Body */}
+      {/* ── Page content ── */}
       <div style={{ maxWidth:980, margin:"0 auto", padding:"20px 16px 60px" }}>
         {loading ? (
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:360, gap:16 }}>
@@ -1491,16 +1675,17 @@ export default function App() {
             <div style={{ fontSize:13, color:C.textSecondary, maxWidth:380, lineHeight:1.6 }}>
               We only display verified data from official sources. Please try again in a few minutes.
             </div>
-            <button onClick={() => { setError(false); setLoading(true); load(); }} style={{ background:C.yellow, color:"#000", border:"none", borderRadius:8, padding:"10px 24px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+            <button onClick={() => { setError(false); setLoading(true); load(); }}
+              style={{ background:C.yellow, color:"#000", border:"none", borderRadius:8, padding:"10px 24px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
               Try again
             </button>
           </div>
         ) : (
-          tab === 0 ? <RatesTab         data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
-          tab === 1 ? <CumulativeTab    data={data} vis={vis} rawCpi={rawCpi} catHistory={catHistory} provHistory={provHistory}/> :
-          tab === 2 ? <TaylorTab        data={data} vis={vis} rateData={rateData}/> :
-          tab === 3 ? <CompoundTab      vis={vis}/> :
-                      <MortgageTab      vis={vis}/>
+          page === 0 ? <RatesTab      data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
+          page === 1 ? <CumulativeTab data={data} vis={vis} rawCpi={rawCpi} catHistory={catHistory} provHistory={provHistory}/> :
+          page === 2 ? <TaylorTab     data={data} vis={vis} rateData={rateData}/> :
+          page === 3 ? <CompoundTab   vis={vis}/> :
+                       <MortgageTab   vis={vis}/>
         )}
 
         <div style={{ textAlign:"center", fontSize:11, color:C.textMuted, fontWeight:500, marginTop:32, paddingTop:20, borderTop:`1px solid ${C.border}`, lineHeight:1.8 }}>
