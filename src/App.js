@@ -945,14 +945,21 @@ function compoundFV(P, monthlyPmt, annualRate, n, years) {
   return fvLump + fvPmt;
 }
 
-function CompoundTab({ vis }) {
+function CompoundTab({ vis, liveCpi }) {
   const [principal, setPrincipal] = useState("");
   const [monthly,   setMonthly]   = useState("");
   const [years,     setYears]     = useState("");
   const [rate,      setRate]      = useState("");
   const [variance,  setVariance]  = useState("");
   const [freq,      setFreq]      = useState(12);
+  const [inflRate,  setInflRate]  = useState("");
+  const [showReal,  setShowReal]  = useState(false);
   const [result,    setResult]    = useState(null);
+
+  // Pre-fill inflation rate from live CPI when it arrives
+  useEffect(() => {
+    if (liveCpi != null && inflRate === "") setInflRate(liveCpi.toFixed(1));
+  }, [liveCpi]); // eslint-disable-line
 
   function calculate() {
     const P   = parseFloat(principal) || 0;
@@ -960,8 +967,9 @@ function CompoundTab({ vis }) {
     const t   = parseFloat(years);
     const r   = parseFloat(rate) / 100;
     const v   = parseFloat(variance) || 0;
+    const inf = parseFloat(inflRate) / 100 || 0;
     if (!t || t <= 0 || t > 100) return;
-    if (!r || r <= 0 || r > 5)   return; // guard: 0–500% range
+    if (!r || r <= 0 || r > 5)   return;
 
     const base         = compoundFV(P, pmt, r, freq, t);
     const low          = v > 0 ? compoundFV(P, pmt, Math.max(0.0001, r - v/100), freq, t) : null;
@@ -969,19 +977,26 @@ function CompoundTab({ vis }) {
     const totalContrib = P + pmt * 12 * t;
     const interest     = base - totalContrib;
 
+    // Real return: Fisher equation r_real = (1+r)/(1+inf) - 1
+    const realRate     = inf > 0 ? (1 + r) / (1 + inf) - 1 : r;
+    const realBase     = compoundFV(P, pmt, realRate, freq, t);
+    const realInterest = realBase - totalContrib;
+    const realRateAnn  = +(realRate * 100).toFixed(2);
+
     const chartData = Array.from({ length: Math.min(Math.ceil(t), 100) }, (_, i) => {
-      const yr     = i + 1;
-      const fv     = compoundFV(P, pmt, r, freq, Math.min(yr, t));
+      const yr      = i + 1;
+      const fv      = compoundFV(P, pmt, r, freq, Math.min(yr, t));
+      const realFv  = compoundFV(P, pmt, realRate, freq, Math.min(yr, t));
       const contrib = P + pmt * 12 * Math.min(yr, t);
       return {
-        year:            `Yr ${yr}`,
-        "Total Value":   +fv.toFixed(2),
-        "Contributions": +Math.max(contrib, 0).toFixed(2),
-        "Interest":      +Math.max(fv - contrib, 0).toFixed(2),
+        year:              `Yr ${yr}`,
+        "Nominal Value":   +fv.toFixed(2),
+        "Real Value":      +realFv.toFixed(2),
+        "Contributions":   +Math.max(contrib, 0).toFixed(2),
       };
     });
 
-    setResult({ base, low, high, totalContrib, interest, chartData });
+    setResult({ base, low, high, totalContrib, interest, realBase, realInterest, realRateAnn, inf, chartData });
   }
 
   const fmt = v => "$" + Math.round(v).toLocaleString("en-CA");
@@ -999,6 +1014,7 @@ function CompoundTab({ vis }) {
           <CalcField label="Length of Time (Years)" value={years} onChange={setYears} placeholder="e.g. 20" hint="How long you plan to invest" isRate/>
           <CalcField label="Annual Interest Rate (%)" value={rate} onChange={setRate} placeholder="e.g. 7" hint="Your estimated annual rate of return" isRate/>
           <CalcField label="Rate Variance (%)" value={variance} onChange={setVariance} placeholder="e.g. 2" hint="Shows low/high range above and below your rate" isRate/>
+          <CalcField label="Assumed Inflation Rate (%)" value={inflRate} onChange={setInflRate} placeholder="e.g. 1.8" hint="Pre-filled from live CPI — adjust to model scenarios" isRate/>
 
           <div style={{ marginBottom:20 }}>
             <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Compound Frequency</div>
@@ -1033,27 +1049,61 @@ function CompoundTab({ vis }) {
               <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Fill in the fields and hit Calculate to see your results</div>
             </div>
           ) : (<>
+            {/* Nominal / Real toggle */}
+            {result.inf > 0 && (
+              <div style={{ display:"flex", background:C.surface2, borderRadius:10, padding:3, border:`1px solid ${C.border}` }}>
+                {["Nominal","Inflation-Adjusted"].map((label,i) => (
+                  <button key={i} onClick={() => setShowReal(i===1)} style={{
+                    flex:1, padding:"8px 12px", borderRadius:8, border:"none", fontFamily:"inherit",
+                    fontSize:12, fontWeight:600, cursor:"pointer", transition:"all .15s",
+                    background: showReal===(i===1) ? C.yellow : "transparent",
+                    color:      showReal===(i===1) ? "#000" : C.textSecondary,
+                  }}>{label}</button>
+                ))}
+              </div>
+            )}
+
             {/* Hero result */}
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>
-                Final Balance after {years} years
+              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
+                {showReal ? "Real (Today's Dollars)" : "Nominal"} Balance after {years} years
               </div>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:14 }}>
-                {fmt(result.base)}
+              {showReal && result.inf > 0 && (
+                <div style={{ fontSize:11, color:C.textMuted, marginBottom:8 }}>
+                  Assuming {(result.inf*100).toFixed(1)}% avg inflation · real return {result.realRateAnn > 0 ? "+" : ""}{result.realRateAnn}%/yr
+                </div>
+              )}
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:showReal ? C.blue : C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:14 }}>
+                {fmt(showReal ? result.realBase : result.base)}
               </div>
-              {result.low != null && (
+              {!showReal && result.low != null && (
                 <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
                   <span style={{ fontSize:11, background:C.redBg, color:C.red, border:`1px solid ${C.red}25`, borderRadius:6, padding:"4px 10px", fontWeight:600 }}>Low: {fmt(result.low)}</span>
                   <span style={{ fontSize:11, background:C.greenBg, color:C.green, border:`1px solid ${C.green}25`, borderRadius:6, padding:"4px 10px", fontWeight:600 }}>High: {fmt(result.high)}</span>
                 </div>
               )}
+              {showReal && result.inf > 0 && (
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
+                  <span style={{ fontSize:11, background:C.surface2, color:C.textSecondary, border:`1px solid ${C.border2}`, borderRadius:6, padding:"4px 10px", fontWeight:600 }}>
+                    Nominal: {fmt(result.base)}
+                  </span>
+                  <span style={{ fontSize:11, background:C.blueBg, color:C.blue, border:`1px solid ${C.blue}25`, borderRadius:6, padding:"4px 10px", fontWeight:600 }}>
+                    Purchasing power lost to inflation: {fmt(result.base - result.realBase)}
+                  </span>
+                </div>
+              )}
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:1, borderTop:`1px solid ${C.border}`, marginTop:8, paddingTop:16 }}>
-                {[
-                  { label:"Total Contributions", val:fmt(result.totalContrib), color:C.blue   },
-                  { label:"Total Interest",       val:fmt(result.interest),    color:C.yellow  },
-                  { label:"Return on Investment", val:`${((result.interest/Math.max(result.totalContrib,1))*100).toFixed(1)}%`, color:C.green },
-                  { label:"Interest/Contrib ratio",val:`${(result.interest/Math.max(result.totalContrib,1)).toFixed(2)}×`,     color:C.purple},
-                ].map((s,i) => (
+                {(showReal && result.inf > 0 ? [
+                  { label:"Real Final Balance",    val:fmt(result.realBase),     color:C.blue   },
+                  { label:"Real Interest Earned",  val:fmt(result.realInterest), color:C.yellow },
+                  { label:"Real ROI",              val:`${((result.realInterest/Math.max(result.totalContrib,1))*100).toFixed(1)}%`, color:C.green },
+                  { label:"Real Annual Return",    val:`${result.realRateAnn > 0 ? "+" : ""}${result.realRateAnn}%`, color:C.purple },
+                ] : [
+                  { label:"Total Contributions",   val:fmt(result.totalContrib), color:C.blue   },
+                  { label:"Total Interest",         val:fmt(result.interest),    color:C.yellow  },
+                  { label:"Return on Investment",   val:`${((result.interest/Math.max(result.totalContrib,1))*100).toFixed(1)}%`, color:C.green },
+                  { label:"Interest/Contrib ratio", val:`${(result.interest/Math.max(result.totalContrib,1)).toFixed(2)}×`, color:C.purple },
+                ]).map((s,i) => (
                   <div key={i} style={{ padding:"12px 0" }}>
                     <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
                     <div style={{ fontSize:18, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
@@ -1074,15 +1124,28 @@ function CompoundTab({ vis }) {
                   </div>
                 ))}
               </div>
+              <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
+                {[
+                  { color:C.green, label:"Nominal Value" },
+                  ...(result.inf > 0 ? [{ color:C.blue, label:"Real Value (today's $)" }] : []),
+                  { color:`${C.yellow}99`, label:"Contributions" },
+                ].map((l,i) => (
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSecondary }}>
+                    <span style={{ width:12, height:12, borderRadius:3, background:l.color, display:"inline-block" }}/>
+                    {l.label}
+                  </div>
+                ))}
+              </div>
               <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
+                <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
                   <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v => "$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={(v,n) => [fmt(v), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
-                  <Bar dataKey="Total Value"   fill={C.green} radius={[3,3,0,0]} opacity={0.85}/>
-                  <Bar dataKey="Contributions" fill={C.blue}  radius={[3,3,0,0]} opacity={0.7}/>
-                </BarChart>
+                  <Line type="monotone" dataKey="Nominal Value"  stroke={C.green}  strokeWidth={2.5} dot={false} activeDot={{ r:4 }}/>
+                  {result.inf > 0 && <Line type="monotone" dataKey="Real Value" stroke={C.blue} strokeWidth={2} dot={false} strokeDasharray="5 3" activeDot={{ r:4 }}/>}
+                  <Line type="monotone" dataKey="Contributions" stroke={C.yellow} strokeWidth={1.5} dot={false} strokeDasharray="3 3" opacity={0.7}/>
+                </LineChart>
               </ResponsiveContainer>
             </div>
           </>)}
@@ -1114,7 +1177,7 @@ function MortField({ label, value, set, ph, isSmall }) {
 }
 
 // ── TAB 5: Mortgage Calculators ───────────────────────────────────────────────
-function MortgageTab({ vis }) {
+function MortgageTab({ vis, liveCpi }) {
   const [sub, setSub] = useState(0);
 
   // ── Sub-tab 1: Mortgage Payment Calculator ─────────────────────────────────
@@ -1125,7 +1188,13 @@ function MortgageTab({ vis }) {
     const [rate,      setRate]      = useState("");
     const [amort,     setAmort]     = useState("");
     const [payFreq,   setPayFreq]   = useState("monthly");
+    const [inflRate,  setInflRate]  = useState("");
+    const [showReal,  setShowReal]  = useState(false);
     const [result,    setResult]    = useState(null);
+
+    useEffect(() => {
+      if (liveCpi != null && inflRate === "") setInflRate(liveCpi.toFixed(1));
+    }, [liveCpi]); // eslint-disable-line
 
     const FREQS = { monthly:12, biweekly:26, weekly:52 };
 
@@ -1145,12 +1214,21 @@ function MortgageTab({ vis }) {
       const totalPaid = payment * periods;
       const totalInt  = totalPaid - principal;
       const cmhc      = downPct && d < 20 ? principal * (d < 5 ? 0.04 : d < 10 ? 0.031 : 0.028) : 0;
+      const inf       = parseFloat(inflRate) / 100 || 0;
+      // Real payment: nominal payment discounted by cumulative inflation each year
+      // Inflation helps borrowers — future payments are worth less in real terms
+      const realTotalPaid = inf > 0
+        ? Array.from({length: Math.ceil(a)}, (_,i) => payment * n/Math.ceil(a) / Math.pow(1+inf, i+1)).reduce((s,v)=>s+v,0)
+        : totalPaid;
+      const realTotalInt = realTotalPaid - principal;
 
       // Amortization chart — yearly
       let bal = principal;
       const chartData = [];
+      let cumulativeInf = 1;
       for (let yr = 1; yr <= a; yr++) {
         let intYr = 0, prinYr = 0;
+        cumulativeInf *= (1 + inf);
         for (let p = 0; p < n; p++) {
           const intPmt = bal * rn;
           const prinPmt = payment - intPmt;
@@ -1158,9 +1236,16 @@ function MortgageTab({ vis }) {
           prinYr += prinPmt;
           bal    -= prinPmt;
         }
-        chartData.push({ year:`Yr ${yr}`, Balance:+Math.max(bal,0).toFixed(0), Interest:+intYr.toFixed(0), Principal:+prinYr.toFixed(0) });
+        const nomBal = Math.max(bal, 0);
+        chartData.push({
+          year:             `Yr ${yr}`,
+          "Balance":        +nomBal.toFixed(0),
+          "Real Balance":   inf > 0 ? +(nomBal / cumulativeInf).toFixed(0) : null,
+          Interest:         +intYr.toFixed(0),
+          Principal:        +prinYr.toFixed(0),
+        });
       }
-      setResult({ payment, totalPaid, totalInt, principal, downAmt, cmhc, chartData });
+      setResult({ payment, totalPaid, totalInt, principal, downAmt, cmhc, chartData, inf, realTotalPaid, realTotalInt });
     }
 
     const fmt  = v => "$" + Math.round(v).toLocaleString("en-CA");
@@ -1194,6 +1279,7 @@ function MortgageTab({ vis }) {
             </div>
           </div>
 
+          <MortField label="Assumed Inflation Rate (%)" value={inflRate} set={setInflRate} ph="e.g. 1.8" isSmall/>
           <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Calculate</button>
         </div>
 
@@ -1204,46 +1290,81 @@ function MortgageTab({ vis }) {
               <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your mortgage details to see your payment breakdown</div>
             </div>
           ) : (<>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>
-                {payFreq.charAt(0).toUpperCase()+payFreq.slice(1)} Payment
+            {result.inf > 0 && (
+              <div style={{ display:"flex", background:C.surface2, borderRadius:10, padding:3, border:`1px solid ${C.border}` }}>
+                {["Nominal","Inflation-Adjusted"].map((label,i) => (
+                  <button key={i} onClick={() => setShowReal(i===1)} style={{
+                    flex:1, padding:"8px 12px", borderRadius:8, border:"none", fontFamily:"inherit",
+                    fontSize:12, fontWeight:600, cursor:"pointer", transition:"all .15s",
+                    background: showReal===(i===1) ? C.yellow : "transparent",
+                    color:      showReal===(i===1) ? "#000" : C.textSecondary,
+                  }}>{label}</button>
+                ))}
               </div>
+            )}
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
+                {payFreq.charAt(0).toUpperCase()+payFreq.slice(1)} Payment · {showReal && result.inf > 0 ? "Inflation-Adjusted" : "Nominal"}
+              </div>
+              {showReal && result.inf > 0 && (
+                <div style={{ fontSize:11, color:C.textMuted, marginBottom:8 }}>
+                  Assuming {(result.inf*100).toFixed(1)}% avg inflation · future payments worth less in today's dollars
+                </div>
+              )}
               <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.yellow, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
                 {fmtM(result.payment)}
               </div>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
-                {[
-                  { label:"Mortgage Amount", val:fmt(result.principal),  color:C.white  },
-                  { label:"Down Payment",    val:fmt(result.downAmt),    color:C.blue   },
-                  { label:"Total Interest",  val:fmt(result.totalInt),   color:C.red    },
-                  { label:"Total Cost",      val:fmt(result.totalPaid + result.downAmt), color:C.textPrimary },
+                {(showReal && result.inf > 0 ? [
+                  { label:"Mortgage Amount",        val:fmt(result.principal),               color:C.white },
+                  { label:"Down Payment",           val:fmt(result.downAmt),                 color:C.blue  },
+                  { label:"Real Total Interest",    val:fmt(result.realTotalInt),            color:C.green,
+                    note:"Less than nominal — inflation erodes the real cost of debt" },
+                  { label:"Nominal Total Interest", val:fmt(result.totalInt),                color:C.textSecondary },
+                  { label:"Real Total Cost",        val:fmt(result.realTotalPaid + result.downAmt), color:C.textPrimary },
                   result.cmhc > 0 ? { label:"CMHC Insurance", val:fmt(result.cmhc), color:C.yellow } : null,
-                ].filter(Boolean).map((s,i)=>(
+                ] : [
+                  { label:"Mortgage Amount",        val:fmt(result.principal),               color:C.white },
+                  { label:"Down Payment",           val:fmt(result.downAmt),                 color:C.blue  },
+                  { label:"Total Interest",         val:fmt(result.totalInt),                color:C.red   },
+                  { label:"Total Cost",             val:fmt(result.totalPaid + result.downAmt), color:C.textPrimary },
+                  result.cmhc > 0 ? { label:"CMHC Insurance", val:fmt(result.cmhc), color:C.yellow } : null,
+                ]).filter(Boolean).map((s,i)=>(
                   <div key={i}>
                     <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
                     <div style={{ fontSize:16, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+                    {s.note && <div style={{ fontSize:10, color:C.textMuted, marginTop:3, lineHeight:1.4 }}>{s.note}</div>}
                   </div>
                 ))}
               </div>
               {result.cmhc > 0 && <div style={{ marginTop:10, fontSize:10, color:C.textMuted, background:C.surface2, borderRadius:6, padding:"6px 10px" }}>⚠ CMHC mortgage insurance required (down payment under 20%)</div>}
+              {showReal && result.inf > 0 && (
+                <div style={{ marginTop:12, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 14px", lineHeight:1.6 }}>
+                  💡 Inflation benefits borrowers: your fixed mortgage payment stays the same in dollars, but its real value shrinks over time as prices rise. You effectively repay with cheaper dollars.
+                </div>
+              )}
             </div>
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
               <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Amortization Schedule</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Remaining balance by year</div>
+              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:8 }}>Remaining balance by year</div>
+              {result.inf > 0 && (
+                <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
+                  {[{ color:C.blue, label:"Nominal Balance" },{ color:C.green, label:"Real Balance (today's $)" }].map((l,i) => (
+                    <div key={i} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSecondary }}>
+                      <span style={{ width:12, height:3, background:l.color, borderRadius:2, display:"inline-block" }}/>{l.label}
+                    </div>
+                  ))}
+                </div>
+              )}
               <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
-                  <defs>
-                    <linearGradient id="balGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor={C.blue} stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor={C.blue} stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
+                <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
                   <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9 }} axisLine={{ stroke:C.border }} tickLine={false}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
-                  <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Balance"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
-                  <Area type="monotone" dataKey="Balance" stroke={C.blue} strokeWidth={2} fill="url(#balGrad)" dot={false}/>
-                </AreaChart>
+                  <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
+                  <Line type="monotone" dataKey="Balance"      stroke={C.blue}  strokeWidth={2} dot={false} name="Nominal Balance"/>
+                  {result.inf > 0 && <Line type="monotone" dataKey="Real Balance" stroke={C.green} strokeWidth={2} dot={false} strokeDasharray="5 3" name="Real Balance"/>}
+                </LineChart>
               </ResponsiveContainer>
             </div>
           </>)}
@@ -1763,8 +1884,8 @@ export default function App() {
           page === 0 ? <RatesTab data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
           page === 1 ? <CumulativeTab data={data} vis={vis} rawCpi={rawCpi} catHistory={catHistory} provHistory={provHistory}/> :
           page === 2 ? <TaylorTab     data={data} vis={vis} rateData={rateData}/> :
-          page === 3 ? <CompoundTab   vis={vis}/> :
-                       <MortgageTab   vis={vis}/>
+          page === 3 ? <CompoundTab   vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
+                       <MortgageTab   vis={vis} liveCpi={data?.[data.length-1]?.value}/>
         )}
 
         <div style={{ textAlign:"center", fontSize:11, color:C.textMuted, fontWeight:500, marginTop:32, paddingTop:20, borderTop:`1px solid ${C.border}`, lineHeight:1.8 }}>
