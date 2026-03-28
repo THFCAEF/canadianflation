@@ -31,7 +31,7 @@ import {
   }
   [
     { property: "og:title",       content: "Canadianflation — Canadian CPI Tracker" },
-    { property: "og:description", content: "Track Canadian inflation in real time. Historical CPI data from 1914 to present, sourced from Statistics Canada." },
+    { property: "og:description", content: "Track Canadian inflation in real time. Live CPI data by category and province, sourced directly from Statistics Canada and the Bank of Canada." },
     { property: "og:image",       content: "https://www.canadianflation.ca/social-preview.png" },
     { property: "og:url",         content: "https://www.canadianflation.ca" },
     { name: "twitter:card",       content: "summary_large_image" },
@@ -340,7 +340,7 @@ function HomepageHero({ navigate, cur }) {
 
   const LINKS = [
     { label:"Inflation Rates",    desc:"Track CPI by category and province in real time.",         path:"/inflation-rates",     idx:0, icon:"📊" },
-    { label:"Purchasing Power",   desc:"See how much your dollar has lost since 1914.",             path:"/purchasing-power",    idx:1, icon:"💸" },
+    { label:"Purchasing Power",   desc:"See how much your dollar has lost to inflation over time.",  path:"/purchasing-power",    idx:1, icon:"💸" },
     { label:"Taylor Rule",        desc:"Is the Bank of Canada ahead or behind the curve?",          path:"/taylor-rule",         idx:2, icon:"📐" },
     { label:"Interest Calculator",desc:"Model how compound interest grows your savings.",           path:"/interest-calculator", idx:3, icon:"📈" },
     { label:"Mortgage Calculator",desc:"Calculate payments, transfer tax, and borrowing power.",   path:"/mortgage-calculator", idx:4, icon:"🏠" },
@@ -357,13 +357,12 @@ function HomepageHero({ navigate, cur }) {
         </div>
 
         <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(36px,7vw,64px)", fontWeight:700, lineHeight:1.05, letterSpacing:"-1px", color:C.white, marginBottom:16, margin:"0 0 16px" }}>
-          Understand what inflation<br/>
-          <span style={{ color:rateColor }}>is actually doing</span> to your money.
+          Understand How Inflation Is<br/>
+          <span style={{ color:C.yellow }}>Affecting Your Money</span>
         </h1>
 
         <p style={{ fontSize:15, color:C.textSecondary, lineHeight:1.7, maxWidth:580, margin:"0 0 28px" }}>
-          Canadianflation pulls live data directly from Statistics Canada and the Bank of Canada — no estimates, no editorializing, no agenda. 
-          Just the numbers, from 1914 to this morning, presented clearly so every Canadian can understand the economy they live in.
+          Canadianflation pulls live data directly from Statistics Canada and the Bank of Canada — no estimates, just the numbers.
         </p>
 
         {rate != null && (
@@ -381,7 +380,7 @@ function HomepageHero({ navigate, cur }) {
             View Live Inflation Data →
           </button>
           <button onClick={() => navigate("/purchasing-power", 1)} style={{ background:"transparent", color:C.textSecondary, border:`1px solid ${C.border2}`, borderRadius:10, padding:"12px 24px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
-            See Purchasing Power Since 1914
+            See Purchasing Power Over Time
           </button>
         </div>
       </div>
@@ -393,7 +392,7 @@ function HomepageHero({ navigate, cur }) {
         </h2>
         <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, maxWidth:680, margin:0 }}>
           Most Canadians experience inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no easy way to see the full picture. 
-          Canadianflation exists to change that. We built a free, ad-free, source-cited tool that puts Statistics Canada's data in front of anyone who wants it, presented the way it deserves to be: clearly, honestly, and without spin.
+          Canadianflation exists to change that. We built a free, source-cited tool that puts Statistics Canada's data in front of anyone who wants it, presented the way it deserves to be: clearly, honestly, and without spin.
         </p>
       </div>
 
@@ -617,7 +616,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
   const cadData  = useMemo(() => computeCadDevaluation(rawCpi), [rawCpi]);
   const chart    = cadData.slice(-Math.min(RANGES[range], cadData.length));
   const latest   = cadData[cadData.length - 1];
-  const startYr  = cadData[0]?.iso ? new Date(cadData[0].iso).getFullYear() : "1914";
+  const startYr  = cadData[0]?.iso ? new Date(cadData[0].iso).getFullYear() : "1976";
   const totalLost = latest ? latest.lostPct : 0;
   const ti = range==="2Y"?2:range==="5Y"?5:range==="10Y"?11:range==="25Y"?28:Math.max(1,Math.floor(chart.length/11));
 
@@ -1440,16 +1439,17 @@ function MortgageTab({ vis }) {
 
 // ── Per-page SEO meta ────────────────────────────────────────────────────────
 const PAGE_META = [
-  { path:"/inflation-rates",     title:"Canadian Inflation Rates — CPI by Category & Province | Canadianflation",    description:"Live Canadian CPI data by category and province. Track year-over-year inflation rates for food, shelter, transport and more. Sourced directly from Statistics Canada." },
-  { path:"/purchasing-power",    title:"Canadian Dollar Purchasing Power Since 1914 | Canadianflation",               description:"See how inflation has eroded the purchasing power of the Canadian dollar since 1914. Real data from Statistics Canada — no estimates." },
-  { path:"/taylor-rule",         title:"Taylor Rule vs Bank of Canada Rate | Canadianflation",                        description:"Compare the Bank of Canada overnight rate against the Taylor Rule prescription. Is Canadian monetary policy too tight or too easy?" },
-  { path:"/interest-calculator", title:"Canadian Compound Interest Calculator | Canadianflation",                     description:"Calculate how your savings or investments grow with compound interest. Adjust rate, frequency, contributions, and time horizon." },
-  { path:"/mortgage-calculator", title:"Canadian Mortgage Calculator — Payment, Tax & Borrowing | Canadianflation",  description:"Calculate Canadian mortgage payments, provincial property transfer tax, and borrowing capacity. Covers all 10 provinces with 2024 tax brackets." },
+  { path:"/inflation-rates",     title:"Canadian Inflation Rates — Live CPI by Category & Province | Canadianflation",         description:"Live Canadian CPI data by category and province. Track year-over-year inflation rates for food, shelter, transport and more. Sourced directly from Statistics Canada." },
+  { path:"/purchasing-power",    title:"Canadian Dollar Purchasing Power — How Inflation Erodes Your Money | Canadianflation",  description:"See how inflation has eroded the purchasing power of the Canadian dollar over time. Live data from Statistics Canada — no estimates." },
+  { path:"/taylor-rule",         title:"Taylor Rule vs Bank of Canada Rate | Canadianflation",                                  description:"Compare the Bank of Canada overnight rate against the Taylor Rule prescription. Is Canadian monetary policy too tight or too easy?" },
+  { path:"/interest-calculator", title:"Canadian Compound Interest Calculator | Canadianflation",                               description:"Calculate how your savings or investments grow with compound interest. Adjust rate, frequency, contributions, and time horizon." },
+  { path:"/mortgage-calculator", title:"Canadian Mortgage Calculator — Payment, Tax & Borrowing | Canadianflation",             description:"Calculate Canadian mortgage payments, provincial property transfer tax, and borrowing capacity. Covers all 10 provinces with 2024 tax brackets." },
+  { path:"/",                    title:"Canadianflation — Canada's Independent Inflation Tracker",                              description:"Track Canadian inflation in real time. Live CPI data from Statistics Canada, purchasing power history, Taylor Rule analysis, and free financial calculators." },
 ];
 
 // ── Client-side routing map ───────────────────────────────────────────────────
 const ROUTES = {
-  "/":                    0,
+  "/":                    5,
   "/inflation-rates":     0,
   "/purchasing-power":    1,
   "/taylor-rule":         2,
@@ -1577,7 +1577,7 @@ export default function App() {
 
   const DATA_PAGES = [
     { label:"Inflation Rates",   path:"/inflation-rates",  idx:0, desc:"CPI by category & province" },
-    { label:"Purchasing Power",  path:"/purchasing-power", idx:1, desc:"Dollar erosion since 1914"  },
+    { label:"Purchasing Power",  path:"/purchasing-power", idx:1, desc:"Dollar erosion over time"   },
     { label:"Taylor Rule",       path:"/taylor-rule",      idx:2, desc:"BoC rate vs prescription"   },
   ];
   const CALC_PAGES = [
@@ -1625,7 +1625,7 @@ export default function App() {
       {/* ── Nav ── */}
       <nav style={{ background:C.surface, borderBottom:`1px solid ${C.border}`, padding:"0 20px", height:56, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(16px)" }}>
         {/* Wordmark */}
-        <button onClick={() => { closeAll(); navigate("/inflation-rates", 0); }}
+        <button onClick={() => { closeAll(); navigate("/", 5); }}
           style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:0 }}>
           <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:18, fontWeight:700, letterSpacing:"-.3px", color:C.white }}>Canadian</span>
           <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:18, fontWeight:700, letterSpacing:"-.3px", color:C.red }}>flation</span>
@@ -1736,7 +1736,8 @@ export default function App() {
             </button>
           </div>
         ) : (
-          page === 0 ? <><HomepageHero navigate={navigate} cur={data?.[data.length-1]}/><RatesTab data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/></> :
+          page === 5 ? <HomepageHero navigate={navigate} cur={data?.[data.length-1]}/> :
+          page === 0 ? <RatesTab data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
           page === 1 ? <CumulativeTab data={data} vis={vis} rawCpi={rawCpi} catHistory={catHistory} provHistory={provHistory}/> :
           page === 2 ? <TaylorTab     data={data} vis={vis} rateData={rateData}/> :
           page === 3 ? <CompoundTab   vis={vis}/> :
