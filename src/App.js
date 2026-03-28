@@ -1356,6 +1356,15 @@ function MortgageTab({ vis }) {
   );
 }
 
+// ── Per-page SEO meta ────────────────────────────────────────────────────────
+const PAGE_META = [
+  { path:"/inflation-rates",     title:"Canadian Inflation Rates — CPI by Category & Province | Canadianflation",    description:"Live Canadian CPI data by category and province. Track year-over-year inflation rates for food, shelter, transport and more. Sourced directly from Statistics Canada." },
+  { path:"/purchasing-power",    title:"Canadian Dollar Purchasing Power Since 1914 | Canadianflation",               description:"See how inflation has eroded the purchasing power of the Canadian dollar since 1914. Real data from Statistics Canada — no estimates." },
+  { path:"/taylor-rule",         title:"Taylor Rule vs Bank of Canada Rate | Canadianflation",                        description:"Compare the Bank of Canada overnight rate against the Taylor Rule prescription. Is Canadian monetary policy too tight or too easy?" },
+  { path:"/interest-calculator", title:"Canadian Compound Interest Calculator | Canadianflation",                     description:"Calculate how your savings or investments grow with compound interest. Adjust rate, frequency, contributions, and time horizon." },
+  { path:"/mortgage-calculator", title:"Canadian Mortgage Calculator — Payment, Tax & Borrowing | Canadianflation",  description:"Calculate Canadian mortgage payments, provincial property transfer tax, and borrowing capacity. Covers all 10 provinces with 2024 tax brackets." },
+];
+
 // ── Root App ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [data,        setData]        = useState(null);
@@ -1470,50 +1479,21 @@ export default function App() {
     return () => window.removeEventListener("popstate", handler);
   }, []);
 
-  // ── Per-page SEO meta update ───────────────────────────────────────────────
-  const PAGE_META = [
-    {
-      path:        "/inflation-rates",
-      title:       "Canadian Inflation Rates 2024 — CPI by Category & Province | Canadianflation",
-      description: "Live Canadian CPI data by category and province. Track year-over-year inflation rates for food, shelter, transport and more. Sourced directly from Statistics Canada.",
-    },
-    {
-      path:        "/purchasing-power",
-      title:       "Canadian Dollar Purchasing Power Since 1914 | Canadianflation",
-      description: "See how inflation has eroded the purchasing power of the Canadian dollar since 1914. Real data from Statistics Canada — no estimates.",
-    },
-    {
-      path:        "/taylor-rule",
-      title:       "Taylor Rule vs Bank of Canada Rate | Canadianflation",
-      description: "Compare the Bank of Canada overnight rate against the Taylor Rule prescription. Is Canadian monetary policy too tight or too easy?",
-    },
-    {
-      path:        "/interest-calculator",
-      title:       "Canadian Compound Interest Calculator | Canadianflation",
-      description: "Calculate how your savings or investments grow with compound interest. Adjust rate, frequency, contributions, and time horizon.",
-    },
-    {
-      path:        "/mortgage-calculator",
-      title:       "Canadian Mortgage Calculator — Payment, Tax & Borrowing | Canadianflation",
-      description: "Calculate Canadian mortgage payments, provincial property transfer tax, and borrowing capacity. Covers all 10 provinces with 2024 tax brackets.",
-    },
-  ];
-
   useEffect(() => {
     const m = PAGE_META[page];
     if (!m) return;
     document.title = m.title;
-    const setMeta = (sel, content) => {
+    const setMeta = (sel, val) => {
       const el = document.querySelector(sel);
-      if (el) el.setAttribute("content", content);
+      if (el) el.setAttribute("content", val);
     };
-    setMeta('meta[name="description"]',         m.description);
-    setMeta('meta[property="og:title"]',         m.title);
-    setMeta('meta[property="og:description"]',   m.description);
-    setMeta('meta[property="og:url"]',           "https://www.canadianflation.ca" + m.path);
-    setMeta('meta[name="twitter:title"]',        m.title);
-    setMeta('meta[name="twitter:description"]',  m.description);
-  }, [page]); // eslint-disable-line
+    setMeta('meta[name="description"]',        m.description);
+    setMeta('meta[property="og:title"]',       m.title);
+    setMeta('meta[property="og:description"]', m.description);
+    setMeta('meta[property="og:url"]',         "https://www.canadianflation.ca" + m.path);
+    setMeta('meta[name="twitter:title"]',      m.title);
+    setMeta('meta[name="twitter:description"]',m.description);
+  }, [page]);
 
   // ── Nav state ─────────────────────────────────────────────────────────────
   const [mobileOpen,   setMobileOpen]   = useState(false);
