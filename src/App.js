@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine, AreaChart, Area,
@@ -879,15 +879,35 @@ function TaylorTab({ data, vis, rateData }) {
 }
 
 // ── Shared input field (defined outside components to avoid remount glitch) ──
-function CalcField({ label, required, value, onChange, placeholder, hint }) {
+function fmtInput(v) {
+  if (v === "" || v === undefined) return "";
+  const n = parseFloat(String(v).replace(/,/g, ""));
+  if (isNaN(n)) return v;
+  // Only add commas for values >= 1000, and only if no decimal being typed
+  if (String(v).slice(-1) === "." || String(v).endsWith(".0") || String(v).match(/\.\d*0$/)) return v;
+  return n >= 1000 ? n.toLocaleString("en-CA") : String(v);
+}
+
+function parseInput(v) {
+  return String(v).replace(/,/g, "");
+}
+
+function CalcField({ label, value, onChange, placeholder, hint, isRate }) {
+  const [focused, setFocused] = React.useState(false);
+  const displayVal = focused || isRate ? value : fmtInput(value);
   return (
     <div style={{ marginBottom:16 }}>
       <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>
-        {label}{required && <span style={{ color:C.red }}> *</span>}
+        {label}
       </div>
       {hint && <div style={{ fontSize:11, color:C.textSecondary, marginBottom:6 }}>{hint}</div>}
       <input
-        type="number" value={value} onChange={e => onChange(e.target.value)}
+        type="text"
+        inputMode="decimal"
+        value={displayVal}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        onChange={e => onChange(parseInput(e.target.value))}
         placeholder={placeholder}
         style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:14, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
       />
@@ -969,9 +989,9 @@ function CompoundTab({ vis }) {
 
           <CalcField label="Initial Investment" value={principal} onChange={setPrincipal} placeholder="e.g. 10000" hint="Amount you have available to invest today"/>
           <CalcField label="Monthly Contribution" value={monthly} onChange={setMonthly} placeholder="e.g. 500" hint="Amount added every month (use negative to withdraw)"/>
-          <CalcField label="Length of Time (Years)" value={years} onChange={setYears} placeholder="e.g. 20" hint="How long you plan to invest"/>
-          <CalcField label="Annual Interest Rate (%)" value={rate} onChange={setRate} placeholder="e.g. 7" hint="Your estimated annual rate of return"/>
-          <CalcField label="Rate Variance (%)" value={variance} onChange={setVariance} placeholder="e.g. 2" hint="Shows low/high range above and below your rate"/>
+          <CalcField label="Length of Time (Years)" value={years} onChange={setYears} placeholder="e.g. 20" hint="How long you plan to invest" isRate/>
+          <CalcField label="Annual Interest Rate (%)" value={rate} onChange={setRate} placeholder="e.g. 7" hint="Your estimated annual rate of return" isRate/>
+          <CalcField label="Rate Variance (%)" value={variance} onChange={setVariance} placeholder="e.g. 2" hint="Shows low/high range above and below your rate" isRate/>
 
           <div style={{ marginBottom:20 }}>
             <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Compound Frequency</div>
@@ -1124,14 +1144,17 @@ function MortgageTab({ vis }) {
           <div style={{ fontSize:14, fontWeight:700, marginBottom:16 }}>Calculate Mortgage Payments</div>
 
           {[
-            { label:"Price of Property *", val:price, set:setPrice, ph:"e.g. 650000" },
-            { label:"Interest Rate (%) *",  val:rate,  set:setRate,  ph:"e.g. 4.5"   },
-            { label:"Amortization (Years) *",val:amort,set:setAmort, ph:"e.g. 25"    },
+            { label:"Price of Property", val:price, set:setPrice, ph:"e.g. 650000" },
+            { label:"Interest Rate (%)",  val:rate,  set:setRate,  ph:"e.g. 4.5"   },
+            { label:"Amortization (Years)",val:amort,set:setAmort, ph:"e.g. 25"    },
           ].map(({label,val,set,ph},i) => (
             <div key={i} style={{ marginBottom:14 }}>
               <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
               <input type="number" value={val} onChange={e=>set(e.target.value)} placeholder={ph}
-                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}/>
+                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+              onFocus={e => { const raw = e.target.value.replace(/,/g,""); e.target.value = raw; }}
+              onBlur={e => { const n = parseFloat(e.target.value.replace(/,/g,"")); if (!isNaN(n) && n >= 1000) e.target.value = n.toLocaleString("en-CA"); }}
+            />
             </div>
           ))}
 
@@ -1143,7 +1166,10 @@ function MortgageTab({ vis }) {
               ))}
             </div>
             <input type="number" value={down} onChange={e=>setDown(e.target.value)} placeholder={downPct?"e.g. 20":"e.g. 130000"}
-              style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}/>
+              style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+              onFocus={e => { const raw = e.target.value.replace(/,/g,""); e.target.value = raw; }}
+              onBlur={e => { const n = parseFloat(e.target.value.replace(/,/g,"")); if (!isNaN(n) && n >= 1000) e.target.value = n.toLocaleString("en-CA"); }}
+            />
           </div>
 
           <div style={{ marginBottom:20 }}>
@@ -1288,13 +1314,16 @@ function MortgageTab({ vis }) {
           </div>
 
           {[
-            { label:"Purchase Price *", val:price, set:setPrice, ph:"e.g. 650000" },
+            { label:"Purchase Price", val:price, set:setPrice, ph:"e.g. 650000" },
             { label:"Municipal Assessment (optional)", val:assess, set:setAssess, ph:"Leave blank to use purchase price" },
           ].map(({label,val,set,ph},i)=>(
             <div key={i} style={{ marginBottom:14 }}>
               <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
               <input type="number" value={val} onChange={e=>set(e.target.value)} placeholder={ph}
-                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}/>
+                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+              onFocus={e => { const raw = e.target.value.replace(/,/g,""); e.target.value = raw; }}
+              onBlur={e => { const n = parseFloat(e.target.value.replace(/,/g,"")); if (!isNaN(n) && n >= 1000) e.target.value = n.toLocaleString("en-CA"); }}
+            />
             </div>
           ))}
 
@@ -1359,14 +1388,17 @@ function MortgageTab({ vis }) {
           <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>How much can you borrow based on your payment budget?</div>
 
           {[
-            { label:"Payment Amount *", val:payment, set:setPayment, ph:"e.g. 2000" },
-            { label:"Annual Interest Rate (%) *", val:rate, set:setRate, ph:"e.g. 4.5" },
-            { label:"Amortization (Years) *", val:amort, set:setAmort, ph:"e.g. 25" },
+            { label:"Payment Amount", val:payment, set:setPayment, ph:"e.g. 2000" },
+            { label:"Annual Interest Rate (%)", val:rate, set:setRate, ph:"e.g. 4.5" },
+            { label:"Amortization (Years)", val:amort, set:setAmort, ph:"e.g. 25" },
           ].map(({label,val,set,ph},i)=>(
             <div key={i} style={{ marginBottom:14 }}>
               <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
               <input type="number" value={val} onChange={e=>set(e.target.value)} placeholder={ph}
-                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}/>
+                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+              onFocus={e => { const raw = e.target.value.replace(/,/g,""); e.target.value = raw; }}
+              onBlur={e => { const n = parseFloat(e.target.value.replace(/,/g,"")); if (!isNaN(n) && n >= 1000) e.target.value = n.toLocaleString("en-CA"); }}
+            />
             </div>
           ))}
 
