@@ -1,0 +1,22 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "rewrites": [
+    { "source": "/inflation-rates",     "destination": "/index.html" },
+    { "source": "/purchasing-power",    "destination": "/index.html" },
+    { "source": "/taylor-rule",         "destination": "/index.html" },
+    { "source": "/interest-calculator", "destination": "/index.html" },
+    { "source": "/mortgage-calculator", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options",        "value": "SAMEORIGIN" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy",        "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy",     "value": "camera=(), microphone=(), geolocation=()" }
+      ]
+    }
+  ]
+}
