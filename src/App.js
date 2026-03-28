@@ -1085,6 +1085,50 @@ function CompoundTab({ vis }) {
   );
 }
 
+// ── Mortgage input field with comma formatting ────────────────────────────────
+function MortField({ label, value, set, ph, isSmall }) {
+  const [raw, setRaw] = React.useState(value);
+  const [focused, setFocused] = React.useState(false);
+
+  const handleChange = e => {
+    const v = e.target.value.replace(/[^0-9.]/g, "");
+    setRaw(v);
+    set(v);
+  };
+  const handleFocus = () => { setRaw(value); setFocused(true); };
+  const handleBlur  = () => {
+    setFocused(false);
+    const n = parseFloat(value);
+    if (!isNaN(n) && n >= 1000 && !isSmall) {
+      setRaw(n.toLocaleString("en-CA"));
+    } else {
+      setRaw(value);
+    }
+  };
+
+  // Sync if parent resets
+  React.useEffect(() => {
+    if (!focused) {
+      const n = parseFloat(value);
+      setRaw(!isNaN(n) && n >= 1000 && !isSmall ? n.toLocaleString("en-CA") : value);
+    }
+  }, [value, focused, isSmall]);
+
+  return (
+    <div style={{ marginBottom:14 }}>
+      <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
+      <input
+        type="text" inputMode="decimal"
+        value={raw} placeholder={ph}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+      />
+    </div>
+  );
+}
+
 // ── TAB 5: Mortgage Calculators ───────────────────────────────────────────────
 function MortgageTab({ vis }) {
   const [sub, setSub] = useState(0);
@@ -1143,20 +1187,9 @@ function MortgageTab({ vis }) {
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
           <div style={{ fontSize:14, fontWeight:700, marginBottom:16 }}>Calculate Mortgage Payments</div>
 
-          {[
-            { label:"Price of Property", val:price, set:setPrice, ph:"e.g. 650000" },
-            { label:"Interest Rate (%)",  val:rate,  set:setRate,  ph:"e.g. 4.5"   },
-            { label:"Amortization (Years)",val:amort,set:setAmort, ph:"e.g. 25"    },
-          ].map(({label,val,set,ph},i) => (
-            <div key={i} style={{ marginBottom:14 }}>
-              <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
-              <input type="number" value={val} onChange={e=>set(e.target.value)} placeholder={ph}
-                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
-              onFocus={e => { const raw = e.target.value.replace(/,/g,""); e.target.value = raw; }}
-              onBlur={e => { const n = parseFloat(e.target.value.replace(/,/g,"")); if (!isNaN(n) && n >= 1000) e.target.value = n.toLocaleString("en-CA"); }}
-            />
-            </div>
-          ))}
+          <MortField label="Price of Property"   value={price} set={setPrice} ph="e.g. 650,000"/>
+          <MortField label="Interest Rate (%)"    value={rate}  set={setRate}  ph="e.g. 4.5" isSmall/>
+          <MortField label="Amortization (Years)" value={amort} set={setAmort} ph="e.g. 25"  isSmall/>
 
           <div style={{ marginBottom:14 }}>
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>Down Payment</div>
@@ -1165,11 +1198,7 @@ function MortgageTab({ vis }) {
                 <button key={lbl} onClick={()=>setDownPct(val)} style={{ flex:1, background:downPct===val?C.yellow:C.surface2, color:downPct===val?"#000":C.textSecondary, border:`1px solid ${downPct===val?C.yellow:C.border2}`, borderRadius:7, padding:"7px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>{lbl}</button>
               ))}
             </div>
-            <input type="number" value={down} onChange={e=>setDown(e.target.value)} placeholder={downPct?"e.g. 20":"e.g. 130000"}
-              style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
-              onFocus={e => { const raw = e.target.value.replace(/,/g,""); e.target.value = raw; }}
-              onBlur={e => { const n = parseFloat(e.target.value.replace(/,/g,"")); if (!isNaN(n) && n >= 1000) e.target.value = n.toLocaleString("en-CA"); }}
-            />
+            <MortField label="" value={down} set={setDown} ph={downPct?"e.g. 20":"e.g. 130,000"} isSmall={downPct}/>
           </div>
 
           <div style={{ marginBottom:20 }}>
@@ -1313,19 +1342,8 @@ function MortgageTab({ vis }) {
             </div>
           </div>
 
-          {[
-            { label:"Purchase Price", val:price, set:setPrice, ph:"e.g. 650000" },
-            { label:"Municipal Assessment (optional)", val:assess, set:setAssess, ph:"Leave blank to use purchase price" },
-          ].map(({label,val,set,ph},i)=>(
-            <div key={i} style={{ marginBottom:14 }}>
-              <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
-              <input type="number" value={val} onChange={e=>set(e.target.value)} placeholder={ph}
-                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
-              onFocus={e => { const raw = e.target.value.replace(/,/g,""); e.target.value = raw; }}
-              onBlur={e => { const n = parseFloat(e.target.value.replace(/,/g,"")); if (!isNaN(n) && n >= 1000) e.target.value = n.toLocaleString("en-CA"); }}
-            />
-            </div>
-          ))}
+          <MortField label="Purchase Price"                  value={price}  set={setPrice}  ph="e.g. 650,000"/>
+          <MortField label="Municipal Assessment (optional)" value={assess} set={setAssess} ph="Leave blank to use purchase price"/>
 
           <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Calculate</button>
           <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>Estimates only — consult a notary for exact figures. Municipal surcharges (e.g. Montreal) not included.</div>
@@ -1387,20 +1405,9 @@ function MortgageTab({ vis }) {
           <div style={{ fontSize:14, fontWeight:700, marginBottom:4 }}>Calculate Borrowing Capacity</div>
           <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>How much can you borrow based on your payment budget?</div>
 
-          {[
-            { label:"Payment Amount", val:payment, set:setPayment, ph:"e.g. 2000" },
-            { label:"Annual Interest Rate (%)", val:rate, set:setRate, ph:"e.g. 4.5" },
-            { label:"Amortization (Years)", val:amort, set:setAmort, ph:"e.g. 25" },
-          ].map(({label,val,set,ph},i)=>(
-            <div key={i} style={{ marginBottom:14 }}>
-              <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>
-              <input type="number" value={val} onChange={e=>set(e.target.value)} placeholder={ph}
-                style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
-              onFocus={e => { const raw = e.target.value.replace(/,/g,""); e.target.value = raw; }}
-              onBlur={e => { const n = parseFloat(e.target.value.replace(/,/g,"")); if (!isNaN(n) && n >= 1000) e.target.value = n.toLocaleString("en-CA"); }}
-            />
-            </div>
-          ))}
+          <MortField label="Payment Amount"           value={payment} set={setPayment} ph="e.g. 2,000"/>
+          <MortField label="Annual Interest Rate (%)" value={rate}    set={setRate}    ph="e.g. 4.5" isSmall/>
+          <MortField label="Amortization (Years)"     value={amort}   set={setAmort}   ph="e.g. 25"  isSmall/>
 
           <div style={{ marginBottom:20 }}>
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Payment Frequency</div>
