@@ -1561,7 +1561,347 @@ function MortgageTab({ vis, liveCpi }) {
     );
   }
 
-  const SUBS = ["Mortgage Payment", "Transfer Tax", "Borrowing Capacity"];
+  // ── Sub-tab 4: Debt Load Impact Calculator ────────────────────────────────
+  function DebtImpact() {
+    const [income,    setIncome]    = useState("");
+    const [homePrice, setHomePrice] = useState("");
+    const [downPct,   setDownPct]   = useState("20");
+    const [mortRate,  setMortRate]  = useState("5.5");
+    const [amort,     setAmort]     = useState("25");
+    const [propTax,   setPropTax]   = useState("");
+    const [heat,      setHeat]      = useState("150");
+    const [condoFee,  setCondoFee]  = useState("0");
+    const [student,   setStudent]   = useState("0");
+    const [carLoan,   setCarLoan]   = useState("0");
+    const [ccBal,     setCcBal]     = useState("0");
+    const [locBal,    setLocBal]    = useState("0");
+    const [support,   setSupport]   = useState("0");
+    const [creditScore, setCreditScore] = useState("excellent");
+    const [result,    setResult]    = useState(null);
+
+    // Stress test: higher of contract rate + 2% or 5.25%
+    const stressRate = r => Math.max(r + 2, 5.25);
+
+    // Monthly mortgage payment
+    function mortPayment(principal, annualRate, amortYears, paymentsPerYear = 12) {
+      const r = annualRate / 100 / paymentsPerYear;
+      const n = amortYears * paymentsPerYear;
+      if (Math.abs(r) < 1e-10) return principal / n;
+      return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    }
+
+    // Reverse-solve: given max monthly PITI, what's the max loan?
+    function maxLoan(maxMonthlyPITI, taxMo, heatMo, condoMo, annualRate, amortYears) {
+      const availForMortgage = maxMonthlyPITI - taxMo - heatMo - condoMo / 2;
+      if (availForMortgage <= 0) return 0;
+      const r = annualRate / 100 / 12;
+      const n = amortYears * 12;
+      if (Math.abs(r) < 1e-10) return availForMortgage * n;
+      return availForMortgage * (Math.pow(1 + r, n) - 1) / (r * Math.pow(1 + r, n));
+    }
+
+    // Credit score capacity multiplier
+    const creditMult = { excellent: 1.0, good: 0.95, fair: 0.90 };
+    const creditLabel = { excellent: "Excellent (760+)", good: "Good (660–759)", fair: "Fair (<660)" };
+    const creditDelta = { excellent: "+0%", good: "−5%", fair: "−10%" };
+
+    function calc() {
+      const grossIncome  = parseFloat(income) || 0;
+      const r            = parseFloat(mortRate) || 5.5;
+      const sr           = stressRate(r);
+      const a            = parseFloat(amort) || 25;
+      const dp           = parseFloat(downPct) || 20;
+      const hp           = parseFloat(homePrice) || 0;
+      if (!grossIncome) return;
+
+      const monthlyIncome = grossIncome / 12;
+      const maxGDS        = monthlyIncome * 0.39;
+      const maxTDS        = monthlyIncome * 0.44;
+
+      // Monthly debt payments
+      const studentMo  = parseFloat(student)  || 0;
+      const carMo      = parseFloat(carLoan)  || 0;
+      const ccMo       = (parseFloat(ccBal)   || 0) * 0.03;
+      const locMo      = (parseFloat(locBal)  || 0) * 0.03;
+      const supportMo  = parseFloat(support)  || 0;
+      const totalDebt  = studentMo + carMo + ccMo + locMo + supportMo;
+
+      // Derive property tax and heat
+      const heatMo     = parseFloat(heat) || 150;
+      const condoMo    = parseFloat(condoFee) || 0;
+
+      // Compute scenarios
+      const mult = creditMult[creditScore] || 1.0;
+
+      function scenario(extraDebt, taxOverride) {
+        // GDS limit: PITI + ½ condo ≤ 39% gross
+        // TDS limit: PITI + ½ condo + all debt ≤ 44% gross
+        // Use stress-tested rate to find max loan
+        const loanGDS = maxLoan(maxGDS, taxOverride / 12, heatMo, condoMo, sr, a);
+        const loanTDS = maxLoan(maxTDS - extraDebt, taxOverride / 12, heatMo, condoMo, sr, a);
+        const loan    = Math.max(0, Math.min(loanGDS, loanTDS) * mult);
+        const price   = loan / (1 - dp / 100);
+        const tax     = price * 0.01; // fallback ~1%
+        const cmhc    = dp < 20 ? loan * (dp < 5 ? 0.04 : dp < 10 ? 0.031 : 0.028) : 0;
+        const pmt     = mortPayment(loan + cmhc, r, a);
+        const piti    = pmt + tax / 12 + heatMo + condoMo / 2;
+        const gds     = (piti / monthlyIncome) * 100;
+        const tds     = ((piti + extraDebt) / monthlyIncome) * 100;
+        return { price, loan, pmt, gds, tds, cmhc };
+      }
+
+      // Auto-derive property tax
+      const taxAnnual = parseFloat(propTax) || 0;
+
+      // Baseline: no existing debt
+      const base    = scenario(0, taxAnnual);
+      // With all existing debt
+      const withAll = scenario(totalDebt, taxAnnual);
+      // Per-debt marginal scenarios
+      const withStudent  = scenario(studentMo,             taxAnnual);
+      const withCar      = scenario(studentMo + carMo,     taxAnnual);
+      const withCC       = scenario(studentMo + carMo + ccMo, taxAnnual);
+      const withLoc      = scenario(studentMo + carMo + ccMo + locMo, taxAnnual);
+      const withSupport  = scenario(totalDebt,             taxAnnual);
+      const withCredit   = scenario(totalDebt,             taxAnnual); // already includes mult
+
+      // Debt payoff insight: paying off CC
+      const noCC    = scenario(studentMo + carMo + locMo + supportMo, taxAnnual);
+      const ccGain  = noCC.price - withAll.price;
+      const locGain = scenario(studentMo + carMo + ccMo + supportMo, taxAnnual).price - withAll.price;
+
+      setResult({
+        base, withAll, withStudent, withCar, withCC, withLoc, withSupport, withCredit,
+        totalDebt, ccMo, locMo, ccGain, locGain,
+        studentMo, carMo, supportMo,
+        dp, mult, creditScore, sr,
+        rows: [
+          { label: "Debt-free baseline",           price: base.price,       gds: base.gds,     tds: base.tds,     delta: null },
+          studentMo > 0 ? { label: `+ $${Math.round(studentMo).toLocaleString("en-CA")}/mo student loan`,  price: withStudent.price,  gds: withStudent.gds,  tds: withStudent.tds,  delta: withStudent.price - base.price } : null,
+          carMo > 0     ? { label: `+ $${Math.round(carMo).toLocaleString("en-CA")}/mo car loan`,          price: withCar.price,      gds: withCar.gds,      tds: withCar.tds,      delta: withCar.price - withStudent.price } : null,
+          ccMo > 0      ? { label: `+ 3% of $${Math.round(parseFloat(ccBal)||0).toLocaleString("en-CA")} CC balance`,  price: withCC.price,  gds: withCC.gds,   tds: withCC.tds,   delta: withCC.price - withCar.price } : null,
+          locMo > 0     ? { label: `+ 3% of $${Math.round(parseFloat(locBal)||0).toLocaleString("en-CA")} LOC balance`, price: withLoc.price, gds: withLoc.gds,  tds: withLoc.tds,  delta: withLoc.price - withCC.price } : null,
+          supportMo > 0 ? { label: `+ $${Math.round(supportMo).toLocaleString("en-CA")}/mo support payments`, price: withSupport.price, gds: withSupport.gds, tds: withSupport.tds, delta: withSupport.price - withLoc.price } : null,
+          creditScore !== "excellent" ? { label: `Credit score: ${creditLabel[creditScore]}`, price: withCredit.price, gds: withCredit.gds, tds: withCredit.tds, delta: null, isCreditRow: true } : null,
+        ].filter(Boolean),
+      });
+    }
+
+    const fmt  = v => "$" + Math.round(Math.max(v, 0)).toLocaleString("en-CA");
+    const fmtK = v => v >= 0 ? `+$${Math.round(v/1000)}K` : `−$${Math.round(Math.abs(v)/1000)}K`;
+
+    const inputStyle = { width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"9px 12px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" };
+    const labelStyle = { fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4, display:"block" };
+
+    function Row({ label, children }) {
+      return (
+        <div style={{ marginBottom:12 }}>
+          <label style={labelStyle}>{label}</label>
+          {children}
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
+        {/* ── Input panel ── */}
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+          <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Debt Load Impact Calculator</div>
+          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:20 }}>See how existing debt reduces your maximum home price using Canadian GDS/TDS rules</div>
+
+          {/* Income & Property */}
+          <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:12 }}>Income & Property</div>
+          <Row label="Gross Annual Income *">
+            <MortField label="" value={income} set={setIncome} ph="e.g. 120,000"/>
+          </Row>
+          <Row label="Down Payment (%)">
+            <MortField label="" value={downPct} set={setDownPct} ph="e.g. 20" isSmall/>
+          </Row>
+          <Row label="Home Price (optional — leave blank to auto-solve)">
+            <MortField label="" value={homePrice} set={setHomePrice} ph="Auto-calculated"/>
+          </Row>
+          <Row label="Mortgage Rate (%)">
+            <MortField label="" value={mortRate} set={setMortRate} ph="e.g. 5.5" isSmall/>
+          </Row>
+          <Row label="Amortization (Years)">
+            <div style={{ display:"flex", gap:6 }}>
+              {["25","30"].map(y => (
+                <button key={y} onClick={()=>setAmort(y)} style={{ flex:1, padding:"8px", borderRadius:7, border:`1px solid ${amort===y ? C.yellow : C.border2}`, background:amort===y ? C.yellow : C.surface2, color:amort===y ? "#000" : C.textSecondary, fontWeight:600, fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>{y} years</button>
+              ))}
+            </div>
+          </Row>
+          <Row label="Annual Property Tax (leave blank for ~1% estimate)">
+            <MortField label="" value={propTax} set={setPropTax} ph="e.g. 6,000"/>
+          </Row>
+          <Row label="Monthly Heat ($)">
+            <MortField label="" value={heat} set={setHeat} ph="e.g. 150" isSmall/>
+          </Row>
+          <Row label="Monthly Condo Fee ($)">
+            <MortField label="" value={condoFee} set={setCondoFee} ph="e.g. 0" isSmall/>
+          </Row>
+
+          {/* Existing Debt */}
+          <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Existing Monthly Debt Payments</div>
+          <Row label="Student Loans ($/mo)">
+            <MortField label="" value={student} set={setStudent} ph="e.g. 400" isSmall/>
+          </Row>
+          <Row label="Car Loans ($/mo)">
+            <MortField label="" value={carLoan} set={setCarLoan} ph="e.g. 500" isSmall/>
+          </Row>
+          <Row label="Credit Card Balance ($) — 3% used as min payment">
+            <MortField label="" value={ccBal} set={setCcBal} ph="e.g. 10,000"/>
+          </Row>
+          <Row label="Line of Credit Balance ($) — 3% used">
+            <MortField label="" value={locBal} set={setLocBal} ph="e.g. 5,000"/>
+          </Row>
+          <Row label="Child / Spousal Support ($/mo)">
+            <MortField label="" value={support} set={setSupport} ph="e.g. 0" isSmall/>
+          </Row>
+
+          {/* Credit Score */}
+          <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Credit Score</div>
+          <div style={{ display:"flex", flexDirection:"column", gap:6, marginBottom:20 }}>
+            {[["excellent","Excellent (760+)","Full capacity"],["good","Good (660–759)","−5% capacity"],["fair","Fair (<660)","−10% capacity"]].map(([val, label, note]) => (
+              <button key={val} onClick={() => setCreditScore(val)} style={{
+                display:"flex", alignItems:"center", justifyContent:"space-between",
+                padding:"10px 14px", borderRadius:10, border:`1px solid ${creditScore===val ? C.yellow : C.border2}`,
+                background: creditScore===val ? `${C.yellow}15` : C.surface2,
+                cursor:"pointer", fontFamily:"inherit", textAlign:"left",
+              }}>
+                <span style={{ fontSize:12, fontWeight:600, color: creditScore===val ? C.yellow : C.textPrimary }}>{label}</span>
+                <span style={{ fontSize:11, color:C.textMuted }}>{note}</span>
+              </button>
+            ))}
+          </div>
+
+          <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+            Calculate Impact
+          </button>
+          <div style={{ marginTop:10, fontSize:10, color:C.textMuted, lineHeight:1.6 }}>
+            Uses OSFI stress test (contract rate +2%, min 5.25%). GDS ≤39% · TDS ≤44%. For guidance only — consult a mortgage broker for qualification.
+          </div>
+        </div>
+
+        {/* ── Results panel ── */}
+        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+          {!result ? (
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:300 }}>
+              <div style={{ fontSize:32 }}>🏡</div>
+              <div style={{ fontSize:14, fontWeight:600, color:C.textPrimary, textAlign:"center" }}>Enter your income and debt to see your max home price</div>
+              <div style={{ fontSize:12, color:C.textMuted, textAlign:"center", maxWidth:260, lineHeight:1.6 }}>Each debt row shows exactly how much it reduces your buying power</div>
+            </div>
+          ) : (<>
+            {/* Hero */}
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
+                Maximum Home Price · Stress-Tested at {result.sr.toFixed(2)}%
+              </div>
+              <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:16 }}>
+                <div>
+                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>With all debts</div>
+                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(36px,7vw,60px)", fontWeight:700, color:C.yellow, lineHeight:1, letterSpacing:"-1px" }}>
+                    {fmt(result.withAll.price)}
+                  </div>
+                </div>
+                <div style={{ paddingBottom:6 }}>
+                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>Debt-free baseline</div>
+                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:28, fontWeight:700, color:C.green, letterSpacing:"-.5px" }}>
+                    {fmt(result.base.price)}
+                  </div>
+                </div>
+              </div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
+                {[
+                  { label:"Debt Cost",      val:fmt(result.base.price - result.withAll.price), color:C.red,    note:"Home price lost to debt" },
+                  { label:"GDS Ratio",      val:`${result.withAll.gds.toFixed(1)}%`,           color:result.withAll.gds > 39 ? C.red : C.green, note:"Limit: 39%" },
+                  { label:"TDS Ratio",      val:`${result.withAll.tds.toFixed(1)}%`,           color:result.withAll.tds > 44 ? C.red : C.green, note:"Limit: 44%" },
+                ].map((s,i) => (
+                  <div key={i} style={{ padding:"10px 0" }}>
+                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:3 }}>{s.label}</div>
+                    <div style={{ fontSize:18, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+                    <div style={{ fontSize:10, color:C.textMuted }}>{s.note}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Debt impact table */}
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
+              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Debt-by-Debt Breakdown</div>
+              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:16 }}>How each debt reduces your maximum home price</div>
+              <div style={{ overflowX:"auto" }}>
+                <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
+                  <thead>
+                    <tr style={{ borderBottom:`1px solid ${C.border2}` }}>
+                      {["Scenario","Max Home Price","GDS","TDS","Impact"].map((h,i) => (
+                        <th key={i} style={{ padding:"8px 10px", textAlign:i===0?"left":"right", fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", whiteSpace:"nowrap" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {result.rows.map((row, i) => (
+                      <tr key={i} style={{ borderBottom:`1px solid ${C.border}`, background: row.isCreditRow ? `${C.purple}08` : i===0 ? `${C.green}08` : "transparent" }}>
+                        <td style={{ padding:"10px 10px", color: i===0 ? C.green : row.isCreditRow ? C.purple : C.textPrimary, fontWeight: i===0 ? 700 : 500, fontSize:12 }}>{row.label}</td>
+                        <td style={{ padding:"10px 10px", textAlign:"right", fontFamily:"'Barlow Condensed',sans-serif", fontSize:15, fontWeight:700, color: i===0 ? C.green : C.textPrimary }}>{fmt(row.price)}</td>
+                        <td style={{ padding:"10px 10px", textAlign:"right", color:row.gds > 39 ? C.red : C.textSecondary, fontSize:11 }}>{row.gds.toFixed(1)}%</td>
+                        <td style={{ padding:"10px 10px", textAlign:"right", color:row.tds > 44 ? C.red : C.textSecondary, fontSize:11 }}>{row.tds.toFixed(1)}%</td>
+                        <td style={{ padding:"10px 10px", textAlign:"right", whiteSpace:"nowrap" }}>
+                          {row.delta != null ? (
+                            <span style={{ fontSize:12, fontWeight:700, color:C.red, background:C.redBg, borderRadius:5, padding:"2px 8px" }}>
+                              {fmtK(row.delta)}
+                            </span>
+                          ) : i===0 ? (
+                            <span style={{ fontSize:11, color:C.textMuted }}>baseline</span>
+                          ) : (
+                            <span style={{ fontSize:12, fontWeight:700, color:C.purple, background:`${C.purple}15`, borderRadius:5, padding:"2px 8px" }}>
+                              {fmtK(result.withCredit.price - result.withSupport.price)}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Debt payoff simulator */}
+            {(result.ccGain > 0 || result.locGain > 0) && (
+              <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
+                <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>💡 Debt Payoff Simulator</div>
+                <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>Paying off these debts before buying would unlock additional home price</div>
+                {[
+                  result.ccMo > 0  && { label:`Pay off $${Math.round(parseFloat(ccBal)||0).toLocaleString("en-CA")} credit card balance`, gain:result.ccGain,  color:C.green },
+                  result.locMo > 0 && { label:`Pay off $${Math.round(parseFloat(locBal)||0).toLocaleString("en-CA")} line of credit`,      gain:result.locGain, color:C.blue  },
+                ].filter(Boolean).map((item, i) => (
+                  <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 14px", background:C.surface2, borderRadius:10, marginBottom:8, gap:12, flexWrap:"wrap" }}>
+                    <span style={{ fontSize:12, color:C.textPrimary, flex:1 }}>{item.label}</span>
+                    <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:18, fontWeight:700, color:item.color, whiteSpace:"nowrap" }}>
+                      → +{fmt(item.gain)} buying power
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* CMHC note */}
+            {result.dp < 20 && (
+              <div style={{ background:`${C.yellow}10`, border:`1px solid ${C.yellow}30`, borderRadius:12, padding:"14px 16px" }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.yellow, marginBottom:4 }}>⚠ CMHC Insurance Required</div>
+                <div style={{ fontSize:11, color:C.textSecondary, lineHeight:1.6 }}>
+                  Down payment under 20% requires CMHC mortgage insurance. Premium added to your loan:
+                  {result.withAll.cmhc > 0 ? ` ${fmt(result.withAll.cmhc)} (${result.dp < 5 ? "4.00" : result.dp < 10 ? "3.10" : "2.80"}% of insured loan)` : " N/A at this home price."} Max insured home price is $1.5M.
+                </div>
+              </div>
+            )}
+          </>)}
+        </div>
+      </div>
+    );
+  }
+
+
+  const SUBS = ["Mortgage Payment", "Transfer Tax", "Borrowing Capacity", "Debt Impact"];
 
   return (
     <div className={`reveal ${vis?"in":""}`}>
@@ -1576,7 +1916,7 @@ function MortgageTab({ vis, liveCpi }) {
           }}>{s}</button>
         ))}
       </div>
-      {sub===0 ? <MortgagePayment/> : sub===1 ? <TransferTax/> : <BorrowingCapacity/>}
+      {sub===0 ? <MortgagePayment/> : sub===1 ? <TransferTax/> : sub===2 ? <BorrowingCapacity/> : <DebtImpact/>}
     </div>
   );
 }
