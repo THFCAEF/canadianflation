@@ -1592,6 +1592,7 @@ function DebtField({ label, value, set, ph, isSmall, section }) {
     const [propTax,   setPropTax]   = useState("");
     const [heat,      setHeat]      = useState("150");
     const [condoFee,  setCondoFee]  = useState("0");
+    const [isCondo,   setIsCondo]   = useState(false);
     const [student,   setStudent]   = useState("0");
     const [carLoan,   setCarLoan]   = useState("0");
     const [ccBal,     setCcBal]     = useState("0");
@@ -1733,8 +1734,23 @@ function DebtField({ label, value, set, ph, isSmall, section }) {
             </div>
           </div>
           <DebtField label="Annual Property Tax (leave blank for ~1% estimate)" value={propTax} set={setPropTax} ph="e.g. 6,000"/>
-          <DebtField label="Monthly Heat ($)" value={heat} set={setHeat} ph="e.g. 150" isSmall/>
-          <DebtField label="Monthly Condo Fee ($)" value={condoFee} set={setCondoFee} ph="e.g. 0" isSmall/>
+          <div style={{ marginBottom:12 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>Monthly Heat ($)</div>
+            <div style={{ fontSize:10, color:C.textMuted, marginBottom:6 }}>Lenders typically estimate $100–200/mo — adjust if you know your actual cost</div>
+            <DebtField label="" value={heat} set={setHeat} ph="e.g. 150" isSmall/>
+          </div>
+          <div style={{ marginBottom:12 }}>
+            <button onClick={() => { setIsCondo(v => !v); if (isCondo) setCondoFee("0"); }} style={{ display:"flex", alignItems:"center", gap:10, background:"none", border:`1px solid ${isCondo ? C.yellow : C.border2}`, borderRadius:8, padding:"9px 14px", cursor:"pointer", fontFamily:"inherit", width:"100%", textAlign:"left" }}>
+              <span style={{ width:16, height:16, borderRadius:4, border:`2px solid ${isCondo ? C.yellow : C.textMuted}`, background:isCondo ? C.yellow : "transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:10, color:"#000", fontWeight:700 }}>{isCondo ? "✓" : ""}</span>
+              <span style={{ fontSize:12, fontWeight:600, color:isCondo ? C.yellow : C.textSecondary }}>This is a condo / strata unit</span>
+            </button>
+            {isCondo && (
+              <div style={{ marginTop:8 }}>
+                <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>Half your condo fee counts toward GDS/TDS (lender rule)</div>
+                <DebtField label="" value={condoFee} set={setCondoFee} ph="e.g. 500" isSmall/>
+              </div>
+            )}
+          </div>
 
           {/* Existing Debt */}
           <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Existing Monthly Debt Payments</div>
