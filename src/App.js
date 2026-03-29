@@ -1561,6 +1561,27 @@ function MortgageTab({ vis, liveCpi }) {
     );
   }
 
+// ── Simple stateless field for DebtImpact (no internal state = no remount glitch) ──
+function DebtField({ label, value, set, ph, isSmall, section }) {
+  const handleChange = e => {
+    const raw = e.target.value.replace(/,/g, "");
+    if (raw !== "" && !/^\d*\.?\d*$/.test(raw)) return;
+    set(raw);
+  };
+  const displayVal = isSmall ? value : fmtInput(value);
+  return (
+    <div style={{ marginBottom:12 }}>
+      {label && <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>{label}</div>}
+      <input
+        type="text" inputMode="decimal"
+        value={displayVal} placeholder={ph}
+        onChange={handleChange}
+        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"9px 12px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+      />
+    </div>
+  );
+}
+
   // ── Sub-tab 4: Debt Load Impact Calculator ────────────────────────────────
   function DebtImpact() {
     const [income,    setIncome]    = useState("");
@@ -1690,18 +1711,6 @@ function MortgageTab({ vis, liveCpi }) {
     const fmt  = v => "$" + Math.round(Math.max(v, 0)).toLocaleString("en-CA");
     const fmtK = v => v >= 0 ? `+$${Math.round(v/1000)}K` : `−$${Math.round(Math.abs(v)/1000)}K`;
 
-    const inputStyle = { width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"9px 12px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" };
-    const labelStyle = { fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4, display:"block" };
-
-    function Row({ label, children }) {
-      return (
-        <div style={{ marginBottom:12 }}>
-          <label style={labelStyle}>{label}</label>
-          {children}
-        </div>
-      );
-    }
-
     return (
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
         {/* ── Input panel ── */}
@@ -1711,52 +1720,29 @@ function MortgageTab({ vis, liveCpi }) {
 
           {/* Income & Property */}
           <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:12 }}>Income & Property</div>
-          <Row label="Gross Annual Income *">
-            <MortField label="" value={income} set={setIncome} ph="e.g. 120,000"/>
-          </Row>
-          <Row label="Down Payment (%)">
-            <MortField label="" value={downPct} set={setDownPct} ph="e.g. 20" isSmall/>
-          </Row>
-          <Row label="Home Price (optional — leave blank to auto-solve)">
-            <MortField label="" value={homePrice} set={setHomePrice} ph="Auto-calculated"/>
-          </Row>
-          <Row label="Mortgage Rate (%)">
-            <MortField label="" value={mortRate} set={setMortRate} ph="e.g. 5.5" isSmall/>
-          </Row>
-          <Row label="Amortization (Years)">
+          <DebtField label="Gross Annual Income *" value={income} set={setIncome} ph="e.g. 120,000"/>
+          <DebtField label="Down Payment (%)" value={downPct} set={setDownPct} ph="e.g. 20" isSmall/>
+          <DebtField label="Home Price (optional — leave blank to auto-solve)" value={homePrice} set={setHomePrice} ph="Auto-calculated"/>
+          <DebtField label="Mortgage Rate (%)" value={mortRate} set={setMortRate} ph="e.g. 5.5" isSmall/>
+          <div style={{ marginBottom:12 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>Amortization (Years)</div>
             <div style={{ display:"flex", gap:6 }}>
               {["25","30"].map(y => (
                 <button key={y} onClick={()=>setAmort(y)} style={{ flex:1, padding:"8px", borderRadius:7, border:`1px solid ${amort===y ? C.yellow : C.border2}`, background:amort===y ? C.yellow : C.surface2, color:amort===y ? "#000" : C.textSecondary, fontWeight:600, fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>{y} years</button>
               ))}
             </div>
-          </Row>
-          <Row label="Annual Property Tax (leave blank for ~1% estimate)">
-            <MortField label="" value={propTax} set={setPropTax} ph="e.g. 6,000"/>
-          </Row>
-          <Row label="Monthly Heat ($)">
-            <MortField label="" value={heat} set={setHeat} ph="e.g. 150" isSmall/>
-          </Row>
-          <Row label="Monthly Condo Fee ($)">
-            <MortField label="" value={condoFee} set={setCondoFee} ph="e.g. 0" isSmall/>
-          </Row>
+          </div>
+          <DebtField label="Annual Property Tax (leave blank for ~1% estimate)" value={propTax} set={setPropTax} ph="e.g. 6,000"/>
+          <DebtField label="Monthly Heat ($)" value={heat} set={setHeat} ph="e.g. 150" isSmall/>
+          <DebtField label="Monthly Condo Fee ($)" value={condoFee} set={setCondoFee} ph="e.g. 0" isSmall/>
 
           {/* Existing Debt */}
           <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Existing Monthly Debt Payments</div>
-          <Row label="Student Loans ($/mo)">
-            <MortField label="" value={student} set={setStudent} ph="e.g. 400" isSmall/>
-          </Row>
-          <Row label="Car Loans ($/mo)">
-            <MortField label="" value={carLoan} set={setCarLoan} ph="e.g. 500" isSmall/>
-          </Row>
-          <Row label="Credit Card Balance ($) — 3% used as min payment">
-            <MortField label="" value={ccBal} set={setCcBal} ph="e.g. 10,000"/>
-          </Row>
-          <Row label="Line of Credit Balance ($) — 3% used">
-            <MortField label="" value={locBal} set={setLocBal} ph="e.g. 5,000"/>
-          </Row>
-          <Row label="Child / Spousal Support ($/mo)">
-            <MortField label="" value={support} set={setSupport} ph="e.g. 0" isSmall/>
-          </Row>
+          <DebtField label="Student Loans ($/mo)" value={student} set={setStudent} ph="e.g. 400" isSmall/>
+          <DebtField label="Car Loans ($/mo)" value={carLoan} set={setCarLoan} ph="e.g. 500" isSmall/>
+          <DebtField label="Credit Card Balance ($) — 3% used as min payment" value={ccBal} set={setCcBal} ph="e.g. 10,000"/>
+          <DebtField label="Line of Credit Balance ($) — 3% used" value={locBal} set={setLocBal} ph="e.g. 5,000"/>
+          <DebtField label="Child / Spousal Support ($/mo)" value={support} set={setSupport} ph="e.g. 0" isSmall/>
 
           {/* Credit Score */}
           <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Credit Score</div>
