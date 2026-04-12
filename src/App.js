@@ -372,6 +372,10 @@ function HomepageHero({ navigate, cur }) {
               <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:28, fontWeight:700, color:rateColor, letterSpacing:"-1px", lineHeight:1 }}>{rate.toFixed(1)}%</span>
               <span style={{ fontSize:11, color:C.textMuted }}>year-over-year · {cur.date}</span>
             </div>
+            <div style={{ fontSize:10, color:C.textMuted, display:"flex", alignItems:"center", gap:5 }}>
+              <span style={{ display:"inline-block", width:5, height:5, borderRadius:"50%", background:C.green }}></span>
+              March data releases April 20
+            </div>
           </div>
         )}
 
@@ -455,6 +459,10 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
         <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:12 }}>
           Canada · All-Items CPI · Year-over-Year · {cur?.date}
         </div>
+        <div style={{ fontSize:10, fontWeight:600, color:C.textMuted, marginBottom:12, display:"flex", alignItems:"center", gap:6 }}>
+          <span style={{ display:"inline-block", width:6, height:6, borderRadius:"50%", background:C.green }}></span>
+          Live StatCan data · March 2026 figures release April 20
+        </div>
         <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:20 }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(60px,12vw,96px)", fontWeight:700, lineHeight:1, letterSpacing:"-2px", color:valColor(cur?.value ?? 0) }}>
             {cur?.value.toFixed(1)}%
@@ -492,7 +500,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"22px 20px 16px", marginBottom:16, transitionDelay:".06s" }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:10 }}>
         <div>
-          <div style={{ fontSize:14, fontWeight:700 }}>Inflation History</div>
+          <h2 style={{ fontSize:14, fontWeight:700, margin:0 }}>Inflation History</h2>
           <div style={{ fontSize:10, color:C.textSecondary, marginTop:2 }}>Year-over-year · {chart[0]?.date} – {chart[chart.length-1]?.date}</div>
         </div>
         <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
@@ -946,6 +954,7 @@ function compoundFV(P, monthlyPmt, annualRate, n, years) {
 }
 
 function CompoundTab({ vis, liveCpi }) {
+  const resultsRef = React.useRef(null);
   const [principal, setPrincipal] = useState("");
   const [monthly,   setMonthly]   = useState("");
   const [years,     setYears]     = useState("");
@@ -997,6 +1006,7 @@ function CompoundTab({ vis, liveCpi }) {
     });
 
     setResult({ base, low, high, totalContrib, interest, realBase, realInterest, realRateAnn, inf, chartData });
+    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior:"smooth", block:"start" }), 100);
   }
 
   const fmt = v => "$" + Math.round(v).toLocaleString("en-CA");
@@ -1042,7 +1052,7 @@ function CompoundTab({ vis, liveCpi }) {
         </div>
 
         {/* Results panel */}
-        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+        <div ref={resultsRef} style={{ display:"flex", flexDirection:"column", gap:14 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:12, minHeight:200 }}>
               <div style={{ fontSize:28 }}>📈</div>
@@ -1182,6 +1192,7 @@ function MortgageTab({ vis, liveCpi }) {
 
   // ── Sub-tab 1: Mortgage Payment Calculator ─────────────────────────────────
   function MortgagePayment() {
+    const mortResultsRef = React.useRef(null);
     const [price,     setPrice]     = useState("");
     const [down,      setDown]      = useState("");
     const [downPct,   setDownPct]   = useState(true); // true = %, false = $
@@ -1246,6 +1257,7 @@ function MortgageTab({ vis, liveCpi }) {
         });
       }
       setResult({ payment, totalPaid, totalInt, principal, downAmt, cmhc, chartData, inf, realTotalPaid, realTotalInt });
+      setTimeout(() => mortResultsRef.current?.scrollIntoView({ behavior:"smooth", block:"start" }), 100);
     }
 
     const fmt  = v => "$" + Math.round(v).toLocaleString("en-CA");
@@ -1283,7 +1295,7 @@ function MortgageTab({ vis, liveCpi }) {
           <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Calculate</button>
         </div>
 
-        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+        <div ref={mortResultsRef} style={{ display:"flex", flexDirection:"column", gap:14 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12 }}>
               <div style={{ fontSize:28 }}>🏠</div>
@@ -1584,6 +1596,7 @@ function DebtField({ label, value, set, ph, isSmall, section }) {
 
   // ── Sub-tab 4: Debt Load Impact Calculator ────────────────────────────────
   function DebtImpact() {
+    const debtResultsRef = React.useRef(null);
     const [income,    setIncome]    = useState("");
     const [homePrice, setHomePrice] = useState("");
     const [downPct,   setDownPct]   = useState("20");
@@ -1692,6 +1705,7 @@ function DebtField({ label, value, set, ph, isSmall, section }) {
       const ccGain  = noCC.price - withAll.price;
       const locGain = scenario(studentMo + carMo + ccMo + supportMo, taxAnnual).price - withAll.price;
 
+      setTimeout(() => debtResultsRef.current?.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
       setResult({
         base, withAll, withStudent, withCar, withCC, withLoc, withSupport, withCredit,
         totalDebt, ccMo, locMo, ccGain, locGain,
@@ -1735,18 +1749,18 @@ function DebtField({ label, value, set, ph, isSmall, section }) {
           </div>
           <DebtField label="Annual Property Tax (leave blank for ~1% estimate)" value={propTax} set={setPropTax} ph="e.g. 6,000"/>
           <div style={{ marginBottom:12 }}>
-            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>Monthly Heat ($)</div>
-            <div style={{ fontSize:10, color:C.textMuted, marginBottom:6 }}>Lenders typically estimate $100–200/mo — adjust if you know your actual cost</div>
+            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>Monthly Energy Bill ($)</div>
+            <div style={{ fontSize:10, color:C.textMuted, marginBottom:6 }}>Gas, electricity, heating oil — lenders use $100–200/mo if unknown</div>
             <DebtField label="" value={heat} set={setHeat} ph="e.g. 150" isSmall/>
           </div>
           <div style={{ marginBottom:12 }}>
             <button onClick={() => { setIsCondo(v => !v); if (isCondo) setCondoFee("0"); }} style={{ display:"flex", alignItems:"center", gap:10, background:"none", border:`1px solid ${isCondo ? C.yellow : C.border2}`, borderRadius:8, padding:"9px 14px", cursor:"pointer", fontFamily:"inherit", width:"100%", textAlign:"left" }}>
               <span style={{ width:16, height:16, borderRadius:4, border:`2px solid ${isCondo ? C.yellow : C.textMuted}`, background:isCondo ? C.yellow : "transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:10, color:"#000", fontWeight:700 }}>{isCondo ? "✓" : ""}</span>
-              <span style={{ fontSize:12, fontWeight:600, color:isCondo ? C.yellow : C.textSecondary }}>This is a condo / strata unit</span>
+              <span style={{ fontSize:12, fontWeight:600, color:isCondo ? C.yellow : C.textSecondary }}>I'm buying a condo or apartment</span>
             </button>
             {isCondo && (
               <div style={{ marginTop:8 }}>
-                <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>Half your condo fee counts toward GDS/TDS (lender rule)</div>
+                <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>Lenders count half your monthly fee toward your debt ratios</div>
                 <DebtField label="" value={condoFee} set={setCondoFee} ph="e.g. 500" isSmall/>
               </div>
             )}
@@ -1785,7 +1799,7 @@ function DebtField({ label, value, set, ph, isSmall, section }) {
         </div>
 
         {/* ── Results panel ── */}
-        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+        <div ref={debtResultsRef} style={{ display:"flex", flexDirection:"column", gap:14 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:300 }}>
               <div style={{ fontSize:32 }}>🏡</div>
@@ -1907,7 +1921,7 @@ function DebtField({ label, value, set, ph, isSmall, section }) {
 
   return (
     <div className={`reveal ${vis?"in":""}`}>
-      <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap" }}>
+      <div style={{ display:"flex", gap:8, marginBottom:20, overflowX:"auto", WebkitOverflowScrolling:"touch", paddingBottom:4, scrollbarWidth:"none" }}>
         {SUBS.map((s,i) => (
           <button key={i} onClick={()=>setSub(i)} style={{
             background: sub===i ? C.surface2 : "transparent",
@@ -1915,6 +1929,7 @@ function DebtField({ label, value, set, ph, isSmall, section }) {
             color:      sub===i ? C.textPrimary : C.textMuted,
             borderRadius:10, padding:"8px 18px", fontSize:12, fontWeight:600,
             cursor:"pointer", fontFamily:"inherit", transition:"all .15s",
+            whiteSpace:"nowrap", flexShrink:0,
           }}>{s}</button>
         ))}
       </div>
@@ -2092,6 +2107,7 @@ export default function App() {
         .rb:hover:not(.on){border-color:${C.border2};color:${C.textPrimary}}
         @keyframes spin{to{transform:rotate(360deg)}}
         .spin{border:2px solid ${C.border};border-top-color:${C.yellow};border-radius:50%;animation:spin .7s linear infinite}
+        .sub-scroll::-webkit-scrollbar{display:none}
         .nav-drop{position:absolute;top:calc(100% + 8px);left:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
         .nav-drop-item{display:block;width:100%;padding:10px 14px;border-radius:8px;border:none;background:none;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s}
         .nav-drop-item:hover{background:${C.surface2}}
