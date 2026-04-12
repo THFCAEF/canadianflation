@@ -2,40 +2,110 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <!-- Red dollar sign favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='32' fill='%23E05A4A'/><text x='32' y='46' font-size='42' font-weight='bold' text-anchor='middle' font-family='Arial' fill='%23fff'>$</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <!-- NO manifest link — prevents PWA install prompt -->
 
-    <title>Canadian Inflation Tracker — Live CPI Data Since 1914 | Canadianflation</title>
-    <meta name="description" content="Track Canadian inflation in real time. Live CPI data by category and province, purchasing power since 1914, Taylor Rule analysis, and financial calculators. Sourced from Statistics Canada." />
-    <meta name="keywords" content="Canadian inflation, CPI Canada, inflation rate Canada, purchasing power Canada, Bank of Canada rate, mortgage calculator Canada" />
+    <title>Canadianflation — Canada's Independent Inflation Tracker</title>
+    <meta name="description" content="Track Canadian inflation in real time. Live CPI data by category and province, purchasing power history, Taylor Rule analysis, and free Canadian financial calculators. Sourced from Statistics Canada." />
+    <meta name="keywords" content="Canadian inflation rate, CPI Canada 2024, inflation calculator Canada, purchasing power Canada, mortgage calculator Canada, Bank of Canada rate, compound interest calculator Canada" />
     <link rel="canonical" href="https://www.canadianflation.ca/" />
 
-    <!-- Open Graph — controls how link looks when shared on iMessage, WhatsApp, Messenger, Slack, etc. -->
+    <!-- Open Graph -->
     <meta property="og:type"        content="website" />
     <meta property="og:site_name"   content="Canadianflation" />
     <meta property="og:url"         content="https://www.canadianflation.ca/" />
-    <meta property="og:title"       content="Canadianflation — Live Canadian Inflation Tracker" />
-    <meta property="og:description" content="Real-time Canadian CPI data from Statistics Canada. Track inflation by category and province, see how your dollar has lost value since 1914, and use our free mortgage and interest calculators." />
+    <meta property="og:title"       content="Canadianflation — Canada's Independent Inflation Tracker" />
+    <meta property="og:description" content="Real-time Canadian CPI data from Statistics Canada. Track inflation by category and province, see how your dollar has lost value over time, and use our free mortgage and interest calculators." />
     <meta property="og:image"       content="https://www.canadianflation.ca/social-preview.png" />
     <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt"    content="Canadianflation — Canadian CPI Tracker showing live inflation data" />
+    <meta property="og:image:alt"    content="Canadianflation — Canadian CPI Tracker dashboard" />
     <meta property="og:locale"       content="en_CA" />
 
-    <!-- Twitter / X Card -->
+    <!-- Twitter / X -->
     <meta name="twitter:card"        content="summary_large_image" />
-    <meta name="twitter:site"        content="@canadianflation" />
-    <meta name="twitter:title"       content="Canadianflation — Live Canadian Inflation Tracker" />
-    <meta name="twitter:description" content="Real-time Canadian CPI data from Statistics Canada. Track inflation by category, province, and see purchasing power since 1914." />
+    <meta name="twitter:title"       content="Canadianflation — Canada's Independent Inflation Tracker" />
+    <meta name="twitter:description" content="Real-time Canadian CPI data from Statistics Canada. Track inflation by category, province, and see purchasing power over time." />
     <meta name="twitter:image"       content="https://www.canadianflation.ca/social-preview.png" />
     <meta name="twitter:image:alt"   content="Canadianflation — Canadian CPI Tracker" />
 
     <!-- Security -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://www.canadianflation.ca/#website",
+          "url": "https://www.canadianflation.ca/",
+          "name": "Canadianflation",
+          "description": "Canada's independent inflation tracker — live CPI data from Statistics Canada and the Bank of Canada.",
+          "inLanguage": "en-CA",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Canadianflation",
+            "url": "https://www.canadianflation.ca/"
+          }
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://www.canadianflation.ca/#app",
+          "name": "Canadianflation",
+          "url": "https://www.canadianflation.ca/",
+          "applicationCategory": "FinanceApplication",
+          "operatingSystem": "Any",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "CAD"
+          },
+          "description": "Free Canadian inflation tracker and financial calculator suite. Live CPI data, purchasing power history, mortgage calculator, compound interest calculator, and debt impact calculator.",
+          "featureList": [
+            "Live Canadian CPI inflation rates by category and province",
+            "Canadian dollar purchasing power history",
+            "Taylor Rule vs Bank of Canada rate comparison",
+            "Canadian mortgage payment calculator with stress test",
+            "Compound interest calculator with inflation adjustment",
+            "Debt load impact calculator (GDS/TDS)"
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is the current inflation rate in Canada?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Canada's current inflation rate (CPI) is sourced live from Statistics Canada table 18-10-0004-01. StatCan releases monthly CPI data approximately 3 weeks after the reference month."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How much has the Canadian dollar lost to inflation?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Canadianflation's purchasing power calculator shows the real value of the Canadian dollar over time using Statistics Canada's official CPI index going back decades."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does the Canadian mortgage stress test work?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The OSFI mortgage stress test requires qualifying at the higher of your contract rate plus 2%, or 5.25%. Our mortgage calculator applies this automatically."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
