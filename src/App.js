@@ -417,29 +417,6 @@ function HomepageHero({ navigate, cur }) {
           </button>
         ))}
       </div>
-
-      {/* How it works */}
-      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 28px", marginTop:14 }}>
-        <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, fontWeight:700, color:C.white, marginBottom:10, letterSpacing:"-.3px" }}>
-          How it works
-        </h2>
-        <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, maxWidth:680, margin:0 }}>
-          Canadianflation is a free Canadian inflation calculator that fetches live data directly from
-          Statistics Canada's Web Data Service (table 18-10-0004-01) and the Bank of Canada Valet API on every page load —
-          similar to the Bank of Canada inflation calculator, but with a broader set of tools built for everyday Canadians.
-          Every number you see traces to an official government source, updated monthly when Statistics Canada publishes new CPI data.
-        </p>
-        <div style={{ display:"flex", gap:16, marginTop:14, flexWrap:"wrap" }}>
-          <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810000401" target="_blank" rel="noopener noreferrer"
-            style={{ fontSize:11, color:C.textMuted, textDecoration:"none", display:"flex", alignItems:"center", gap:5 }}>
-            <span style={{ color:C.green }}>↗</span> Statistics Canada — Table 18-10-0004-01
-          </a>
-          <a href="https://www.bankofcanada.ca/valet/docs" target="_blank" rel="noopener noreferrer"
-            style={{ fontSize:11, color:C.textMuted, textDecoration:"none", display:"flex", alignItems:"center", gap:5 }}>
-            <span style={{ color:C.green }}>↗</span> Bank of Canada Valet API
-          </a>
-        </div>
-      </div>
     </div>
   );
 }
@@ -544,7 +521,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={50}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
           <Tooltip content={<SingleTip suffix="%" note={v=>`${v>BOC_TARGET?`+${(v-BOC_TARGET).toFixed(1)}pp above`:`${(BOC_TARGET-v).toFixed(1)}pp below`} BoC target`}/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3" label={{ value:"BoC 2%", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
@@ -603,7 +580,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={catHistory} margin={{ top:4, right:8, left:-24, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
           <Tooltip content={<MultiTip/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
@@ -625,7 +602,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={provHistory} margin={{ top:4, right:8, left:-24, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
           <Tooltip content={<MultiTip/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
@@ -714,7 +691,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={50}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`$${v.toFixed(2)}`} domain={["auto","auto"]}/>
           <Tooltip content={<SingleTip prefix="$" suffix="" note={v=>`Lost ${((1-v)*100).toFixed(1)}¢ of every dollar`}/>}/>
           <ReferenceLine y={1} stroke={C.border2} strokeDasharray="4 3" label={{ value:"$1.00 baseline", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
@@ -768,7 +745,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={catCumHistory} margin={{ top:4, right:8, left:-10, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
           <Tooltip content={<MultiTip suffix="%"/>}/>
           <ReferenceLine y={0} stroke={C.border}/>
@@ -786,7 +763,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={provCumHistory} margin={{ top:4, right:8, left:-10, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
           <Tooltip content={<MultiTip suffix="%"/>}/>
           {PROV_KEYS.map(k => activeProvs[k] ? <Line key={k} type="monotone" dataKey={k} stroke={PROV_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{ r:3, stroke:C.surface, strokeWidth:2 }}/> : null)}
@@ -850,7 +827,7 @@ function TaylorTab({ data, vis, rateData }) {
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={sliced} margin={{ top:4, right:8, left:-20, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={50}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
           <Tooltip content={<MultiTip suffix="%"/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3" label={{ value:"2% target", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
@@ -877,7 +854,7 @@ function TaylorTab({ data, vis, rateData }) {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-            <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={50}/>
+            <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti}/>
             <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}pp`}/>
             <Tooltip content={<SingleTip suffix="pp" note={v => v > 0 ? "BoC tighter than Taylor suggests" : "BoC easier than Taylor suggests"}/>}/>
             <ReferenceLine y={0} stroke={C.border2} strokeDasharray="4 3"/>
@@ -1172,7 +1149,7 @@ function CompoundTab({ vis, liveCpi }) {
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v => "$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={(v,n) => [fmt(v), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
                   <Line type="monotone" dataKey="Nominal Value"  stroke={C.green}  strokeWidth={2.5} dot={false} activeDot={{ r:4 }}/>
@@ -1394,7 +1371,7 @@ function MortgageTab({ vis, liveCpi }) {
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9 }} axisLine={{ stroke:C.border }} tickLine={false}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
                   <Line type="monotone" dataKey="Balance"      stroke={C.blue}  strokeWidth={2} dot={false} name="Nominal Balance"/>
@@ -1961,499 +1938,6 @@ function DebtField({ label, value, set, ph, isSmall, section }) {
   );
 }
 
-// ── Retirement Calculator ─────────────────────────────────────────────────────
-function RetirementTab({ vis, liveCpi }) {
-  const retResultsRef = React.useRef(null);
-  const [savings,   setSavings]   = useState("");
-  const [monthly,   setMonthly]   = useState("");
-  const [retReturn, setRetReturn] = useState("5");
-  const [inflRate,  setInflRate]  = useState("");
-  const [mode,      setMode]      = useState("howlong"); // "howlong" | "howmuch"
-  const [targetYrs, setTargetYrs] = useState("25");
-  const [result,    setResult]    = useState(null);
-
-  useEffect(() => {
-    if (liveCpi != null && inflRate === "") setInflRate(liveCpi.toFixed(1));
-  }, [liveCpi]); // eslint-disable-line
-
-  const fmt  = v => "$" + Math.round(Math.max(v,0)).toLocaleString("en-CA");
-  const fmtK = v => "$" + Math.round(v/1000) + "K";
-
-  function calculate() {
-    const S   = parseFloat(savings)   || 0;
-    const W   = parseFloat(monthly)   || 0;
-    const r   = parseFloat(retReturn) / 100 / 12; // monthly nominal
-    const inf = parseFloat(inflRate)  / 100 / 12; // monthly inflation
-    if (!S || !W) return;
-
-    // Real monthly return (Fisher)
-    const rReal = (1 + r) / (1 + inf) - 1;
-
-    if (mode === "howlong") {
-      // How many months until money runs out?
-      // Nominal: simple depletion
-      let balNom = S, balReal = S, mo = 0;
-      const MAX = 100 * 12;
-      const chartData = [];
-      while (balNom > 0 && mo < MAX) {
-        balNom  = balNom  * (1 + r)     - W;
-        balReal = balReal * (1 + rReal)  - W;
-        mo++;
-        if (mo % 12 === 0) {
-          chartData.push({
-            year:         `Yr ${mo/12}`,
-            "Nominal":    +Math.max(balNom,  0).toFixed(0),
-            "Real (today's $)": +Math.max(balReal, 0).toFixed(0),
-          });
-        }
-        if (balNom <= 0 && balReal <= 0) break;
-      }
-      const nomYears  = balNom  > 0 ? "Never runs out" : `${(mo/12).toFixed(1)} years`;
-      const realYears = balReal > 0 ? "Never runs out" : `${(mo/12).toFixed(1)} years`;
-      // Find real depletion
-      let balR2 = S, moR = 0;
-      while (balR2 > 0 && moR < MAX) { balR2 = balR2*(1+rReal)-W; moR++; }
-      const realYearsNum = balR2 > 0 ? null : moR/12;
-      let balN2 = S, moN = 0;
-      while (balN2 > 0 && moN < MAX) { balN2 = balN2*(1+r)-W; moN++; }
-      const nomYearsNum = balN2 > 0 ? null : moN/12;
-
-      setTimeout(() => retResultsRef.current?.scrollIntoView({ behavior:"smooth", block:"start" }), 100);
-      setResult({ mode, nomYears, realYears, nomYearsNum, realYearsNum, chartData, S, W, inf, r });
-
-    } else {
-      // How much can I withdraw monthly for N years?
-      const n = parseFloat(targetYrs) * 12;
-      // Nominal max withdrawal (PV annuity solve)
-      const maxNom  = Math.abs(r)     < 1e-10 ? S/n : S * r     / (1 - Math.pow(1+r,    -n));
-      const maxReal = Math.abs(rReal) < 1e-10 ? S/n : S * rReal / (1 - Math.pow(1+rReal,-n));
-      // Chart: balance over years at max nominal withdrawal
-      let bal = S;
-      const chartData = [];
-      for (let yr = 1; yr <= parseFloat(targetYrs); yr++) {
-        for (let m = 0; m < 12; m++) bal = bal*(1+r) - maxNom;
-        chartData.push({ year:`Yr ${yr}`, "Balance":+Math.max(bal,0).toFixed(0) });
-      }
-      setTimeout(() => retResultsRef.current?.scrollIntoView({ behavior:"smooth", block:"start" }), 100);
-      setResult({ mode, maxNom, maxReal, targetYrs, chartData, S, inf });
-    }
-  }
-
-  const EXAMPLES = [
-    { label:"$500K · withdraw $2,500/mo", savings:"500000", monthly:"2500" },
-    { label:"$1M · withdraw $4,000/mo",   savings:"1000000",monthly:"4000" },
-    { label:"$250K · withdraw $1,500/mo", savings:"250000", monthly:"1500" },
-  ];
-
-  return (
-    <div className={`reveal ${vis?"in":""}`}>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>Retirement Calculator</div>
-          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>See how long your savings will last — adjusted for inflation</div>
-
-          {/* Mode toggle */}
-          <div style={{ display:"flex", background:C.surface2, borderRadius:10, padding:3, border:`1px solid ${C.border}`, marginBottom:20 }}>
-            {[["howlong","How long will it last?"],["howmuch","How much can I withdraw?"]].map(([val,lbl])=>(
-              <button key={val} onClick={()=>setMode(val)} style={{ flex:1, padding:"8px 10px", borderRadius:8, border:"none", fontFamily:"inherit", fontSize:11, fontWeight:600, cursor:"pointer", transition:"all .15s", background:mode===val?C.yellow:"transparent", color:mode===val?"#000":C.textSecondary }}>{lbl}</button>
-            ))}
-          </div>
-
-          <CalcField label="Total Retirement Savings ($)" value={savings} onChange={setSavings} placeholder="e.g. 500,000"/>
-          <CalcField label="Monthly Withdrawal ($)" value={monthly} onChange={setMonthly} placeholder="e.g. 2,500" hint="How much you plan to take out each month"/>
-          <CalcField label="Expected Annual Return (%)" value={retReturn} onChange={setRetReturn} placeholder="e.g. 5" hint="Conservative: 4–5% for balanced portfolio" isRate/>
-          <CalcField label="Assumed Inflation Rate (%)" value={inflRate} onChange={setInflRate} placeholder="e.g. 2.1" hint="Pre-filled from live CPI — adjust to model scenarios" isRate/>
-          {mode === "howmuch" && (
-            <CalcField label="Target Retirement Length (Years)" value={targetYrs} onChange={setTargetYrs} placeholder="e.g. 25" isRate/>
-          )}
-
-          {/* Quick examples */}
-          <div style={{ marginBottom:16 }}>
-            <div style={{ fontSize:11, color:C.textMuted, marginBottom:8 }}>Quick examples:</div>
-            <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-              {EXAMPLES.map((ex,i)=>(
-                <button key={i} onClick={()=>{ setSavings(ex.savings); setMonthly(ex.monthly); }} style={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"7px 12px", fontSize:11, color:C.textSecondary, cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
-                  ↗ {ex.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <button onClick={calculate} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
-            Calculate
-          </button>
-          <div style={{ marginTop:10, fontSize:10, color:C.textMuted, lineHeight:1.6 }}>
-            Source: Statistics Canada CPI (live) · For planning purposes only — not financial advice.
-          </div>
-        </div>
-
-        <div ref={retResultsRef} style={{ display:"flex", flexDirection:"column", gap:14 }}>
-          {!result ? (
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:280 }}>
-              <div style={{ fontSize:32 }}>🏖️</div>
-              <div style={{ fontSize:14, fontWeight:600, color:C.textPrimary, textAlign:"center" }}>Enter your savings and withdrawal to see your retirement runway</div>
-              <div style={{ fontSize:12, color:C.textMuted, textAlign:"center", maxWidth:260, lineHeight:1.6 }}>The inflation-adjusted view shows the real purchasing power of your withdrawals over time</div>
-            </div>
-          ) : result.mode === "howlong" ? (<>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>Your money lasts</div>
-              <div style={{ display:"flex", gap:24, flexWrap:"wrap", marginBottom:16 }}>
-                <div>
-                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>Nominal</div>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(32px,6vw,52px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px" }}>
-                    {result.nomYears}
-                  </div>
-                </div>
-                <div>
-                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>Real (inflation-adjusted)</div>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(32px,6vw,52px)", fontWeight:700, color:C.blue, lineHeight:1, letterSpacing:"-1px" }}>
-                    {result.realYears}
-                  </div>
-                </div>
-              </div>
-              {result.nomYearsNum && result.realYearsNum && (
-                <div style={{ fontSize:12, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 14px", lineHeight:1.6 }}>
-                  💡 Inflation shortens your runway by approximately <strong style={{ color:C.yellow }}>{(result.nomYearsNum - result.realYearsNum).toFixed(1)} years</strong> — your withdrawals lose purchasing power over time.
-                </div>
-              )}
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, borderTop:`1px solid ${C.border}`, paddingTop:16, marginTop:16 }}>
-                {[
-                  { label:"Starting Savings",   val:fmt(result.S),              color:C.white  },
-                  { label:"Monthly Withdrawal", val:fmt(result.W),              color:C.yellow },
-                  { label:"Inflation Rate",     val:`${(result.inf*12*100).toFixed(1)}%/yr`,   color:C.textSecondary },
-                ].map((s,i)=>(
-                  <div key={i}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", marginBottom:3 }}>{s.label}</div>
-                    <div style={{ fontSize:15, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Savings Balance Over Time</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Nominal vs. real (inflation-adjusted) balance year by year</div>
-              <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
-                {[{color:C.green,label:"Nominal Balance"},{color:C.blue,label:"Real Balance (today's $)"}].map((l,i)=>(
-                  <div key={i} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSecondary }}>
-                    <span style={{ width:12,height:3,background:l.color,borderRadius:2,display:"inline-block" }}/>{l.label}
-                  </div>
-                ))}
-              </div>
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
-                  <YAxis tick={{ fill:C.textMuted, fontSize:10 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
-                  <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"),n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
-                  <ReferenceLine y={0} stroke={C.border}/>
-                  <Line type="monotone" dataKey="Nominal"        stroke={C.green} strokeWidth={2} dot={false}/>
-                  <Line type="monotone" dataKey="Real (today's $)" stroke={C.blue} strokeWidth={2} dot={false} strokeDasharray="5 3"/>
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </>) : (<>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>
-                Max Monthly Withdrawal over {result.targetYrs} years
-              </div>
-              <div style={{ display:"flex", gap:24, flexWrap:"wrap", marginBottom:16 }}>
-                <div>
-                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>Nominal</div>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(32px,6vw,52px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px" }}>
-                    {fmt(result.maxNom)}/mo
-                  </div>
-                </div>
-                <div>
-                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>Real purchasing power</div>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(32px,6vw,52px)", fontWeight:700, color:C.blue, lineHeight:1, letterSpacing:"-1px" }}>
-                    {fmt(result.maxReal)}/mo
-                  </div>
-                </div>
-              </div>
-              <div style={{ fontSize:12, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 14px", lineHeight:1.6 }}>
-                💡 In today's dollars, {fmt(result.maxNom)}/mo will feel like {fmt(result.maxReal)}/mo by the time inflation is factored in over {result.targetYrs} years.
-              </div>
-            </div>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Balance Drawdown</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Savings balance year by year at max nominal withdrawal</div>
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
-                  <defs><linearGradient id="retGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.blue} stopOpacity={0.2}/><stop offset="95%" stopColor={C.blue} stopOpacity={0}/></linearGradient></defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
-                  <YAxis tick={{ fill:C.textMuted, fontSize:10 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
-                  <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Balance"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
-                  <Area type="monotone" dataKey="Balance" stroke={C.blue} strokeWidth={2} fill="url(#retGrad)" dot={false}/>
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </>)}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
-// ── RRSP / TFSA Contribution Calculator ──────────────────────────────────────
-function ContributionTab({ vis }) {
-  const [sub, setSub] = useState(0);
-
-  // ── TFSA Sub-tab ───────────────────────────────────────────────────────────
-  function TFSACalc() {
-    const [birthYear,  setBirthYear]  = useState("");
-    const [contributed,setContributed]= useState("");
-    const [withdrawn,  setWithdrawn]  = useState("");
-    const [result,     setResult]     = useState(null);
-
-    // Official TFSA annual limits by year
-    const TFSA_LIMITS = {
-      2009:5000,2010:5000,2011:5000,2012:5000,2013:5500,
-      2014:5500,2015:10000,2016:5500,2017:5500,2018:5500,
-      2019:6000,2020:6000,2021:6000,2022:6000,2023:6500,
-      2024:7000,2025:7000,2026:7000,
-    };
-
-    function calc() {
-      const born = parseInt(birthYear);
-      if (!born || born < 1900 || born > 2010) return;
-      const eligible = born + 18; // year became eligible
-      const currentYear = new Date().getFullYear();
-      if (eligible > currentYear) { setResult({ notEligible: true, eligible }); return; }
-
-      let room = 0;
-      for (let yr = Math.max(eligible, 2009); yr <= currentYear; yr++) {
-        room += TFSA_LIMITS[yr] || 7000;
-      }
-      const contribs  = parseFloat(contributed) || 0;
-      const withdrawn_ = parseFloat(withdrawn)  || 0;
-      const remaining  = room - contribs + withdrawn_;
-      const yearsEligible = currentYear - Math.max(eligible, 2009) + 1;
-
-      setResult({ room, contribs, withdrawn: withdrawn_, remaining, yearsEligible, eligible, currentYear, TFSA_LIMITS });
-    }
-
-    const fmt = v => "$" + Math.round(v).toLocaleString("en-CA");
-
-    // Cumulative room by year for chart
-    const chartData = result && !result.notEligible ? (() => {
-      let cum = 0;
-      return Object.entries(result.TFSA_LIMITS)
-        .filter(([yr]) => parseInt(yr) >= Math.max(result.eligible, 2009) && parseInt(yr) <= result.currentYear)
-        .map(([yr, limit]) => { cum += limit; return { year: yr, "Cumulative Room": cum }; });
-    })() : [];
-
-    return (
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:4 }}>TFSA Contribution Room</div>
-          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:20 }}>Calculate your total available room based on your eligibility year and contribution history</div>
-
-          <DebtField label="Year of Birth" value={birthYear} set={setBirthYear} ph="e.g. 1990" isSmall/>
-          <DebtField label="Total Contributions Made to Date ($)" value={contributed} set={setContributed} ph="e.g. 40,000"/>
-          <DebtField label="Total Withdrawals Made to Date ($)" value={withdrawn} set={setWithdrawn} ph="e.g. 5,000" />
-
-          <div style={{ marginBottom:16, background:C.surface2, borderRadius:10, padding:"12px 14px", fontSize:11, color:C.textMuted, lineHeight:1.7 }}>
-            💡 TFSA withdrawals add back to your room the following calendar year. Enter your lifetime withdrawals to see your accurate room.
-          </div>
-
-          <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
-            Calculate Room
-          </button>
-          <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>Based on official CRA TFSA annual limits. Confirm at <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account.html" target="_blank" rel="noopener noreferrer" style={{ color:C.green }}>CRA.gc.ca</a></div>
-        </div>
-
-        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-          {!result ? (
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:240 }}>
-              <div style={{ fontSize:32 }}>🏦</div>
-              <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your birth year to see your TFSA contribution room</div>
-            </div>
-          ) : result.notEligible ? (
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:14, color:C.textSecondary }}>You become eligible for a TFSA in <strong style={{ color:C.yellow }}>{result.eligible}</strong> (the year you turn 18). No room has accumulated yet.</div>
-            </div>
-          ) : (<>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>Available TFSA Room</div>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:result.remaining >= 0 ? C.green : C.red, lineHeight:1, letterSpacing:"-1px", marginBottom:14 }}>
-                {result.remaining >= 0 ? fmt(result.remaining) : `Over by ${fmt(Math.abs(result.remaining))}`}
-              </div>
-              {result.remaining < 0 && (
-                <div style={{ fontSize:12, color:C.red, background:C.redBg, borderRadius:8, padding:"10px 14px", marginBottom:14 }}>⚠ You may have over-contributed. Contact CRA — penalty is 1%/month on excess.</div>
-              )}
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
-                {[
-                  { label:"Lifetime Room",     val:fmt(result.room),      color:C.white  },
-                  { label:"Total Contributed", val:fmt(result.contribs),  color:result.contribs > result.room ? C.red : C.blue },
-                  { label:"Withdrawals Added", val:fmt(result.withdrawn), color:C.green  },
-                ].map((s,i)=>(
-                  <div key={i}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", marginBottom:3 }}>{s.label}</div>
-                    <div style={{ fontSize:16, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Cumulative Room by Year</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Total TFSA room that has accumulated since your eligibility year</div>
-              <ResponsiveContainer width="100%" height={180}>
-                <AreaChart data={chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
-                  <defs><linearGradient id="tfsaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.green} stopOpacity={0.2}/><stop offset="95%" stopColor={C.green} stopOpacity={0}/></linearGradient></defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
-                  <YAxis tick={{ fill:C.textMuted, fontSize:10 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
-                  <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Cumulative Room"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
-                  <Area type="stepAfter" dataKey="Cumulative Room" stroke={C.green} strokeWidth={2} fill="url(#tfsaGrad)" dot={false}/>
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </>)}
-        </div>
-      </div>
-    );
-  }
-
-  // ── RRSP Sub-tab ───────────────────────────────────────────────────────────
-  function RRSPCalc() {
-    const [income,     setIncome]     = useState("");
-    const [prevLimit,  setPrevLimit]  = useState("");
-    const [pensionAdj, setPensionAdj] = useState("0");
-    const [contributed,setContributed]= useState("0");
-    const [province,   setProvince]   = useState("ON");
-    const [result,     setResult]     = useState(null);
-
-    // 2024 RRSP limit
-    const MAX_RRSP_2024 = 31560;
-    const MAX_RRSP_2025 = 32490;
-
-    // Marginal tax rates by province (simplified 2024, combined federal+provincial)
-    const PROV_RATES = {
-      BC:{name:"BC",     rates:[[0,15],[57375,22.7],[114750,28.2],[165430,31.0],[235675,32.79],[240716,43.7],[284124,46.86],[410670,53.5]]},
-      AB:{name:"AB",     rates:[[0,15],[57375,20.5],[114750,30.5],[165430,36.0],[235675,38.29],[314928,42.3]]},
-      SK:{name:"SK",     rates:[[0,18.5],[49720,25.5],[114750,33.5],[142292,38.5],[235675,44.79]]},
-      MB:{name:"MB",     rates:[[0,25.8],[36842,27.75],[79625,32.75],[114750,39.65],[235675,47.94]]},
-      ON:{name:"ON",     rates:[[0,20.05],[51446,24.15],[102894,29.65],[150000,31.48],[220000,33.89],[235675,43.41],[261599,46.41],[500000,53.53]]},
-      QC:{name:"QC",     rates:[[0,26.53],[51780,31.53],[103545,37.12],[114750,42.37],[235675,47.46]]},
-      NB:{name:"NB",     rates:[[0,23.84],[47715,28.34],[95431,33.34],[176756,38.34],[235675,47.63]]},
-      NS:{name:"NS",     rates:[[0,23.79],[29590,30.95],[59180,35.98],[93000,38.67],[150000,39.67],[235675,50.0]]},
-      PE:{name:"PEI",    rates:[[0,24],[32656,28.5],[64313,33.0],[105000,37.0],[235675,47.29]]},
-      NL:{name:"NL",     rates:[[0,23.2],[43198,28.7],[86395,33.7],[154244,40.2],[235675,51.3]]},
-    };
-
-    function getMarginalRate(incomeVal, prov) {
-      const brackets = PROV_RATES[prov]?.rates || PROV_RATES.ON.rates;
-      let rate = brackets[0][1];
-      for (const [threshold, r] of brackets) {
-        if (incomeVal >= threshold) rate = r;
-      }
-      return rate / 100;
-    }
-
-    function calc() {
-      const inc  = parseFloat(income) || 0;
-      const prev = parseFloat(prevLimit) || 0;
-      const pa   = parseFloat(pensionAdj) || 0;
-      const cont = parseFloat(contributed) || 0;
-      if (!inc) return;
-
-      const earned2025   = inc * 0.18;
-      const newRoom2025  = Math.min(earned2025, MAX_RRSP_2025);
-      const totalRoom    = prev + newRoom2025 - pa;
-      const remaining    = Math.max(0, totalRoom - cont);
-      const marginalRate = getMarginalRate(inc, province);
-      const taxSaving    = remaining * marginalRate;
-
-      setResult({ totalRoom, remaining, newRoom2025, prev, cont, pa, marginalRate, taxSaving, inc, province });
-    }
-
-    const fmt = v => "$" + Math.round(Math.max(v,0)).toLocaleString("en-CA");
-
-    return (
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:4 }}>RRSP Contribution Room</div>
-          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:20 }}>Estimate your 2025 RRSP deduction limit and potential tax savings</div>
-
-          <DebtField label="Earned Income (prior year) ($)" value={income} set={setIncome} ph="e.g. 95,000" />
-          <DebtField label="Previous Year's RRSP Limit ($)" value={prevLimit} set={setPrevLimit} ph="e.g. 15,000" hint="From your latest CRA Notice of Assessment"/>
-          <DebtField label="Pension Adjustment ($)" value={pensionAdj} set={setPensionAdj} ph="e.g. 0" hint="From your T4 box 52 — enter 0 if none" isSmall/>
-          <DebtField label="Contributions Made This Year ($)" value={contributed} set={setContributed} ph="e.g. 5,000"/>
-
-          <div style={{ marginBottom:16 }}>
-            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Province (for tax savings estimate)</div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
-              {Object.keys(PROV_RATES).map(p=>(
-                <button key={p} onClick={()=>setProvince(p)} style={{ background:province===p?C.yellow:C.surface2, color:province===p?"#000":C.textSecondary, border:`1px solid ${province===p?C.yellow:C.border2}`, borderRadius:7, padding:"5px 10px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
-              ))}
-            </div>
-          </div>
-
-          <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
-            Calculate Room
-          </button>
-          <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>Based on 2025 RRSP limit of ${MAX_RRSP_2025.toLocaleString()}. Confirm exact figures at <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/contributing-a-rrsp-prpp/how-much-can-you-contribute.html" target="_blank" rel="noopener noreferrer" style={{ color:C.green }}>CRA.gc.ca</a></div>
-        </div>
-
-        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-          {!result ? (
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:240 }}>
-              <div style={{ fontSize:32 }}>📋</div>
-              <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your income and prior-year limit to calculate your RRSP room</div>
-            </div>
-          ) : (<>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>Available RRSP Room (2025)</div>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:14 }}>
-                {fmt(result.remaining)}
-              </div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
-                {[
-                  { label:"New Room Added (2025)",      val:fmt(result.newRoom2025),   color:C.white  },
-                  { label:"Previous Unused Room",       val:fmt(result.prev),          color:C.white  },
-                  { label:"Total Deduction Limit",      val:fmt(result.totalRoom),     color:C.yellow },
-                  { label:"Already Contributed",        val:fmt(result.cont),          color:C.blue   },
-                  { label:"Marginal Tax Rate",          val:`${(result.marginalRate*100).toFixed(1)}%`,  color:C.textSecondary },
-                  { label:"Est. Tax Savings if Maxed",  val:fmt(result.taxSaving),     color:C.green  },
-                ].map((s,i)=>(
-                  <div key={i}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", marginBottom:3 }}>{s.label}</div>
-                    <div style={{ fontSize:16, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ marginTop:14, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 14px", lineHeight:1.6 }}>
-                💡 Contributing {fmt(result.remaining)} to your RRSP could save you approximately <strong style={{ color:C.green }}>{fmt(result.taxSaving)}</strong> in taxes at your {(result.marginalRate*100).toFixed(1)}% marginal rate in {PROV_RATES[result.province]?.name}.
-              </div>
-            </div>
-          </>)}
-        </div>
-      </div>
-    );
-  }
-
-  const SUBS = ["TFSA", "RRSP"];
-  return (
-    <div className={`reveal ${vis?"in":""}`}>
-      <div style={{ display:"flex", gap:8, marginBottom:20, overflowX:"auto", WebkitOverflowScrolling:"touch", paddingBottom:4, scrollbarWidth:"none" }}>
-        {SUBS.map((s,i) => (
-          <button key={i} onClick={()=>setSub(i)} style={{
-            background: sub===i ? C.surface2 : "transparent",
-            border:     `1px solid ${sub===i ? C.border2 : C.border}`,
-            color:      sub===i ? C.textPrimary : C.textMuted,
-            borderRadius:10, padding:"8px 18px", fontSize:12, fontWeight:600,
-            cursor:"pointer", fontFamily:"inherit", transition:"all .15s", whiteSpace:"nowrap", flexShrink:0,
-          }}>{s}</button>
-        ))}
-      </div>
-      {sub===0 ? <TFSACalc/> : <RRSPCalc/>}
-    </div>
-  );
-}
-
-
 // ── Per-page SEO meta ────────────────────────────────────────────────────────
 const PAGE_META = [
   { path:"/inflation-rates",     title:"Canadian Inflation Rates — Live CPI by Category & Province | Canadianflation",         description:"Live Canadian CPI data by category and province. Track year-over-year inflation rates for food, shelter, transport and more. Sourced directly from Statistics Canada." },
@@ -2462,20 +1946,16 @@ const PAGE_META = [
   { path:"/interest-calculator", title:"Canadian Compound Interest Calculator | Canadianflation",                               description:"Calculate how your savings or investments grow with compound interest. Adjust rate, frequency, contributions, and time horizon." },
   { path:"/mortgage-calculator", title:"Canadian Mortgage Calculator — Payment, Tax & Borrowing | Canadianflation",             description:"Calculate Canadian mortgage payments, provincial property transfer tax, and borrowing capacity. Covers all 10 provinces with 2024 tax brackets." },
   { path:"/",                    title:"Canadianflation — Canada's Independent Inflation Tracker",                              description:"Track Canadian inflation in real time. Live CPI data from Statistics Canada, purchasing power history, Taylor Rule analysis, and free financial calculators." },
-  { path:"/retirement-calculator",   title:"Canadian Retirement Calculator — How Long Will Your Money Last? | Canadianflation",    description:"Calculate how long your retirement savings will last given inflation, withdrawals, and investment returns. Uses Statistics Canada CPI data." },
-  { path:"/contribution-calculator", title:"RRSP & TFSA Contribution Room Calculator Canada | Canadianflation",                    description:"Calculate your RRSP deduction limit and TFSA contribution room for 2024. Free Canadian retirement account calculator." },
 ];
 
 // ── Client-side routing map ───────────────────────────────────────────────────
 const ROUTES = {
-  "/":                       5,
-  "/inflation-rates":        0,
-  "/purchasing-power":       1,
-  "/taylor-rule":            2,
-  "/interest-calculator":    3,
-  "/mortgage-calculator":    4,
-  "/retirement-calculator":  6,
-  "/contribution-calculator":7,
+  "/":                    5,
+  "/inflation-rates":     0,
+  "/purchasing-power":    1,
+  "/taylor-rule":         2,
+  "/interest-calculator": 3,
+  "/mortgage-calculator": 4,
 };
 
 // ── Root App ──────────────────────────────────────────────────────────────────
@@ -2602,16 +2082,14 @@ export default function App() {
     { label:"Taylor Rule",       path:"/taylor-rule",      idx:2, desc:"BoC rate vs prescription"   },
   ];
   const CALC_PAGES = [
-    { label:"Interest Calculator",     path:"/interest-calculator",    idx:3, desc:"Compound growth calculator"     },
-    { label:"Mortgage Calculator",     path:"/mortgage-calculator",    idx:4, desc:"Payments, tax & borrowing"      },
-    { label:"Retirement Calculator",   path:"/retirement-calculator",  idx:6, desc:"How long will your money last?" },
-    { label:"Contribution Calculator", path:"/contribution-calculator",idx:7, desc:"RRSP & TFSA room calculator"    },
+    { label:"Interest Calculator", path:"/interest-calculator", idx:3, desc:"Compound growth calculator" },
+    { label:"Mortgage Calculator", path:"/mortgage-calculator", idx:4, desc:"Payments, tax & borrowing"  },
   ];
 
   const closeAll = () => { setDataDropOpen(false); setCalcDropOpen(false); setMobileOpen(false); };
 
   const isDataActive = page <= 2;
-  const isCalcActive = page >= 3 && page !== 5;
+  const isCalcActive = page >= 3;
 
   return (
     <div style={{ minHeight:"100vh", background:C.bg, color:C.textPrimary, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
@@ -2738,7 +2216,6 @@ export default function App() {
             <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
           </button>
         ))}
-        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 10px" }}>Data</div>
       </div>
 
       {/* ── Page content ── */}
@@ -2765,10 +2242,8 @@ export default function App() {
           page === 0 ? <RatesTab data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
           page === 1 ? <CumulativeTab data={data} vis={vis} rawCpi={rawCpi} catHistory={catHistory} provHistory={provHistory}/> :
           page === 2 ? <TaylorTab     data={data} vis={vis} rateData={rateData}/> :
-          page === 3 ? <CompoundTab          vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
-          page === 4 ? <MortgageTab          vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
-          page === 6 ? <RetirementTab        vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
-                       <ContributionTab      vis={vis}/>
+          page === 3 ? <CompoundTab   vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
+                       <MortgageTab   vis={vis} liveCpi={data?.[data.length-1]?.value}/>
         )}
 
         <div style={{ textAlign:"center", fontSize:11, color:C.textMuted, fontWeight:500, marginTop:32, paddingTop:20, borderTop:`1px solid ${C.border}`, lineHeight:1.8 }}>
@@ -2782,3 +2257,4 @@ export default function App() {
     </div>
   );
 }
+
