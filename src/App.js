@@ -2369,7 +2369,7 @@ function RRSPCalc() {
           Calculate Room
         </button>
         <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>
-          2025 limit: ${MAX_RRSP.toLocaleString()}. Verify at <a href="https://www.canada.ca/en/revenue-agency.html" target="_blank" rel="noopener noreferrer" style={{ color:C.green }}>CRA.gc.ca</a>
+          2025 limit: ${MAX_RRSP.toLocaleString()}. Verify at <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/contributing-a-rrsp-prpp/how-much-can-you-contribute.html" target="_blank" rel="noopener noreferrer" style={{ color:C.green }}>CRA.gc.ca</a>
         </div>
       </div>
       <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
