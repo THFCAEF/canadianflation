@@ -2,11 +2,13 @@
   "buildCommand": "npm run build",
   "outputDirectory": "build",
   "rewrites": [
-    { "source": "/inflation-rates",     "destination": "/index.html" },
-    { "source": "/purchasing-power",    "destination": "/index.html" },
-    { "source": "/taylor-rule",         "destination": "/index.html" },
-    { "source": "/interest-calculator", "destination": "/index.html" },
-    { "source": "/mortgage-calculator", "destination": "/index.html" }
+    { "source": "/inflation-rates",        "destination": "/index.html" },
+    { "source": "/purchasing-power",       "destination": "/index.html" },
+    { "source": "/taylor-rule",            "destination": "/index.html" },
+    { "source": "/interest-calculator",    "destination": "/index.html" },
+    { "source": "/mortgage-calculator",    "destination": "/index.html" },
+    { "source": "/retirement-calculator",  "destination": "/index.html" },
+    { "source": "/contribution-calculator","destination": "/index.html" }
   ],
   "headers": [
     {
