@@ -343,10 +343,7 @@ function HomepageHero({ navigate, cur }) {
     { label:"Purchasing Power",   desc:"How much value has your dollar lost?",                        path:"/purchasing-power",    idx:1, icon:"💸" },
     { label:"Taylor Rule",        desc:"Is the Bank of Canada ahead or behind the curve?",          path:"/taylor-rule",         idx:2, icon:"📐" },
     { label:"Interest Calculator",desc:"Model how compound interest grows your savings.",           path:"/interest-calculator", idx:3, icon:"📈" },
-    { label:"Mortgage Calculator",desc:"Model payments, transfer tax, and borrowing power.",        path:"/mortgage-calculator", idx:4,  icon:"🏠" },
-    { label:"Grocery Prices",     desc:"Food inflation by category — what's getting more expensive.", path:"/grocery-prices",         idx:8,  icon:"🛒" },
-    { label:"Exchange Rates",     desc:"CAD vs USD, EUR, GBP, JPY and more — live from BoC.",        path:"/exchange-rates",         idx:9,  icon:"💱" },
-    { label:"Real Wages",         desc:"Are Canadian wages keeping up with inflation?",               path:"/real-wages",              idx:10, icon:"💼" },
+    { label:"Mortgage Calculator",desc:"Model payments, transfer tax, and borrowing power.",        path:"/mortgage-calculator", idx:4, icon:"🏠" },
   ];
 
   return (
@@ -377,7 +374,7 @@ function HomepageHero({ navigate, cur }) {
             </div>
             <div style={{ fontSize:10, color:C.textMuted, display:"flex", alignItems:"center", gap:5 }}>
               <span style={{ display:"inline-block", width:5, height:5, borderRadius:"50%", background:C.green }}></span>
-              {(() => { const n=new Date(); const releases=[{ref:"May",date:new Date("2026-06-22")},{ref:"June",date:new Date("2026-07-17")},{ref:"July",date:new Date("2026-08-19")}]; const next=releases.find(r=>r.date>n); return next?`${next.ref} CPI releases ${next.date.toLocaleDateString("en-CA",{month:"long",day:"numeric"})}`:null; })()}
+              March data releases April 20
             </div>
           </div>
         )}
@@ -487,7 +484,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
         </div>
         <div style={{ fontSize:10, fontWeight:600, color:C.textMuted, marginBottom:12, display:"flex", alignItems:"center", gap:6 }}>
           <span style={{ display:"inline-block", width:6, height:6, borderRadius:"50%", background:C.green }}></span>
-          Live StatCan data · April 2026 · {(() => { const n=new Date(); const releases=[{ref:'May',date:new Date('2026-06-22')},{ref:'June',date:new Date('2026-07-17')}]; const next=releases.find(r=>r.date>n); return next?`Next: ${next.ref} releases ${next.date.toLocaleDateString('en-CA',{month:'long',day:'numeric'})}`:null; })()}
+          Live StatCan data · March 2026 figures release April 20
         </div>
         <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:20 }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(60px,12vw,96px)", fontWeight:700, lineHeight:1, letterSpacing:"-2px", color:valColor(cur?.value ?? 0) }}>
@@ -547,7 +544,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={50}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
           <Tooltip content={<SingleTip suffix="%" note={v=>`${v>BOC_TARGET?`+${(v-BOC_TARGET).toFixed(1)}pp above`:`${(BOC_TARGET-v).toFixed(1)}pp below`} BoC target`}/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3" label={{ value:"BoC 2%", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
@@ -606,7 +603,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={catHistory} margin={{ top:4, right:8, left:-24, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
           <Tooltip content={<MultiTip/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
@@ -628,7 +625,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={provHistory} margin={{ top:4, right:8, left:-24, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
           <Tooltip content={<MultiTip/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
@@ -717,7 +714,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={50}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`$${v.toFixed(2)}`} domain={["auto","auto"]}/>
           <Tooltip content={<SingleTip prefix="$" suffix="" note={v=>`Lost ${((1-v)*100).toFixed(1)}¢ of every dollar`}/>}/>
           <ReferenceLine y={1} stroke={C.border2} strokeDasharray="4 3" label={{ value:"$1.00 baseline", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
@@ -771,7 +768,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={catCumHistory} margin={{ top:4, right:8, left:-10, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
           <Tooltip content={<MultiTip suffix="%"/>}/>
           <ReferenceLine y={0} stroke={C.border}/>
@@ -789,7 +786,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={provCumHistory} margin={{ top:4, right:8, left:-10, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
           <Tooltip content={<MultiTip suffix="%"/>}/>
           {PROV_KEYS.map(k => activeProvs[k] ? <Line key={k} type="monotone" dataKey={k} stroke={PROV_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{ r:3, stroke:C.surface, strokeWidth:2 }}/> : null)}
@@ -853,7 +850,7 @@ function TaylorTab({ data, vis, rateData }) {
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={sliced} margin={{ top:4, right:8, left:-20, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={50}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
           <Tooltip content={<MultiTip suffix="%"/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3" label={{ value:"2% target", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
@@ -880,7 +877,7 @@ function TaylorTab({ data, vis, rateData }) {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-            <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+            <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={50}/>
             <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}pp`}/>
             <Tooltip content={<SingleTip suffix="pp" note={v => v > 0 ? "BoC tighter than Taylor suggests" : "BoC easier than Taylor suggests"}/>}/>
             <ReferenceLine y={0} stroke={C.border2} strokeDasharray="4 3"/>
@@ -1175,7 +1172,7 @@ function CompoundTab({ vis, liveCpi }) {
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v => "$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={(v,n) => [fmt(v), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
                   <Line type="monotone" dataKey="Nominal Value"  stroke={C.green}  strokeWidth={2.5} dot={false} activeDot={{ r:4 }}/>
@@ -1418,7 +1415,7 @@ function MortgageTab({ vis, liveCpi }) {
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
                   <Line type="monotone" dataKey="Balance"      stroke={C.blue}  strokeWidth={2} dot={false} name="Nominal Balance"/>
@@ -2144,7 +2141,7 @@ function RetirementTab({ vis, liveCpi }) {
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10, fontWeight:600 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:10 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"),n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
                   <ReferenceLine y={0} stroke={C.border}/>
@@ -2183,7 +2180,7 @@ function RetirementTab({ vis, liveCpi }) {
                 <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <defs><linearGradient id="retGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.blue} stopOpacity={0.2}/><stop offset="95%" stopColor={C.blue} stopOpacity={0}/></linearGradient></defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:10 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Balance"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
                   <Area type="monotone" dataKey="Balance" stroke={C.blue} strokeWidth={2} fill="url(#retGrad)" dot={false}/>
@@ -2293,7 +2290,7 @@ function TFSACalc() {
               <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                 <defs><linearGradient id="tfsaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.green} stopOpacity={0.2}/><stop offset="95%" stopColor={C.green} stopOpacity={0}/></linearGradient></defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:10 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={40}/>
                 <YAxis tick={{ fill:C.textMuted, fontSize:10 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
                 <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Cumulative Room"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
                 <Area type="stepAfter" dataKey="Cumulative Room" stroke={C.green} strokeWidth={2} fill="url(#tfsaGrad)" dot={false}/>
@@ -2434,544 +2431,6 @@ function ContributionTab({ vis }) {
 }
 
 
-// ── Grocery Prices Tab ────────────────────────────────────────────────────────
-// Data: StatCan table 18-10-0245-01 — food subcategories CPI
-// Series use same WDS pattern as main CPI fetch
-// Food subcategory CPI vectors — table 18-10-0004-01 (same as main CPI)
-// These are proper CPI indexes suitable for YoY comparison
-const GROCERY_VECTORS = {
-  "Meat":                  41690985,
-  "Fish & seafood":        41690998,
-  "Dairy & eggs":          41691011,
-  "Bakery & cereals":      41691024,
-  "Fresh vegetables":      41691049,
-  "Fresh fruit":           41691037,
-  "Food from stores":      41690974,
-  "Food from restaurants": 41691062,
-};
-const GROCERY_COLORS = {
-  "Meat":"#E05A4A","Fish & seafood":"#6B9FE4","Dairy & eggs":"#F5C842",
-  "Bakery & cereals":"#F0814A","Fresh vegetables":"#3ECFA0","Fresh fruit":"#B07FE8",
-  "Other food":"#4AC8E8","Food from stores":"#F5C842","Food from restaurants":"#E05A4A",
-};
-
-function GroceryTab({ vis }) {
-  const [grocData, setGrocData] = useState(null);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(false);
-  const [active,   setActive]   = useState(Object.fromEntries(Object.keys(GROCERY_VECTORS).filter(k=>k!=="Food from stores"&&k!=="Food from restaurants").map(k=>[k,true])));
-  const [range,    setRange]    = useState("5Y");
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const ids = Object.values(GROCERY_VECTORS);
-        const res = await fetch(`${STATCAN_BASE}/getDataFromVectorsAndLatestNPeriods`, {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify(ids.map(id => ({ vectorId:id, latestN:600 }))),
-        });
-        if (!res.ok) throw new Error();
-        const json   = await res.json();
-        const rawMap = parseBatchWDS(json);
-
-        // Build monthly YoY for each category
-        const result = {};
-        Object.entries(GROCERY_VECTORS).forEach(([name, vid]) => {
-          const raw = rawMap[vid];
-          if (raw?.length) result[name] = computeYoY(raw);
-        });
-        setGrocData(result);
-      } catch { setError(true); }
-      finally  { setLoading(false); }
-    }
-    load();
-  }, []); // eslint-disable-line
-
-  const fmt = v => v != null ? `${v > 0 ? "+" : ""}${v.toFixed(1)}%` : "—";
-  const RANGE_N = { "2Y":24, "5Y":60, "10Y":120 };
-
-  // Build chart data — merge all categories by date
-  const chartData = useMemo(() => {
-    if (!grocData) return [];
-    const keys = Object.keys(GROCERY_VECTORS).filter(k=>k!=="Food from stores"&&k!=="Food from restaurants");
-    const allDates = [...new Set(keys.flatMap(k => (grocData[k]||[]).map(p=>p.iso)))].sort();
-    const n = RANGE_N[range] || 60;
-    return allDates.slice(-n).map(iso => {
-      const row = { date: fmtDate(iso), iso };
-      keys.forEach(k => {
-        const pt = (grocData[k]||[]).find(p=>p.iso===iso);
-        if (pt) row[k] = pt.value;
-      });
-      return row;
-    });
-  }, [grocData, range]);
-
-  // Latest values for snapshot
-  const latest = useMemo(() => {
-    if (!grocData) return {};
-    const out = {};
-    Object.keys(GROCERY_VECTORS).forEach(k => {
-      const series = grocData[k];
-      if (series?.length) out[k] = series[series.length-1].value;
-    });
-    return out;
-  }, [grocData]);
-
-  const sortedCategories = Object.keys(GROCERY_VECTORS)
-    .filter(k=>k!=="Food from stores"&&k!=="Food from restaurants")
-    .sort((a,b) => (latest[b]||0) - (latest[a]||0));
-
-  const fmtDate2 = iso => { const d=new Date(iso+"T12:00:00"); return `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]} ${d.getFullYear()}`; };
-  const latestDate = grocData ? Object.values(grocData).find(s=>s?.length)?.[Object.values(grocData).find(s=>s?.length)?.length-1]?.date : null;
-
-  return (
-    <div className={`reveal ${vis?"in":""}`}>
-      {loading ? (
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:300, gap:16 }}>
-          <div className="spin" style={{ width:32, height:32 }}/>
-          <p style={{ color:C.textMuted, fontSize:12 }}>Loading grocery price data from Statistics Canada…</p>
-        </div>
-      ) : error ? (
-        <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
-          <div style={{ fontSize:28, marginBottom:12 }}>📡</div>
-          <div>Statistics Canada grocery data unavailable. Please try again later.</div>
-        </div>
-      ) : (<>
-        {/* Hero */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px", marginBottom:16 }}>
-          <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
-            Canadian Grocery Prices · Year-over-Year · {latestDate}
-          </div>
-          <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,44px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 16px" }}>
-            Food Inflation by Category
-          </h1>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))", gap:8 }}>
-            {[
-              { label:"Food from Stores",       key:"Food from stores" },
-              { label:"Food from Restaurants",  key:"Food from restaurants" },
-            ].map(({label,key},i) => (
-              <div key={i} style={{ background:C.surface2, borderRadius:10, padding:"12px 14px" }}>
-                <div style={{ fontSize:10, color:C.textMuted, fontWeight:600, marginBottom:4 }}>{label}</div>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:28, fontWeight:700, color:valColor(latest[key]||0), letterSpacing:"-.5px" }}>
-                  {fmt(latest[key])}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>
-            Source: Statistics Canada table 18-10-0245-01 · Data: subcategory food CPI indexes
-          </div>
-        </div>
-
-        {/* Snapshot cards */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10, marginBottom:16 }}>
-          {sortedCategories.map((k,i) => (
-            <div key={i} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:"14px 12px" }}>
-              <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>{k}</div>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:24, fontWeight:700, color:valColor(latest[k]||0), letterSpacing:"-.3px" }}>
-                {fmt(latest[k])}
-              </div>
-              <div style={{ fontSize:9, color:valColor(latest[k]||0), marginTop:3 }}>
-                {(latest[k]||0) > BOC_TARGET ? "Above target" : "At/below target"}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Trend chart */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:4 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12, flexWrap:"wrap", gap:10 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Food Price Trends</div>
-              <div style={{ fontSize:10, color:C.textSecondary }}>Year-over-year % · Source: Statistics Canada 18-10-0245-01</div>
-            </div>
-            <div style={{ display:"flex", gap:5 }}>
-              {["2Y","5Y","10Y"].map(r=><button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>)}
-            </div>
-          </div>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:14 }}>
-            {sortedCategories.map(k=><FilterPill key={k} label={k} color={GROCERY_COLORS[k]} active={active[k]} onClick={()=>setActive(p=>({...p,[k]:!p[k]}))}/>)}
-          </div>
-          <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={chartData} margin={{ top:4, right:8, left:-20, bottom:36 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={55} height={36}/>
-              <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
-              <Tooltip content={<MultiTip/>}/>
-              <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
-              <ReferenceLine y={0} stroke={C.border}/>
-              {sortedCategories.map(k=>active[k]?<Line key={k} type="monotone" dataKey={k} stroke={GROCERY_COLORS[k]} strokeWidth={2} dot={false} activeDot={{r:3}}/>:null)}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </>)}
-    </div>
-  );
-}
-
-// ── Exchange Rates Tab ────────────────────────────────────────────────────────
-const FX_SERIES = {
-  "USD": { id:"FXUSDCAD", label:"US Dollar",         flag:"🇺🇸", color:"#6B9FE4" },
-  "EUR": { id:"FXEURCAD", label:"Euro",               flag:"🇪🇺", color:"#F5C842" },
-  "GBP": { id:"FXGBPCAD", label:"British Pound",      flag:"🇬🇧", color:"#E05A4A" },
-  "JPY": { id:"FXJPYCAD", label:"Japanese Yen",       flag:"🇯🇵", color:"#3ECFA0" },
-  "AUD": { id:"FXAUDCAD", label:"Australian Dollar",  flag:"🇦🇺", color:"#B07FE8" },
-  "CHF": { id:"FXCHFCAD", label:"Swiss Franc",        flag:"🇨🇭", color:"#F0814A" },
-  "CNY": { id:"FXCNYCAD", label:"Chinese Renminbi",   flag:"🇨🇳", color:"#E8A23A" },
-  "MXN": { id:"FXMXNCAD", label:"Mexican Peso",       flag:"🇲🇽", color:"#4AC8E8" },
-};
-
-function parseFXValet(json, seriesId) {
-  try {
-    const obs = json?.observations;
-    if (!Array.isArray(obs)) return [];
-    // Downsample daily → monthly average for clean charting
-    const byMonth = {};
-    obs.forEach(o => {
-      const val = parseFloat(o[seriesId]?.v);
-      if (!o.d || isNaN(val) || val <= 0) return;
-      const ym = o.d.slice(0, 7);
-      if (!byMonth[ym]) byMonth[ym] = [];
-      byMonth[ym].push(val);
-    });
-    return Object.keys(byMonth).sort().map(ym => {
-      const vals = byMonth[ym];
-      const avg  = vals.reduce((s,v)=>s+v,0) / vals.length;
-      return { date: fmtDate(ym + "-01"), iso: ym + "-01", rate: +avg.toFixed(4) };
-    });
-  } catch { return []; }
-}
-
-function ExchangeRatesTab({ vis }) {
-  const [fxData,   setFxData]   = useState({});
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(false);
-  const [selected, setSelected] = useState("USD");
-  const [range,    setRange]    = useState("5Y");
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const seriesIds = Object.values(FX_SERIES).map(s=>s.id).join(",");
-        const res = await fetch(
-          `https://www.bankofcanada.ca/valet/observations/${seriesIds}/json?start_date=2000-01-01`
-        );
-        if (!res.ok) throw new Error();
-        const json = await res.json();
-        const result = {};
-        Object.entries(FX_SERIES).forEach(([code, s]) => {
-          result[code] = parseFXValet(json, s.id);
-        });
-        setFxData(result);
-      } catch { setError(true); }
-      finally  { setLoading(false); }
-    }
-    load();
-  }, []); // eslint-disable-line
-
-  const RANGE_N = { "1Y":12, "5Y":60, "10Y":120, "All":9999 };
-  const series  = fxData[selected] || [];
-  const latest  = series[series.length-1];
-  const yearAgo = series[series.length-13];
-  const chart   = series.slice(-Math.min(RANGE_N[range], series.length));
-  const change1Y = latest && yearAgo ? ((latest.rate - yearAgo.rate) / yearAgo.rate * 100) : null;
-
-  // Latest rate for each currency
-  const latestRates = Object.fromEntries(
-    Object.entries(fxData).map(([code, s]) => [code, s[s.length-1]?.rate])
-  );
-
-  return (
-    <div className={`reveal ${vis?"in":""}`}>
-      {loading ? (
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:300, gap:16 }}>
-          <div className="spin" style={{ width:32, height:32 }}/>
-          <p style={{ color:C.textMuted, fontSize:12 }}>Loading exchange rates from Bank of Canada…</p>
-        </div>
-      ) : error ? (
-        <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
-          <div style={{ fontSize:28, marginBottom:12 }}>📡</div>
-          <div>Bank of Canada exchange rate data unavailable. Please try again later.</div>
-        </div>
-      ) : (<>
-        {/* Hero */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px", marginBottom:16 }}>
-          <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
-            Canadian Dollar Exchange Rates · {latest?.date}
-          </div>
-          <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(24px,4vw,38px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 16px" }}>
-            CAD vs Major World Currencies
-          </h1>
-          <div style={{ fontSize:10, color:C.textMuted, marginBottom:6 }}>
-            Source: Bank of Canada Valet API · Daily rates published by 16:30 ET
-          </div>
-        </div>
-
-        {/* Currency rate table */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:16 }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:14 }}>Live Rates — 1 Foreign Currency = X CAD</div>
-          <div style={{ overflowX:"auto" }}>
-            <table style={{ width:"100%", borderCollapse:"collapse" }}>
-              <thead>
-                <tr style={{ borderBottom:`1px solid ${C.border2}` }}>
-                  {["Currency","Rate (→ CAD)","1Y Change","Select"].map((h,i)=>(
-                    <th key={i} style={{ padding:"8px 12px", textAlign:i===0?"left":"right", fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", whiteSpace:"nowrap" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(FX_SERIES).map(([code, s]) => {
-                  const rate  = latestRates[code];
-                  const prev  = fxData[code]?.[fxData[code].length-13]?.rate;
-                  const chg   = rate && prev ? ((rate-prev)/prev*100) : null;
-                  const isSelected = selected === code;
-                  return (
-                    <tr key={code} style={{ borderBottom:`1px solid ${C.border}`, background:isSelected?`${C.yellow}08`:"transparent" }}>
-                      <td style={{ padding:"12px 12px" }}>
-                        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                          <span style={{ fontSize:18 }}>{s.flag}</span>
-                          <div>
-                            <div style={{ fontSize:13, fontWeight:700, color:isSelected?C.yellow:C.textPrimary }}>{code}</div>
-                            <div style={{ fontSize:11, color:C.textMuted }}>{s.label}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td style={{ padding:"12px 12px", textAlign:"right" }}>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, fontWeight:700, color:isSelected?C.yellow:C.textPrimary }}>
-                          {rate ? `$${rate.toFixed(4)}` : "—"}
-                        </div>
-                      </td>
-                      <td style={{ padding:"12px 12px", textAlign:"right" }}>
-                        {chg != null ? (
-                          <span style={{ fontSize:12, fontWeight:700, color:chg>0?C.green:C.red }}>
-                            {chg>0?"+":""}{chg.toFixed(2)}%
-                          </span>
-                        ) : "—"}
-                      </td>
-                      <td style={{ padding:"12px 12px", textAlign:"right" }}>
-                        <button onClick={()=>setSelected(code)} style={{ background:isSelected?C.yellow:C.surface2, color:isSelected?"#000":C.textSecondary, border:`1px solid ${isSelected?C.yellow:C.border2}`, borderRadius:7, padding:"5px 12px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
-                          Chart
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Historical chart for selected currency */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:4 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14, flexWrap:"wrap", gap:10 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:700 }}>{FX_SERIES[selected].flag} {FX_SERIES[selected].label} / CAD History</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginTop:2 }}>Monthly average rate · Source: Bank of Canada</div>
-            </div>
-            <div style={{ display:"flex", gap:5 }}>
-              {["1Y","5Y","10Y","All"].map(r=><button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>)}
-            </div>
-          </div>
-          {change1Y != null && (
-            <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:change1Y>0?C.greenBg:C.redBg, color:change1Y>0?C.green:C.red, borderRadius:6, padding:"4px 10px", fontSize:12, fontWeight:700, marginBottom:14, border:`1px solid ${change1Y>0?C.green:C.red}25` }}>
-              {change1Y>0?"▲":"▼"} {Math.abs(change1Y).toFixed(2)}% vs 1 year ago · 1 {selected} = ${latest?.rate.toFixed(4)} CAD
-            </div>
-          )}
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={chart} margin={{ top:4, right:8, left:-10, bottom:36 }}>
-              <defs>
-                <linearGradient id="fxGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor={FX_SERIES[selected].color} stopOpacity={0.2}/>
-                  <stop offset="95%" stopColor={FX_SERIES[selected].color} stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={55} height={36}/>
-              <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>`$${v.toFixed(2)}`} domain={["auto","auto"]}/>
-              <Tooltip formatter={(v,n)=>[`$${v.toFixed(4)} CAD`,`1 ${selected}`]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
-              <Area type="monotone" dataKey="rate" stroke={FX_SERIES[selected].color} strokeWidth={2} fill="url(#fxGrad)" dot={false}/>
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </>)}
-    </div>
-  );
-}
-
-// ── Real Wages Tab ────────────────────────────────────────────────────────────
-// Data: StatCan table 14-10-0063-01 — average hourly wages
-// Vector v2132579 = Canada, all employees, average hourly earnings
-const WAGES_VECTOR = 2132579;
-
-function RealWagesTab({ vis }) {
-  const [wageData, setWageData] = useState(null);
-  const [cpiData,  setCpiData]  = useState(null);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(false);
-  const [range,    setRange]    = useState("10Y");
-
-  useEffect(() => {
-    async function load() {
-      try {
-        // Fetch wages + national CPI together
-        const res = await fetch(`${STATCAN_BASE}/getDataFromVectorsAndLatestNPeriods`, {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify([
-            { vectorId: WAGES_VECTOR, latestN: 600 },
-            { vectorId: CPI_VECTOR,   latestN: 600 },
-          ]),
-        });
-        if (!res.ok) throw new Error();
-        const json   = await res.json();
-        const rawMap = parseBatchWDS(json);
-
-        const wages = rawMap[WAGES_VECTOR];
-        const cpi   = rawMap[CPI_VECTOR];
-        if (!wages?.length || !cpi?.length) throw new Error("Insufficient data");
-
-        // Build YoY for wages
-        const wageYoY = computeYoY(wages);
-        const cpiYoY  = computeYoY(cpi);
-
-        // Merge into single series by date
-        const cpiMap = Object.fromEntries(cpiYoY.map(p => [p.iso, p.value]));
-        const merged = wageYoY.map(p => ({
-          ...p,
-          wages:    p.value,
-          cpi:      cpiMap[p.iso] ?? null,
-          realGain: cpiMap[p.iso] != null ? +(p.value - cpiMap[p.iso]).toFixed(2) : null,
-        })).filter(p => p.cpi != null);
-
-        setWageData(merged);
-        setCpiData(cpiYoY);
-      } catch { setError(true); }
-      finally  { setLoading(false); }
-    }
-    load();
-  }, []); // eslint-disable-line
-
-  const RANGE_N = { "2Y":24, "5Y":60, "10Y":120, "All":9999 };
-  const chart   = wageData ? wageData.slice(-Math.min(RANGE_N[range], wageData.length)) : [];
-  const latest  = wageData?.[wageData.length-1];
-  const ti = range==="2Y"?2:range==="5Y"?5:range==="10Y"?11:Math.max(1,Math.floor(chart.length/8));
-
-  return (
-    <div className={`reveal ${vis?"in":""}`}>
-      {loading ? (
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:300, gap:16 }}>
-          <div className="spin" style={{ width:32, height:32 }}/>
-          <p style={{ color:C.textMuted, fontSize:12 }}>Loading wage data from Statistics Canada…</p>
-        </div>
-      ) : error ? (
-        <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
-          <div style={{ fontSize:28, marginBottom:12 }}>📡</div>
-          <div>Statistics Canada wage data unavailable. Please try again later.</div>
-        </div>
-      ) : (<>
-        {/* Hero */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, marginBottom:16, overflow:"hidden" }}>
-          <div style={{ padding:"24px 20px 0" }}>
-            <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
-              Canadian Wages vs Inflation · {latest?.date}
-            </div>
-            <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,48px)", fontWeight:700, letterSpacing:"-.5px", margin:"0 0 14px" }}>
-              <span style={{ color:C.white }}>Are wages </span>
-              <span style={{ color: latest?.realGain >= 0 ? C.green : C.red }}>
-                {latest?.realGain >= 0 ? "keeping up" : "falling behind"}
-              </span>
-              <span style={{ color:C.white }}> with inflation?</span>
-            </h1>
-            {latest && (
-              <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:20 }}>
-                <span style={{ fontSize:12, fontWeight:700, color:C.blue, background:C.blueBg, border:`1px solid ${C.blue}25`, borderRadius:6, padding:"4px 10px" }}>
-                  Wages: +{latest.wages.toFixed(1)}% YoY
-                </span>
-                <span style={{ fontSize:12, fontWeight:700, color:valColor(latest.cpi), background:valBg(latest.cpi), border:`1px solid ${valColor(latest.cpi)}25`, borderRadius:6, padding:"4px 10px" }}>
-                  Inflation: +{latest.cpi.toFixed(1)}% YoY
-                </span>
-                <span style={{ fontSize:12, fontWeight:700, color:latest.realGain>=0?C.green:C.red, background:latest.realGain>=0?C.greenBg:C.redBg, border:`1px solid ${latest.realGain>=0?C.green:C.red}25`, borderRadius:6, padding:"4px 10px" }}>
-                  Real gain: {latest.realGain>=0?"+":""}{latest.realGain.toFixed(1)}pp
-                </span>
-              </div>
-            )}
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", borderTop:`1px solid ${C.border}` }}>
-            {[
-              { label:"Wage Growth",   val:`${latest?.wages?.toFixed(1)}%`,   color:C.blue  },
-              { label:"CPI Inflation", val:`${latest?.cpi?.toFixed(1)}%`,     color:valColor(latest?.cpi||0) },
-              { label:"Real Gain/Loss",val:`${latest?.realGain>=0?"+":""}${latest?.realGain?.toFixed(1)}pp`, color:latest?.realGain>=0?C.green:C.red },
-            ].map((s,i)=>(
-              <div key={i} style={{ padding:"14px 16px", borderRight:i<2?`1px solid ${C.border}`:"none" }}>
-                <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
-                <div style={{ fontSize:22, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Wages vs CPI chart */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:16 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14, flexWrap:"wrap", gap:10 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Wage Growth vs CPI Inflation</div>
-              <div style={{ fontSize:10, color:C.textSecondary }}>Year-over-year % · Source: Statistics Canada table 14-10-0063-01</div>
-            </div>
-            <div style={{ display:"flex", gap:5 }}>
-              {["2Y","5Y","10Y","All"].map(r=><button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>)}
-            </div>
-          </div>
-          <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
-            {[{color:C.blue,label:"Wage Growth"},{color:C.yellow,label:"CPI Inflation"}].map((l,i)=>(
-              <div key={i} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSecondary }}>
-                <span style={{ width:16,height:3,background:l.color,borderRadius:2,display:"inline-block" }}/>{l.label}
-              </div>
-            ))}
-          </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={chart} margin={{ top:4, right:8, left:-20, bottom:36 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
-              <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
-              <Tooltip content={<MultiTip suffix="%"/>}/>
-              <ReferenceLine y={0} stroke={C.border}/>
-              <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
-              <Line type="monotone" dataKey="wages" stroke={C.blue}   strokeWidth={2.5} dot={false} name="Wage Growth"/>
-              <Line type="monotone" dataKey="cpi"   stroke={C.yellow} strokeWidth={2}   dot={false} name="CPI Inflation" strokeDasharray="5 3"/>
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Real wage gain/loss chart */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:4 }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Real Wage Gain / Loss</div>
-          <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>Wage growth minus inflation — positive means workers are gaining purchasing power</div>
-          <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={chart} margin={{ top:4, right:8, left:-20, bottom:36 }}>
-              <defs>
-                <linearGradient id="wageGainGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor={C.green} stopOpacity={0.25}/>
-                  <stop offset="95%" stopColor={C.green} stopOpacity={0}/>
-                </linearGradient>
-                <linearGradient id="wageLossGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%"  stopColor={C.red}/>
-                  <stop offset="100%" stopColor={C.red}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
-              <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}pp`}/>
-              <Tooltip formatter={(v,n)=>[`${v>0?"+":""}${v.toFixed(2)}pp`,"Real Wage Change"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
-              <ReferenceLine y={0} stroke={C.border2} strokeDasharray="4 3" label={{ value:"Break even", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
-              <Area type="monotone" dataKey="realGain" stroke={C.green} strokeWidth={2} fill="url(#wageGainGrad)" dot={false} name="Real Wage Change"/>
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </>)}
-    </div>
-  );
-}
-
-
 // ── Per-page SEO meta ────────────────────────────────────────────────────────
 const PAGE_META = [
   { path:"/inflation-rates",     title:"Canadian Inflation Rates — Live CPI by Category & Province | Canadianflation",         description:"Live Canadian CPI data by category and province. Track year-over-year inflation rates for food, shelter, transport and more. Sourced directly from Statistics Canada." },
@@ -2982,9 +2441,6 @@ const PAGE_META = [
   { path:"/",                    title:"Canadianflation — Canada's Independent Inflation Tracker",                              description:"Track Canadian inflation in real time. Live CPI data from Statistics Canada, purchasing power history, Taylor Rule analysis, and free financial calculators." },
   { path:"/retirement-calculator",   title:"Canadian Retirement Calculator — How Long Will Your Money Last? | Canadianflation",    description:"Calculate how long your retirement savings will last given inflation, withdrawals, and investment returns. Uses Statistics Canada CPI data." },
   { path:"/contribution-calculator", title:"RRSP & TFSA Contribution Room Calculator Canada | Canadianflation",                    description:"Calculate your RRSP deduction limit and TFSA contribution room for 2024. Free Canadian retirement account calculator." },
-  { path:"/grocery-prices",          title:"Canadian Grocery Price Tracker — Food Inflation by Category | Canadianflation",          description:"Track Canadian grocery price inflation by category — meat, dairy, bakery, vegetables and more. Live data from Statistics Canada." },
-  { path:"/exchange-rates",          title:"CAD Exchange Rates — Canadian Dollar vs Major Currencies | Canadianflation",              description:"Live and historical Canadian dollar exchange rates vs USD, EUR, GBP, JPY and more. Sourced from the Bank of Canada Valet API." },
-  { path:"/real-wages",              title:"Canadian Real Wages vs Inflation — Are You Keeping Up? | Canadianflation",               description:"Compare Canadian wage growth against CPI inflation. Are workers keeping up with the cost of living? Live data from Statistics Canada." },
 ];
 
 // ── Client-side routing map ───────────────────────────────────────────────────
@@ -2997,9 +2453,6 @@ const ROUTES = {
   "/mortgage-calculator":    4,
   "/retirement-calculator":  6,
   "/contribution-calculator":7,
-  "/grocery-prices":         8,
-  "/exchange-rates":         9,
-  "/real-wages":             10,
 };
 
 // ── Root App ──────────────────────────────────────────────────────────────────
@@ -3110,8 +2563,7 @@ export default function App() {
     setMeta('meta[name="description"]',        m.description);
     setMeta('meta[property="og:title"]',       m.title);
     setMeta('meta[property="og:description"]', m.description);
-    const canonPath = m.path === "/" ? "/" : m.path;
-    setMeta('meta[property="og:url"]', "https://www.canadianflation.ca" + canonPath);
+    setMeta('meta[property="og:url"]',         "https://www.canadianflation.ca" + m.path);
     setMeta('meta[name="twitter:title"]',      m.title);
     setMeta('meta[name="twitter:description"]',m.description);
   }, [page]);
@@ -3120,7 +2572,6 @@ export default function App() {
   const [mobileOpen,   setMobileOpen]   = useState(false);
   const [dataDropOpen, setDataDropOpen] = useState(false);
   const [calcDropOpen, setCalcDropOpen] = useState(false);
-  const [costDropOpen, setCostDropOpen] = useState(false);
 
   const DATA_PAGES = [
     { label:"Inflation Rates",   path:"/inflation-rates",  idx:0, desc:"CPI by category & province" },
@@ -3128,22 +2579,16 @@ export default function App() {
     { label:"Taylor Rule",       path:"/taylor-rule",      idx:2, desc:"BoC rate vs prescription"   },
   ];
   const CALC_PAGES = [
-    { label:"Interest Calculator",     path:"/interest-calculator",    idx:3,  desc:"Compound growth calculator"     },
-    { label:"Mortgage Calculator",     path:"/mortgage-calculator",    idx:4,  desc:"Payments, tax & borrowing"      },
-    { label:"Retirement Calculator",   path:"/retirement-calculator",  idx:6,  desc:"How long will your money last?" },
-    { label:"Contribution Calculator", path:"/contribution-calculator",idx:7,  desc:"RRSP & TFSA room calculator"    },
-  ];
-  const COST_PAGES = [
-    { label:"Grocery Prices",          path:"/grocery-prices",         idx:8,  desc:"Food inflation by category"     },
-    { label:"Exchange Rates",          path:"/exchange-rates",         idx:9,  desc:"CAD vs major currencies"        },
-    { label:"Real Wages",              path:"/real-wages",             idx:10, desc:"Are wages keeping up?"          },
+    { label:"Interest Calculator",     path:"/interest-calculator",    idx:3, desc:"Compound growth calculator"     },
+    { label:"Mortgage Calculator",     path:"/mortgage-calculator",    idx:4, desc:"Payments, tax & borrowing"      },
+    { label:"Retirement Calculator",   path:"/retirement-calculator",  idx:6, desc:"How long will your money last?" },
+    { label:"Contribution Calculator", path:"/contribution-calculator",idx:7, desc:"RRSP & TFSA room calculator"    },
   ];
 
-  const closeAll = () => { setDataDropOpen(false); setCalcDropOpen(false); setCostDropOpen(false); setMobileOpen(false); };
+  const closeAll = () => { setDataDropOpen(false); setCalcDropOpen(false); setMobileOpen(false); };
 
   const isDataActive = page <= 2;
-  const isCalcActive = [3,4,6,7].includes(page);
-  const isCostActive = [8,9,10].includes(page);
+  const isCalcActive = page >= 3 && page !== 5;
 
   return (
     <div style={{ minHeight:"100vh", background:C.bg, color:C.textPrimary, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
@@ -3163,7 +2608,6 @@ export default function App() {
         .spin{border:2px solid ${C.border};border-top-color:${C.yellow};border-radius:50%;animation:spin .7s linear infinite}
         .sub-scroll::-webkit-scrollbar{display:none}
         .nav-drop{position:absolute;top:calc(100% + 8px);left:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
-        .nav-drop-right{position:absolute;top:calc(100% + 8px);right:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
         .nav-drop-item{display:block;width:100%;padding:10px 14px;border-radius:8px;border:none;background:none;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s}
         .nav-drop-item:hover{background:${C.surface2}}
         .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
@@ -3218,7 +2662,7 @@ export default function App() {
           {/* Calculators dropdown */}
           <div style={{ position:"relative" }} onClick={e => e.stopPropagation()}>
             <button
-              onClick={() => { setCalcDropOpen(v => !v); setDataDropOpen(false); setCostDropOpen(false); }}
+              onClick={() => { setCalcDropOpen(v => !v); setDataDropOpen(false); }}
               style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
                 color: isCalcActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
                 padding:"8px 12px", borderRadius:8, transition:"all .15s",
@@ -3231,31 +2675,6 @@ export default function App() {
             {calcDropOpen && (
               <div className="nav-drop">
                 {CALC_PAGES.map(p => (
-                  <button key={p.idx} className="nav-drop-item" onClick={() => { navigate(p.path, p.idx); closeAll(); }}>
-                    <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
-                    <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Cost of Living dropdown */}
-          <div style={{ position:"relative" }} onClick={e => e.stopPropagation()}>
-            <button
-              onClick={() => { setCostDropOpen(v => !v); setDataDropOpen(false); setCalcDropOpen(false); }}
-              style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
-                color: isCostActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
-                padding:"8px 12px", borderRadius:8, transition:"all .15s",
-              }}>
-              Cost of Living
-              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ transform: costDropOpen?"rotate(180deg)":"none", transition:"transform .2s" }}>
-                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </button>
-            {costDropOpen && (
-              <div className="nav-drop-right">
-                {COST_PAGES.map(p => (
                   <button key={p.idx} className="nav-drop-item" onClick={() => { navigate(p.path, p.idx); closeAll(); }}>
                     <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
                     <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
@@ -3296,16 +2715,7 @@ export default function App() {
             <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
           </button>
         ))}
-        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 10px" }}>Cost of Living</div>
-        {COST_PAGES.map(p => (
-          <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
-            style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
-              border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:10, padding:"12px 14px",
-              marginBottom:6, cursor:"pointer", fontFamily:"inherit" }}>
-            <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
-            <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
-          </button>
-        ))}
+        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 10px" }}>Data</div>
       </div>
 
       {/* ── Page content ── */}
@@ -3334,12 +2744,8 @@ export default function App() {
           page === 2 ? <TaylorTab     data={data} vis={vis} rateData={rateData}/> :
           page === 3 ? <CompoundTab          vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
           page === 4 ? <MortgageTab          vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
-          page === 6  ? <RetirementTab        vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
-          page === 7  ? <ContributionTab      vis={vis}/> :
-          page === 8  ? <GroceryTab           vis={vis}/> :
-          page === 9  ? <ExchangeRatesTab     vis={vis}/> :
-          page === 10 ? <RealWagesTab         vis={vis}/> :
-                        <ContributionTab      vis={vis}/>
+          page === 6 ? <RetirementTab        vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
+                       <ContributionTab      vis={vis}/>
         )}
 
         <div style={{ textAlign:"center", fontSize:11, color:C.textMuted, fontWeight:500, marginTop:32, paddingTop:20, borderTop:`1px solid ${C.border}`, lineHeight:1.8 }}>
