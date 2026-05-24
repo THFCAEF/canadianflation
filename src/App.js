@@ -2437,16 +2437,17 @@ function ContributionTab({ vis }) {
 // ── Grocery Prices Tab ────────────────────────────────────────────────────────
 // Data: StatCan table 18-10-0245-01 — food subcategories CPI
 // Series use same WDS pattern as main CPI fetch
+// Food subcategory CPI vectors — table 18-10-0004-01 (same as main CPI)
+// These are proper CPI indexes suitable for YoY comparison
 const GROCERY_VECTORS = {
-  "Meat":               41691770,
-  "Fish & seafood":     41691782,
-  "Dairy & eggs":       41691794,
-  "Bakery & cereals":   41691806,
-  "Fresh vegetables":   41691830,
-  "Fresh fruit":        41691842,
-  "Other food":         41691854,
-  "Food from stores":   41691758,
-  "Food from restaurants": 41691866,
+  "Meat":                  41690985,
+  "Fish & seafood":        41690998,
+  "Dairy & eggs":          41691011,
+  "Bakery & cereals":      41691024,
+  "Fresh vegetables":      41691049,
+  "Fresh fruit":           41691037,
+  "Food from stores":      41690974,
+  "Food from restaurants": 41691062,
 };
 const GROCERY_COLORS = {
   "Meat":"#E05A4A","Fish & seafood":"#6B9FE4","Dairy & eggs":"#F5C842",
@@ -2458,7 +2459,7 @@ function GroceryTab({ vis }) {
   const [grocData, setGrocData] = useState(null);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState(false);
-  const [active,   setActive]   = useState(Object.fromEntries(Object.keys(GROCERY_VECTORS).filter(k=>!k.includes("stores")&&!k.includes("restaurants")).map(k=>[k,true])));
+  const [active,   setActive]   = useState(Object.fromEntries(Object.keys(GROCERY_VECTORS).filter(k=>k!=="Food from stores"&&k!=="Food from restaurants").map(k=>[k,true])));
   const [range,    setRange]    = useState("5Y");
 
   useEffect(() => {
@@ -2467,7 +2468,7 @@ function GroceryTab({ vis }) {
         const ids = Object.values(GROCERY_VECTORS);
         const res = await fetch(`${STATCAN_BASE}/getDataFromVectorsAndLatestNPeriods`, {
           method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify(ids.map(id => ({ vectorId:id, latestN:120 }))),
+          body: JSON.stringify(ids.map(id => ({ vectorId:id, latestN:600 }))),
         });
         if (!res.ok) throw new Error();
         const json   = await res.json();
@@ -2492,7 +2493,7 @@ function GroceryTab({ vis }) {
   // Build chart data — merge all categories by date
   const chartData = useMemo(() => {
     if (!grocData) return [];
-    const keys = Object.keys(GROCERY_VECTORS).filter(k=>!k.includes("stores")&&!k.includes("restaurants"));
+    const keys = Object.keys(GROCERY_VECTORS).filter(k=>k!=="Food from stores"&&k!=="Food from restaurants");
     const allDates = [...new Set(keys.flatMap(k => (grocData[k]||[]).map(p=>p.iso)))].sort();
     const n = RANGE_N[range] || 60;
     return allDates.slice(-n).map(iso => {
@@ -2517,7 +2518,7 @@ function GroceryTab({ vis }) {
   }, [grocData]);
 
   const sortedCategories = Object.keys(GROCERY_VECTORS)
-    .filter(k=>!k.includes("stores")&&!k.includes("restaurants"))
+    .filter(k=>k!=="Food from stores"&&k!=="Food from restaurants")
     .sort((a,b) => (latest[b]||0) - (latest[a]||0));
 
   const fmtDate2 = iso => { const d=new Date(iso+"T12:00:00"); return `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]} ${d.getFullYear()}`; };
@@ -2624,12 +2625,20 @@ function parseFXValet(json, seriesId) {
   try {
     const obs = json?.observations;
     if (!Array.isArray(obs)) return [];
-    return obs.map(o => {
-      const date = o.d;
-      const val  = parseFloat(o[seriesId]?.v);
-      if (!date || isNaN(val) || val <= 0) return null;
-      return { date: fmtDate(date + "-01"), iso: date + "-01", rate: val };
-    }).filter(Boolean);
+    // Downsample daily → monthly average for clean charting
+    const byMonth = {};
+    obs.forEach(o => {
+      const val = parseFloat(o[seriesId]?.v);
+      if (!o.d || isNaN(val) || val <= 0) return;
+      const ym = o.d.slice(0, 7);
+      if (!byMonth[ym]) byMonth[ym] = [];
+      byMonth[ym].push(val);
+    });
+    return Object.keys(byMonth).sort().map(ym => {
+      const vals = byMonth[ym];
+      const avg  = vals.reduce((s,v)=>s+v,0) / vals.length;
+      return { date: fmtDate(ym + "-01"), iso: ym + "-01", rate: +avg.toFixed(4) };
+    });
   } catch { return []; }
 }
 
@@ -2808,8 +2817,8 @@ function RealWagesTab({ vis }) {
         const res = await fetch(`${STATCAN_BASE}/getDataFromVectorsAndLatestNPeriods`, {
           method:"POST", headers:{"Content-Type":"application/json"},
           body: JSON.stringify([
-            { vectorId: WAGES_VECTOR, latestN: 240 },
-            { vectorId: CPI_VECTOR,   latestN: 240 },
+            { vectorId: WAGES_VECTOR, latestN: 600 },
+            { vectorId: CPI_VECTOR,   latestN: 600 },
           ]),
         });
         if (!res.ok) throw new Error();
@@ -3154,6 +3163,7 @@ export default function App() {
         .spin{border:2px solid ${C.border};border-top-color:${C.yellow};border-radius:50%;animation:spin .7s linear infinite}
         .sub-scroll::-webkit-scrollbar{display:none}
         .nav-drop{position:absolute;top:calc(100% + 8px);left:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
+        .nav-drop-right{position:absolute;top:calc(100% + 8px);right:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
         .nav-drop-item{display:block;width:100%;padding:10px 14px;border-radius:8px;border:none;background:none;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s}
         .nav-drop-item:hover{background:${C.surface2}}
         .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
@@ -3244,7 +3254,7 @@ export default function App() {
               </svg>
             </button>
             {costDropOpen && (
-              <div className="nav-drop">
+              <div className="nav-drop-right">
                 {COST_PAGES.map(p => (
                   <button key={p.idx} className="nav-drop-item" onClick={() => { navigate(p.path, p.idx); closeAll(); }}>
                     <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
