@@ -8,4 +8,7 @@
   <url><loc>https://www.canadianflation.ca/mortgage-calculator</loc><changefreq>yearly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.canadianflation.ca/retirement-calculator</loc><changefreq>yearly</changefreq><priority>0.8</priority></url>
   <url><loc>https://www.canadianflation.ca/contribution-calculator</loc><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.canadianflation.ca/grocery-prices</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.canadianflation.ca/exchange-rates</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.canadianflation.ca/real-wages</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
