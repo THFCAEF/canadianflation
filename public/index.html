@@ -7,17 +7,19 @@
     <meta name="theme-color" content="#000000" />
 
     <title>Canadianflation — Canada's Independent Inflation Tracker</title>
-    <meta name="description" content="Track Canadian inflation in real time. Live CPI data by category and province, purchasing power history, Taylor Rule analysis, and free Canadian financial calculators. Sourced from Statistics Canada." />
-    <meta name="keywords" content="Canadian inflation rate, CPI Canada 2024, inflation calculator Canada, purchasing power Canada, mortgage calculator Canada, Bank of Canada rate, compound interest calculator Canada" />
+    <meta name="description" content="Track Canadian inflation in real time. Live CPI, grocery prices, exchange rates, wage growth, purchasing power and free financial calculators. Sourced from Statistics Canada and Bank of Canada." />
+    <meta name="keywords" content="Canadian inflation rate, CPI Canada, inflation calculator Canada, purchasing power Canada, mortgage calculator Canada, Bank of Canada rate, grocery prices Canada, CAD exchange rate, RRSP calculator, TFSA calculator" />
+
+    <!-- Canonical: always www, no trailing slash -->
     <link rel="canonical" href="https://www.canadianflation.ca/" />
 
     <!-- Open Graph -->
-    <meta property="og:type"        content="website" />
-    <meta property="og:site_name"   content="Canadianflation" />
-    <meta property="og:url"         content="https://www.canadianflation.ca/" />
-    <meta property="og:title"       content="Canadianflation — Canada's Independent Inflation Tracker" />
-    <meta property="og:description" content="Real-time Canadian CPI data from Statistics Canada. Track inflation by category and province, see how your dollar has lost value over time, and use our free mortgage and interest calculators." />
-    <meta property="og:image"       content="https://www.canadianflation.ca/social-preview.png" />
+    <meta property="og:type"         content="website" />
+    <meta property="og:site_name"    content="Canadianflation" />
+    <meta property="og:url"          content="https://www.canadianflation.ca/" />
+    <meta property="og:title"        content="Canadianflation — Canada's Independent Inflation Tracker" />
+    <meta property="og:description"  content="Real-time Canadian CPI, grocery prices, exchange rates, wage growth and free financial calculators. Live data from Statistics Canada and the Bank of Canada." />
+    <meta property="og:image"        content="https://www.canadianflation.ca/social-preview.png" />
     <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt"    content="Canadianflation — Canadian CPI Tracker dashboard" />
@@ -26,7 +28,7 @@
     <!-- Twitter / X -->
     <meta name="twitter:card"        content="summary_large_image" />
     <meta name="twitter:title"       content="Canadianflation — Canada's Independent Inflation Tracker" />
-    <meta name="twitter:description" content="Real-time Canadian CPI data from Statistics Canada. Track inflation by category, province, and see purchasing power over time." />
+    <meta name="twitter:description" content="Real-time Canadian CPI, grocery prices, exchange rates, wage growth and free financial calculators." />
     <meta name="twitter:image"       content="https://www.canadianflation.ca/social-preview.png" />
     <meta name="twitter:image:alt"   content="Canadianflation — Canadian CPI Tracker" />
 
@@ -44,7 +46,7 @@
           "@id": "https://www.canadianflation.ca/#website",
           "url": "https://www.canadianflation.ca/",
           "name": "Canadianflation",
-          "description": "Canada's independent inflation tracker — live CPI data from Statistics Canada and the Bank of Canada.",
+          "description": "Canada's independent inflation tracker — live CPI, grocery prices, exchange rates, wages and free financial calculators.",
           "inLanguage": "en-CA",
           "publisher": {
             "@type": "Organization",
@@ -59,19 +61,19 @@
           "url": "https://www.canadianflation.ca/",
           "applicationCategory": "FinanceApplication",
           "operatingSystem": "Any",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "CAD"
-          },
-          "description": "Free Canadian inflation tracker and financial calculator suite. Live CPI data, purchasing power history, mortgage calculator, compound interest calculator, and debt impact calculator.",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CAD" },
+          "description": "Free Canadian inflation tracker with CPI data, grocery prices, CAD exchange rates, real wage tracker, mortgage calculator, compound interest, RRSP/TFSA, and retirement calculators.",
           "featureList": [
             "Live Canadian CPI inflation rates by category and province",
-            "Canadian dollar purchasing power history",
+            "Canadian grocery price inflation by food category",
+            "CAD exchange rates vs USD, EUR, GBP, JPY and more",
+            "Canadian real wage growth vs inflation tracker",
+            "Purchasing power of the Canadian dollar since 1914",
             "Taylor Rule vs Bank of Canada rate comparison",
             "Canadian mortgage payment calculator with stress test",
             "Compound interest calculator with inflation adjustment",
-            "Debt load impact calculator (GDS/TDS)"
+            "RRSP and TFSA contribution room calculator",
+            "Retirement savings calculator"
           ]
         },
         {
@@ -82,15 +84,23 @@
               "name": "What is the current inflation rate in Canada?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Canada's current inflation rate (CPI) is sourced live from Statistics Canada table 18-10-0004-01. StatCan releases monthly CPI data approximately 3 weeks after the reference month."
+                "text": "Canada's current inflation rate is sourced live from Statistics Canada table 18-10-0004-01. StatCan releases monthly CPI data approximately 3 weeks after the reference month."
               }
             },
             {
               "@type": "Question",
-              "name": "How much has the Canadian dollar lost to inflation?",
+              "name": "How much have grocery prices increased in Canada?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Canadianflation's purchasing power calculator shows the real value of the Canadian dollar over time using Statistics Canada's official CPI index going back decades."
+                "text": "Canadianflation's grocery price tracker shows food inflation by subcategory — meat, dairy, bakery, vegetables and more — using Statistics Canada table 18-10-0245-01."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the Canadian dollar exchange rate today?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Canadianflation shows live CAD exchange rates vs USD, EUR, GBP, JPY and other major currencies, sourced from the Bank of Canada Valet API."
               }
             },
             {
