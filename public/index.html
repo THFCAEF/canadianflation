@@ -5,38 +5,27 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='32' fill='%23E05A4A'/><text x='32' y='46' font-size='42' font-weight='bold' text-anchor='middle' font-family='Arial' fill='%23fff'>$</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-
     <title>Canadianflation — Canada's Independent Inflation Tracker</title>
-    <meta name="description" content="Track Canadian inflation in real time. Live CPI, grocery prices, exchange rates, wage growth, purchasing power and free financial calculators. Sourced from Statistics Canada and Bank of Canada." />
-    <meta name="keywords" content="Canadian inflation rate, CPI Canada, inflation calculator Canada, purchasing power Canada, mortgage calculator Canada, Bank of Canada rate, grocery prices Canada, CAD exchange rate, RRSP calculator, TFSA calculator" />
-
-    <!-- Canonical: always www, no trailing slash -->
+    <meta name="description" content="Track Canadian inflation in real time. Live CPI, food prices, exchange rates, wage growth, purchasing power and free financial calculators. Sourced from Statistics Canada and Bank of Canada." />
+    <meta name="keywords" content="Canadian inflation rate, CPI Canada, inflation calculator Canada, purchasing power Canada, mortgage calculator Canada, Bank of Canada rate, grocery prices Canada, food inflation Canada, CAD exchange rate, RRSP calculator, TFSA calculator, real wages Canada" />
     <link rel="canonical" href="https://www.canadianflation.ca/" />
-
-    <!-- Open Graph -->
     <meta property="og:type"         content="website" />
     <meta property="og:site_name"    content="Canadianflation" />
     <meta property="og:url"          content="https://www.canadianflation.ca/" />
     <meta property="og:title"        content="Canadianflation — Canada's Independent Inflation Tracker" />
-    <meta property="og:description"  content="Real-time Canadian CPI, grocery prices, exchange rates, wage growth and free financial calculators. Live data from Statistics Canada and the Bank of Canada." />
+    <meta property="og:description"  content="Real-time Canadian CPI, food prices, exchange rates, wage growth and free financial calculators. Live data from Statistics Canada and the Bank of Canada." />
     <meta property="og:image"        content="https://www.canadianflation.ca/social-preview.png" />
     <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt"    content="Canadianflation — Canadian CPI Tracker dashboard" />
     <meta property="og:locale"       content="en_CA" />
-
-    <!-- Twitter / X -->
     <meta name="twitter:card"        content="summary_large_image" />
     <meta name="twitter:title"       content="Canadianflation — Canada's Independent Inflation Tracker" />
-    <meta name="twitter:description" content="Real-time Canadian CPI, grocery prices, exchange rates, wage growth and free financial calculators." />
+    <meta name="twitter:description" content="Real-time Canadian CPI, food prices, exchange rates, wage growth and free financial calculators." />
     <meta name="twitter:image"       content="https://www.canadianflation.ca/social-preview.png" />
     <meta name="twitter:image:alt"   content="Canadianflation — Canadian CPI Tracker" />
-
-    <!-- Security -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
-
-    <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -46,30 +35,23 @@
           "@id": "https://www.canadianflation.ca/#website",
           "url": "https://www.canadianflation.ca/",
           "name": "Canadianflation",
-          "description": "Canada's independent inflation tracker — live CPI, grocery prices, exchange rates, wages and free financial calculators.",
+          "description": "Canada's independent inflation tracker — live CPI, food prices, exchange rates, wages and free financial calculators.",
           "inLanguage": "en-CA",
-          "publisher": {
-            "@type": "Organization",
-            "name": "Canadianflation",
-            "url": "https://www.canadianflation.ca/"
-          }
+          "publisher": { "@type":"Organization","name":"Canadianflation","url":"https://www.canadianflation.ca/" }
         },
         {
           "@type": "WebApplication",
-          "@id": "https://www.canadianflation.ca/#app",
           "name": "Canadianflation",
           "url": "https://www.canadianflation.ca/",
           "applicationCategory": "FinanceApplication",
           "operatingSystem": "Any",
-          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CAD" },
-          "description": "Free Canadian inflation tracker with CPI data, grocery prices, CAD exchange rates, real wage tracker, mortgage calculator, compound interest, RRSP/TFSA, and retirement calculators.",
+          "offers": { "@type":"Offer","price":"0","priceCurrency":"CAD" },
           "featureList": [
             "Live Canadian CPI inflation rates by category and province",
-            "Canadian grocery price inflation by food category",
+            "Canadian food price inflation by grocery category",
             "CAD exchange rates vs USD, EUR, GBP, JPY and more",
             "Canadian real wage growth vs inflation tracker",
-            "Purchasing power of the Canadian dollar since 1914",
-            "Taylor Rule vs Bank of Canada rate comparison",
+            "Purchasing power of the Canadian dollar over time",
             "Canadian mortgage payment calculator with stress test",
             "Compound interest calculator with inflation adjustment",
             "RRSP and TFSA contribution room calculator",
@@ -79,38 +61,10 @@
         {
           "@type": "FAQPage",
           "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "What is the current inflation rate in Canada?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Canada's current inflation rate is sourced live from Statistics Canada table 18-10-0004-01. StatCan releases monthly CPI data approximately 3 weeks after the reference month."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How much have grocery prices increased in Canada?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Canadianflation's grocery price tracker shows food inflation by subcategory — meat, dairy, bakery, vegetables and more — using Statistics Canada table 18-10-0245-01."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "What is the Canadian dollar exchange rate today?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Canadianflation shows live CAD exchange rates vs USD, EUR, GBP, JPY and other major currencies, sourced from the Bank of Canada Valet API."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How does the Canadian mortgage stress test work?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "The OSFI mortgage stress test requires qualifying at the higher of your contract rate plus 2%, or 5.25%. Our mortgage calculator applies this automatically."
-              }
-            }
+            { "@type":"Question","name":"What is the current inflation rate in Canada?","acceptedAnswer":{"@type":"Answer","text":"Canada's current inflation rate is sourced live from Statistics Canada table 18-10-0004-01, updated monthly."}},
+            { "@type":"Question","name":"How much have food prices increased in Canada?","acceptedAnswer":{"@type":"Answer","text":"Canadianflation's food price tracker shows grocery inflation by subcategory using Statistics Canada CPI data."}},
+            { "@type":"Question","name":"What is the Canadian dollar exchange rate today?","acceptedAnswer":{"@type":"Answer","text":"Canadianflation shows live CAD exchange rates vs USD, EUR, GBP, JPY and more from the Bank of Canada Valet API."}},
+            { "@type":"Question","name":"How does the Canadian mortgage stress test work?","acceptedAnswer":{"@type":"Answer","text":"The OSFI stress test requires qualifying at the higher of your contract rate plus 2%, or 5.25%. Our mortgage calculator applies this automatically."}}
           ]
         }
       ]
