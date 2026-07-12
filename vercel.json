@@ -4,14 +4,16 @@
   "rewrites": [
     { "source": "/inflation-rates",         "destination": "/index.html" },
     { "source": "/purchasing-power",        "destination": "/index.html" },
-    { "source": "/taylor-rule",             "destination": "/index.html" },
     { "source": "/interest-calculator",     "destination": "/index.html" },
     { "source": "/mortgage-calculator",     "destination": "/index.html" },
     { "source": "/retirement-calculator",   "destination": "/index.html" },
     { "source": "/contribution-calculator", "destination": "/index.html" },
-    { "source": "/grocery-prices",          "destination": "/inflation-rates" },
     { "source": "/exchange-rates",          "destination": "/index.html" },
-    { "source": "/real-wages",              "destination": "/index.html" }
+    { "source": "/real-wages",              "destination": "/index.html" },
+    { "source": "/grocery-prices",          "destination": "/inflation-rates" }
+  ],
+  "redirects": [
+    { "source": "/taylor-rule", "destination": "/inflation-rates", "permanent": true }
   ],
   "headers": [
     {
