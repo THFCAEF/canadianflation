@@ -798,6 +798,48 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
   </>);
 }
 
+// ── Input formatting helpers ─────────────────────────────────────────────────
+function fmtInput(v) {
+  if (v === "" || v == null) return "";
+  const s = String(v).replace(/,/g, "");
+  const trailingDot = s.endsWith(".");
+  const parts = s.split(".");
+  const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const decPart = parts.length > 1 ? "." + parts[1] : "";
+  const result = intPart + decPart + (trailingDot && parts.length === 1 ? "." : "");
+  return result;
+}
+
+function parseInput(v) {
+  return String(v).replace(/,/g, "");
+}
+
+// ── Shared calculator input field ─────────────────────────────────────────────
+function CalcField({ label, value, onChange, placeholder, hint, isRate }) {
+  const handleChange = e => {
+    const raw = e.target.value.replace(/,/g, "");
+    if (raw !== "" && !/^-?\d*\.?\d*$/.test(raw)) return;
+    onChange(raw);
+  };
+  const displayVal = isRate ? value : fmtInput(value);
+  return (
+    <div style={{ marginBottom:16 }}>
+      <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>
+        {label}
+      </div>
+      {hint && <div style={{ fontSize:11, color:C.textSecondary, marginBottom:6 }}>{hint}</div>}
+      <input
+        type="text"
+        inputMode="decimal"
+        value={displayVal}
+        onChange={handleChange}
+        placeholder={placeholder}
+        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:14, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+      />
+    </div>
+  );
+}
+
 // ── TAB 4: Interest Calculator ──────────────────────────────────────
 const CI_FREQS = [
   { label:"Annually",     n:1   },
