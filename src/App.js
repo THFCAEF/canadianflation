@@ -388,58 +388,85 @@ function HomepageHero({ navigate, cur }) {
         </div>
       </div>
 
-      {/* Mission statement */}
-      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 28px", marginBottom:16 }}>
-        <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, fontWeight:700, color:C.white, marginBottom:10, letterSpacing:"-.3px" }}>
-          Financial literacy is a right, not a privilege.
-        </h2>
-        <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, maxWidth:680, margin:"0 0 12px" }}>
-          Most Canadians experience inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no easy way to see the full picture. Canadianflation exists to change that.
-        </p>
-        <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, maxWidth:680, margin:0 }}>
-          We built a free, source-cited tool that puts real data in front of anyone who wants it,
-          presented the way it deserves to be: clearly, honestly, and without spin.
-        </p>
+      {/* Two-column section: mission + track inflation */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:12, marginBottom:12 }}>
+
+        {/* Mission */}
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 24px" }}>
+          <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:12 }}>Our mission</div>
+          <p style={{ fontSize:14, fontWeight:600, color:C.white, lineHeight:1.6, margin:"0 0 12px" }}>
+            Financial literacy is a right, not a privilege.
+          </p>
+          <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.75, margin:0 }}>
+            Most Canadians feel inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no clear way to see the full picture. We built a free, source-cited tool that puts real data in front of anyone who wants it, presented clearly and without spin.
+          </p>
+        </div>
+
+        {/* Data sources */}
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 24px" }}>
+          <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:12 }}>Data sources</div>
+          <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+            {[
+              { name:"Statistics Canada", detail:"CPI, food prices, wages", url:"https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810000401" },
+              { name:"Bank of Canada",    detail:"Exchange rates via Valet API", url:"https://www.bankofcanada.ca/valet/docs" },
+              { name:"CRA",              detail:"RRSP & TFSA annual limits", url:"https://www.canada.ca/en/revenue-agency.html" },
+            ].map((s,i) => (
+              <a key={i} href={s.url} target="_blank" rel="noopener noreferrer"
+                style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, padding:"10px 14px", background:C.surface2, borderRadius:10, textDecoration:"none", border:`1px solid ${C.border}` }}>
+                <div>
+                  <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary }}>{s.name}</div>
+                  <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{s.detail}</div>
+                </div>
+                <span style={{ color:C.green, fontSize:14, flexShrink:0 }}>↗</span>
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Navigation cards */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))", gap:12 }}>
-        {LINKS.map((link, i) => (
-          <button key={i} onClick={() => navigate(link.path, link.idx)} style={{
-            background:C.surface, border:`1px solid ${C.border}`, borderRadius:14,
-            padding:"20px 18px", cursor:"pointer", fontFamily:"inherit", textAlign:"left",
-            transition:"border-color .15s, background .15s", WebkitTapHighlightColor:"transparent",
-          }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = C.yellow; e.currentTarget.style.background = C.surface2; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.surface; }}>
-            <div style={{ fontSize:22, marginBottom:10 }}>{link.icon}</div>
-            <div style={{ fontSize:13, fontWeight:700, color:C.white, marginBottom:5 }}>{link.label}</div>
-            <div style={{ fontSize:11, color:C.textMuted, lineHeight:1.6 }}>{link.desc}</div>
-            <div style={{ fontSize:11, color:C.yellow, marginTop:10, fontWeight:600 }}>Explore →</div>
-          </button>
-        ))}
+      {/* Section label */}
+      <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", margin:"8px 0 10px" }}>
+        Explore
       </div>
 
-      {/* How it works */}
-      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 28px", marginTop:14 }}>
-        <h2 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, fontWeight:700, color:C.white, marginBottom:10, letterSpacing:"-.3px" }}>
-          How it works
-        </h2>
-        <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, maxWidth:680, margin:0 }}>
-          Canadianflation is a free Canadian inflation calculator that fetches live data directly from
-          Statistics Canada's Web Data Service (table 18-10-0004-01) and the Bank of Canada Valet API on every page load —
-          similar to the Bank of Canada inflation calculator, but with a broader set of tools built for everyday Canadians.
-          Every number you see traces to an official government source, updated monthly when Statistics Canada publishes new CPI data.
-        </p>
-        <div style={{ display:"flex", gap:16, marginTop:14, flexWrap:"wrap" }}>
-          <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810000401" target="_blank" rel="noopener noreferrer"
-            style={{ fontSize:11, color:C.textMuted, textDecoration:"none", display:"flex", alignItems:"center", gap:5 }}>
-            <span style={{ color:C.green }}>↗</span> Statistics Canada — Table 18-10-0004-01
-          </a>
-          <a href="https://www.bankofcanada.ca/valet/docs" target="_blank" rel="noopener noreferrer"
-            style={{ fontSize:11, color:C.textMuted, textDecoration:"none", display:"flex", alignItems:"center", gap:5 }}>
-            <span style={{ color:C.green }}>↗</span> Bank of Canada Valet API
-          </a>
+      {/* Navigation cards — two rows: data on top, tools below */}
+      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+
+        {/* Track Inflation row */}
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:8 }}>
+          {LINKS.filter(l=>[0,1,8,10,9].includes(l.idx)).map((link, i) => (
+            <button key={i} onClick={() => navigate(link.path, link.idx)} style={{
+              background:C.surface, border:`1px solid ${C.border}`, borderRadius:12,
+              padding:"16px 14px", cursor:"pointer", fontFamily:"inherit", textAlign:"left",
+              transition:"border-color .15s, background .15s", WebkitTapHighlightColor:"transparent",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = C.yellow; e.currentTarget.style.background = C.surface2; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.surface; }}>
+              <div style={{ fontSize:18, marginBottom:8 }}>{link.icon}</div>
+              <div style={{ fontSize:12, fontWeight:700, color:C.white, marginBottom:3 }}>{link.label}</div>
+              <div style={{ fontSize:10, color:C.textMuted, lineHeight:1.5 }}>{link.desc}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* Financial Tools row */}
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))", gap:8 }}>
+          {LINKS.filter(l=>[3,4].includes(l.idx)).concat([
+            { label:"Retirement",   desc:"How long will your savings last?",   path:"/retirement-calculator",   idx:6,  icon:"🏖️" },
+            { label:"RRSP & TFSA",  desc:"Calculate your contribution room",   path:"/contribution-calculator", idx:7,  icon:"📋" },
+          ]).map((link, i) => (
+            <button key={i} onClick={() => navigate(link.path, link.idx)} style={{
+              background:C.surface, border:`1px solid ${C.border}`, borderRadius:12,
+              padding:"16px 14px", cursor:"pointer", fontFamily:"inherit", textAlign:"left",
+              transition:"border-color .15s, background .15s", WebkitTapHighlightColor:"transparent",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = C.blue; e.currentTarget.style.background = C.surface2; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = C.surface; }}>
+              <div style={{ fontSize:18, marginBottom:8 }}>{link.icon}</div>
+              <div style={{ fontSize:12, fontWeight:700, color:C.white, marginBottom:3 }}>{link.label}</div>
+              <div style={{ fontSize:10, color:C.textMuted, lineHeight:1.5 }}>{link.desc}</div>
+            </button>
+          ))}
         </div>
       </div>
     </div>
@@ -1737,7 +1764,7 @@ function MortgageTab({ vis, liveCpi }) {
                   </div>
                 </div>
               </div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(90px,1fr))", gap:8, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
                 {[
                   { label:"Debt Cost",      val:fmt(result.base.price - result.withAll.price), color:C.red,    note:"Home price lost to debt" },
                   { label:"GDS Ratio",      val:`${result.withAll.gds.toFixed(1)}%`,           color:result.withAll.gds > 39 ? C.red : C.green, note:"Limit: 39%" },
@@ -2319,8 +2346,6 @@ function ContributionTab({ vis }) {
 
 
 // ── Food Prices Tab ────────────────────────────────────────────────────────
-// Data: StatCan table 18-10-0245-01 — food subcategories CPI
-// Series use same WDS pattern as main CPI fetch
 // Food subcategory CPI vectors — table 18-10-0004-01 (same as main CPI)
 // These are proper CPI indexes suitable for YoY comparison
 const GROCERY_VECTORS = {
@@ -2413,7 +2438,7 @@ function GroceryTab({ vis }) {
       {loading ? (
         <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:300, gap:16 }}>
           <div className="spin" style={{ width:32, height:32 }}/>
-          <p style={{ color:C.textMuted, fontSize:12 }}>Loading grocery price data from Statistics Canada…</p>
+          <p style={{ color:C.textMuted, fontSize:12 }}>Loading food price data…</p>
         </div>
       ) : error ? (
         <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
@@ -2427,12 +2452,12 @@ function GroceryTab({ vis }) {
             Canadian Food Prices · Year-over-Year · {latestDate}
           </div>
           <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,44px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 16px" }}>
-            Food Inflation by Category
+            What's Getting More Expensive at the Grocery Store
           </h1>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))", gap:8 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
             {[
-              { label:"Food from Stores",       key:"Food from stores" },
-              { label:"Food from Restaurants",  key:"Food from restaurants" },
+              { label:"Groceries & Food at Home", key:"Food from stores" },
+              { label:"Restaurants & Takeout",     key:"Food from restaurants" },
             ].map(({label,key},i) => (
               <div key={i} style={{ background:C.surface2, borderRadius:10, padding:"12px 14px" }}>
                 <div style={{ fontSize:10, color:C.textMuted, fontWeight:600, marginBottom:4 }}>{label}</div>
@@ -2443,12 +2468,12 @@ function GroceryTab({ vis }) {
             ))}
           </div>
           <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>
-            Source: Statistics Canada table 18-10-0245-01 · Data: subcategory food CPI indexes
+            Source: Statistics Canada · Table 18-10-0004-01
           </div>
         </div>
 
         {/* Snapshot cards */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:10, marginBottom:16 }}>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))", gap:8, marginBottom:16 }}>
           {sortedCategories.map((k,i) => (
             <div key={i} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:"14px 12px" }}>
               <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>{k}</div>
@@ -2456,7 +2481,7 @@ function GroceryTab({ vis }) {
                 {fmt(latest[k])}
               </div>
               <div style={{ fontSize:9, color:valColor(latest[k]||0), marginTop:3 }}>
-                {(latest[k]||0) > BOC_TARGET ? "Above target" : "At/below target"}
+                {(latest[k]||0) > BOC_TARGET ? `${((latest[k]||0) - BOC_TARGET).toFixed(1)}pp above BoC target` : "Within BoC target range"}
               </div>
             </div>
           ))}
@@ -2467,7 +2492,7 @@ function GroceryTab({ vis }) {
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12, flexWrap:"wrap", gap:10 }}>
             <div>
               <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Food Price Trends</div>
-              <div style={{ fontSize:10, color:C.textSecondary }}>Year-over-year % · Source: Statistics Canada 18-10-0245-01</div>
+              <div style={{ fontSize:10, color:C.textSecondary }}>Year-over-year change · Statistics Canada table 18-10-0004-01</div>
             </div>
             <div style={{ display:"flex", gap:5 }}>
               {["2Y","5Y","10Y"].map(r=><button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>)}
@@ -2583,8 +2608,8 @@ function ExchangeRatesTab({ vis }) {
           <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
             Canadian Dollar Exchange Rates · {latest?.date}
           </div>
-          <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(24px,4vw,38px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 16px" }}>
-            CAD vs Major World Currencies
+          <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(22px,5vw,38px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 10px" }}>
+            CAD vs Major Currencies
           </h1>
           <div style={{ fontSize:10, color:C.textMuted, marginBottom:6 }}>
             Source: Bank of Canada Valet API · Daily rates published by 16:30 ET
@@ -2594,8 +2619,8 @@ function ExchangeRatesTab({ vis }) {
         {/* Currency rate table */}
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:16 }}>
           <div style={{ fontSize:14, fontWeight:700, marginBottom:14 }}>Live Rates — 1 Foreign Currency = X CAD</div>
-          <div style={{ overflowX:"auto" }}>
-            <table style={{ width:"100%", borderCollapse:"collapse" }}>
+          <div style={{ overflowX:"auto", WebkitOverflowScrolling:"touch" }}>
+            <table style={{ width:"100%", borderCollapse:"collapse", minWidth:360 }}>
               <thead>
                 <tr style={{ borderBottom:`1px solid ${C.border2}` }}>
                   {["Currency","Rate (→ CAD)","1Y Change","Select"].map((h,i)=>(
@@ -2779,7 +2804,7 @@ function RealWagesTab({ vis }) {
               </div>
             )}
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", borderTop:`1px solid ${C.border}` }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(90px,1fr))", borderTop:`1px solid ${C.border}` }}>
             {[
               { label:"Wage Growth",   val:`${latest?.wages?.toFixed(1)}%`,   color:C.blue  },
               { label:"CPI Inflation", val:`${latest?.cpi?.toFixed(1)}%`,     color:valColor(latest?.cpi||0) },
@@ -3029,6 +3054,8 @@ export default function App() {
         @keyframes spin{to{transform:rotate(360deg)}}
         .spin{border:2px solid ${C.border};border-top-color:${C.yellow};border-radius:50%;animation:spin .7s linear infinite}
         .sub-scroll::-webkit-scrollbar{display:none}
+        .overflow-table::-webkit-scrollbar{height:3px}
+        .overflow-table::-webkit-scrollbar-thumb{background:${C.border2};border-radius:2px}
         .nav-drop{position:absolute;top:calc(100% + 8px);left:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
         .nav-drop-right{position:absolute;top:calc(100% + 8px);right:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
         .nav-drop-item{display:block;width:100%;padding:10px 14px;border-radius:8px;border:none;background:none;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s}
