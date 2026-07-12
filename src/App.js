@@ -294,12 +294,12 @@ function taylorRate(inflation) {
 function FilterPill({ label, color, active, onClick }) {
   return (
     <button onClick={onClick} style={{
-      display:"inline-flex", alignItems:"center", gap:5,
+      display:"inline-flex", alignItems:"center", gap:8,
       background: active ? `${color}1A` : "transparent",
       border: `1px solid ${active ? color : C.border2}`,
       color: active ? color : C.textMuted,
       borderRadius:100, padding:"4px 11px", fontSize:11, fontWeight:600,
-      cursor:"pointer", fontFamily:"inherit", transition:"all .15s",
+      cursor:"pointer", fontFamily:"inherit", transition:"background .12s, border-color .12s, color .12s",
       WebkitTapHighlightColor:"transparent",
     }}>
       <span style={{ width:6, height:6, borderRadius:"50%", background:active?color:C.textMuted, flexShrink:0 }}/>
@@ -311,10 +311,10 @@ function FilterPill({ label, color, active, onClick }) {
 const MultiTip = ({ active, payload, label, suffix="%" }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, padding:"12px 16px", boxShadow:"0 8px 32px rgba(0,0,0,.8)", fontFamily:"inherit", minWidth:170, maxWidth:240 }}>
+    <div style={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"12px 16px", boxShadow:"0 8px 32px rgba(0,0,0,.8)", fontFamily:"inherit", minWidth:170, maxWidth:240 }}>
       <div style={{ fontSize:11, fontWeight:600, color:C.textSecondary, textTransform:"uppercase", letterSpacing:".08em", marginBottom:8 }}>{label}</div>
       {payload.slice(0,8).map((p,i) => (
-        <div key={i} style={{ display:"flex", alignItems:"center", gap:6, marginBottom:3 }}>
+        <div key={i} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
           <span style={{ width:7, height:7, borderRadius:"50%", background:p.color, flexShrink:0 }}/>
           <span style={{ fontSize:11, color:C.textSecondary, flex:1, minWidth:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.name}</span>
           <span style={{ fontSize:13, fontWeight:700, color:p.color, fontFamily:"'Barlow Condensed',sans-serif", marginLeft:4, whiteSpace:"nowrap" }}>
@@ -330,7 +330,7 @@ const SingleTip = ({ active, payload, label, prefix="", suffix="%", note }) => {
   if (!active || !payload?.length) return null;
   const v = payload[0].value;
   return (
-    <div style={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, padding:"12px 16px", boxShadow:"0 8px 32px rgba(0,0,0,.8)", fontFamily:"inherit" }}>
+    <div style={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"12px 16px", boxShadow:"0 8px 32px rgba(0,0,0,.8)", fontFamily:"inherit" }}>
       <div style={{ fontSize:11, fontWeight:600, color:C.textSecondary, textTransform:"uppercase", letterSpacing:".08em", marginBottom:6 }}>{label}</div>
       <div style={{ fontSize:26, fontWeight:700, color:payload[0].color||C.yellow, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.5px", lineHeight:1 }}>
         {prefix}{v?.toFixed(2)}{suffix}
@@ -373,7 +373,7 @@ function HomepageHero({ navigate, cur }) {
           }}
           onMouseEnter={e => { e.currentTarget.style.background = C.surface2; }}
           onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
-          <div style={{ fontSize:13, fontWeight:600, color:C.textPrimary, marginBottom:3, letterSpacing:"-.1px" }}>{link.label}</div>
+          <div style={{ fontSize:13, fontWeight:600, color:C.textPrimary, marginBottom:4, letterSpacing:"-.1px" }}>{link.label}</div>
           <div style={{ fontSize:11, color:C.textMuted, lineHeight:1.5 }}>{link.desc}</div>
         </button>
       ))}
@@ -388,7 +388,7 @@ function HomepageHero({ navigate, cur }) {
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:"16px 16px 0 0", padding:"48px 32px 40px", position:"relative", overflow:"hidden" }}>
           <div style={{ position:"absolute", top:0, right:0, width:400, height:400, background:`radial-gradient(circle at top right, ${rateColor}06, transparent 65%)`, pointerEvents:"none" }}/>
 
-          <div style={{ fontSize:10, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".16em", marginBottom:20 }}>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".16em", marginBottom:24 }}>
             Canada's Independent Inflation Tracker
           </div>
 
@@ -412,7 +412,7 @@ function HomepageHero({ navigate, cur }) {
             {rate != null && (
               <div style={{ display:"inline-flex", alignItems:"center", gap:8 }}>
                 <span style={{ display:"inline-block", width:6, height:6, borderRadius:"50%", background:rateColor, flexShrink:0 }}/>
-                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:22, fontWeight:700, color:rateColor, letterSpacing:"-.5px" }}>{rate.toFixed(1)}%</span>
+                <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, fontWeight:700, color:rateColor, letterSpacing:"-.5px" }}>{rate.toFixed(1)}%</span>
                 <span style={{ fontSize:11, color:C.textMuted }}>CPI · {cur.date}</span>
               </div>
             )}
@@ -422,14 +422,14 @@ function HomepageHero({ navigate, cur }) {
         {/* ── Nav grid — flush to hero, no gap ── */}
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderTop:"none", borderRadius:"0 0 0 0" }}>
           <div style={{ padding:"12px 16px 8px", borderBottom:`1px solid ${C.border}` }}>
-            <span style={{ fontSize:10, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em" }}>Track Inflation</span>
+            <span style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em" }}>Track Inflation</span>
           </div>
           <NavRow items={TRACK} hoverColor={C.surface2}/>
         </div>
 
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderTop:"none", borderRadius:"0 0 16px 16px" }}>
           <div style={{ padding:"12px 16px 8px", borderBottom:`1px solid ${C.border}` }}>
-            <span style={{ fontSize:10, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em" }}>Financial Tools</span>
+            <span style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em" }}>Financial Tools</span>
           </div>
           <NavRow items={TOOLS} hoverColor={C.surface2}/>
         </div>
@@ -439,7 +439,7 @@ function HomepageHero({ navigate, cur }) {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:12, marginTop:12 }}>
 
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"28px 24px" }}>
-          <div style={{ fontSize:10, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Our Mission</div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Our Mission</div>
           <p style={{ fontSize:15, fontWeight:600, color:C.textPrimary, lineHeight:1.55, margin:"0 0 14px", letterSpacing:"-.1px" }}>
             Financial literacy is a right, not a privilege.
           </p>
@@ -449,7 +449,7 @@ function HomepageHero({ navigate, cur }) {
         </div>
 
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"28px 24px" }}>
-          <div style={{ fontSize:10, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Data Sources</div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Data Sources</div>
           <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
             {[
               { name:"Statistics Canada", detail:"CPI, food prices, wages · Table 18-10-0004-01", url:"https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810000401" },
@@ -509,32 +509,32 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     {/* Hero */}
     <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, marginBottom:16, overflow:"hidden" }}>
       <div style={{ padding:"28px 24px 0" }}>
-        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
           Canada · All-Items CPI · Year-over-Year · {cur?.date}
         </div>
-        <div style={{ fontSize:10, color:C.textMuted, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
+        <div style={{ fontSize:11, color:C.textMuted, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
           <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810000401" target="_blank" rel="noopener noreferrer" style={{ color:C.textMuted, textDecoration:"none", display:"flex", alignItems:"center", gap:4 }}>
             <span style={{ color:C.green, fontSize:11 }}>↗</span>
             Statistics Canada · Table 18-10-0004-01 · Vector v41690973
           </a>
         </div>
-        <div style={{ fontSize:10, fontWeight:600, color:C.textMuted, marginBottom:12, display:"flex", alignItems:"center", gap:6 }}>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
           <span style={{ display:"inline-block", width:6, height:6, borderRadius:"50%", background:C.green }}></span>
           Live StatCan data · April 2026 · {(() => { const n=new Date(); const releases=[{ref:'May',date:new Date('2026-06-22')},{ref:'June',date:new Date('2026-07-17')}]; const next=releases.find(r=>r.date>n); return next?`Next: ${next.ref} releases ${next.date.toLocaleDateString('en-CA',{month:'long',day:'numeric'})}`:null; })()}
         </div>
-        <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:20 }}>
+        <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:24 }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(60px,12vw,96px)", fontWeight:700, lineHeight:1, letterSpacing:"-2px", color:valColor(cur?.value ?? 0) }}>
             {cur?.value.toFixed(1)}%
           </div>
-          <div style={{ display:"flex", flexDirection:"column", gap:7, paddingBottom:8 }}>
+          <div style={{ display:"flex", flexDirection:"column", gap:8, paddingBottom:8 }}>
             {prev && (
-              <span style={{ display:"inline-flex", alignItems:"center", gap:5, background:valBg(delta), color:valColor(delta), borderRadius:6, padding:"4px 10px", fontSize:12, fontWeight:700, border:`1px solid ${valColor(delta)}25`, width:"fit-content" }}>
+              <span style={{ display:"inline-flex", alignItems:"center", gap:8, background:valBg(delta), color:valColor(delta), borderRadius:6, padding:"4px 10px", fontSize:12, fontWeight:700, border:`1px solid ${valColor(delta)}25`, width:"fit-content" }}>
                 {delta>0?"▲":delta<0?"▼":"—"} {Math.abs(delta).toFixed(1)}pp vs {prev.date}
               </span>
             )}
-            <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
               {[`BoC target ${BOC_TARGET}%`, peak?`Peak ${peak.value.toFixed(1)}% · ${peak.date}`:null, `${data?.length} months · ${startYr}–present`].filter(Boolean).map((t,i) => (
-                <span key={i} style={{ fontSize:10, fontWeight:600, color:C.textMuted, background:C.surface2, border:`1px solid ${C.border}`, borderRadius:5, padding:"3px 8px" }}>{t}</span>
+                <span key={i} style={{ fontSize:11, fontWeight:600, color:C.textMuted, background:C.surface2, border:`1px solid ${C.border}`, borderRadius:5, padding:"3px 8px" }}>{t}</span>
               ))}
             </div>
           </div>
@@ -547,8 +547,8 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
           { label:"12-Mo Low",  val:`${lo12.toFixed(1)}%`,         color:C.green },
           { label:"12-Mo High", val:`${hi12.toFixed(1)}%`,         color:C.red   },
         ].map((s,i) => (
-          <div key={i} style={{ padding:"14px 16px", borderRight:i<3?`1px solid ${C.border}`:"none" }}>
-            <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:5 }}>{s.label}</div>
+          <div key={i} style={{ padding:"14px 16px", borderRight:"none" }}>
+            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
             <div style={{ fontSize:20, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
           </div>
         ))}
@@ -557,12 +557,12 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
 
     {/* History chart */}
     <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"22px 20px 16px", marginBottom:16, transitionDelay:".06s" }}>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:10 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:12 }}>
         <div>
           <h2 style={{ fontSize:14, fontWeight:700, margin:0 }}>Inflation History</h2>
-          <div style={{ fontSize:10, color:C.textSecondary, marginTop:2 }}>Year-over-year · {chart[0]?.date} – {chart[chart.length-1]?.date}</div>
+          <div style={{ fontSize:11, color:C.textSecondary, marginTop:2 }}>Year-over-year · {chart[0]?.date} – {chart[chart.length-1]?.date}</div>
         </div>
-        <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
           {Object.keys(RANGES).map(r => <button key={r} className={`rb ${range===r?"on":""}`} onClick={() => setRange(r)}>{r}</button>)}
         </div>
       </div>
@@ -580,10 +580,10 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
-          <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+          <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
           <Tooltip content={<SingleTip suffix="%" note={v=>`${v>BOC_TARGET?`+${(v-BOC_TARGET).toFixed(1)}pp above`:`${(BOC_TARGET-v).toFixed(1)}pp below`} BoC target`}/>}/>
-          <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3" label={{ value:"BoC 2%", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
+          <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3" label={{ value:"BoC 2%", fill:C.textMuted, fontSize:11, position:"insideTopRight" }}/>
           <ReferenceLine y={0} stroke={C.border}/>
           <Area type="monotone" dataKey="value" stroke="url(#lineGrad)" strokeWidth={2} fill="url(#areaGrad)" dot={false} activeDot={{ r:4, fill:C.yellow, stroke:C.surface, strokeWidth:2 }}/>
         </AreaChart>
@@ -591,14 +591,14 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     </div>
 
     {/* Snapshot lists */}
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:14, marginBottom:16 }}>
-      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", transitionDelay:".11s" }}>
-        <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>By Category</div>
-        <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>Year-over-year change · latest available data</div>
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16, marginBottom:16 }}>
+      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", transitionDelay:".11s" }}>
+        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>By Category</div>
+        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Year-over-year change · latest available data</div>
         {COMPONENTS.map((comp, i) => (
-          <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"9px 0", borderBottom:i<COMPONENTS.length-1?`1px solid ${C.border}`:"none" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:9 }}>
-              <span style={{ width:28, height:28, borderRadius:7, background:valBg(comp.value), display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, flexShrink:0 }}>{comp.icon}</span>
+          <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<COMPONENTS.length-1?`1px solid ${C.border}`:"none" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <span style={{ width:28, height:28, borderRadius:8, background:valBg(comp.value), display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, flexShrink:0 }}>{comp.icon}</span>
               <span style={{ fontSize:12, fontWeight:600, color:C.textPrimary }}>{comp.label}</span>
             </div>
             <span style={{ fontSize:14, fontWeight:700, color:valColor(comp.value), fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px", flexShrink:0 }}>
@@ -607,15 +607,15 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
           </div>
         ))}
       </div>
-      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", transitionDelay:".15s" }}>
-        <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>By Province</div>
-        <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>Year-over-year change · latest available data</div>
+      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", transitionDelay:".15s" }}>
+        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>By Province</div>
+        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Year-over-year change · latest available data</div>
         {PROVINCES.map((p, i) => {
           const clr = valColor(p.value);
           return (
-            <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"9px 0", borderBottom:i<PROVINCES.length-1?`1px solid ${C.border}`:"none" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:9 }}>
-                <span style={{ width:28, height:28, borderRadius:7, background:valBg(p.value), display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, color:clr, flexShrink:0 }}>{p.code}</span>
+            <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<PROVINCES.length-1?`1px solid ${C.border}`:"none" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                <span style={{ width:28, height:28, borderRadius:8, background:valBg(p.value), display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:clr, flexShrink:0 }}>{p.code}</span>
                 <span style={{ fontSize:12, fontWeight:500, color:C.textPrimary }}>{p.name}</span>
               </div>
               <span style={{ fontSize:14, fontWeight:700, color:clr, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px", flexShrink:0 }}>
@@ -628,19 +628,19 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     </div>
 
     {/* Category trend chart */}
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:16, transitionDelay:".18s" }}>
-      <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Category Trends</div>
-      <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>
+    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:16, transitionDelay:".18s" }}>
+      <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Category Trends</div>
+      <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>
         Annual year-over-year % · {catStartYr}–{catEndYr} · Data: Statistics Canada
       </div>
-      <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:16 }}>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:16 }}>
         {CAT_KEYS.map(k => <FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={() => setActiveCats(p => ({ ...p, [k]:!p[k] }))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={catHistory} margin={{ top:4, right:8, left:-24, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
-          <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
           <Tooltip content={<MultiTip/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
           <ReferenceLine y={0} stroke={C.border}/>
@@ -650,19 +650,19 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     </div>
 
     {/* Province trend chart */}
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:4, transitionDelay:".22s" }}>
-      <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Provincial Trends</div>
-      <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>
+    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:4, transitionDelay:".22s" }}>
+      <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Provincial Trends</div>
+      <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>
         Annual year-over-year % · {provStartYr}–{provEndYr} · Data: Statistics Canada
       </div>
-      <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:16 }}>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:16 }}>
         {PROVINCES.map(p => <FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={() => setActiveProvs(prev => ({ ...prev, [p.key]:!prev[p.key] }))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={provHistory} margin={{ top:4, right:8, left:-24, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
-          <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
           <Tooltip content={<MultiTip/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
           {PROV_KEYS.map(k => activeProvs[k] ? <Line key={k} type="monotone" dataKey={k} stroke={PROV_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{ r:3, stroke:C.surface, strokeWidth:2 }}/> : null)}
@@ -697,20 +697,20 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
   return (<>
     <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, marginBottom:16, overflow:"hidden" }}>
       <div style={{ padding:"28px 24px 0" }}>
-        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:12 }}>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:12 }}>
           CAD Purchasing Power · {startYr}–Present · Compound Erosion
         </div>
-        <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:20 }}>
+        <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:24 }}>
           <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(60px,12vw,96px)", fontWeight:700, lineHeight:1, letterSpacing:"-2px", color:C.red }}>
             −{totalLost.toFixed(1)}%
           </div>
-          <div style={{ display:"flex", flexDirection:"column", gap:7, paddingBottom:8 }}>
-            <span style={{ display:"inline-flex", alignItems:"center", gap:6, background:C.redBg, color:C.red, borderRadius:6, padding:"4px 10px", fontSize:12, fontWeight:700, border:`1px solid ${C.red}25`, width:"fit-content" }}>
+          <div style={{ display:"flex", flexDirection:"column", gap:8, paddingBottom:8 }}>
+            <span style={{ display:"inline-flex", alignItems:"center", gap:8, background:C.redBg, color:C.red, borderRadius:6, padding:"4px 10px", fontSize:12, fontWeight:700, border:`1px solid ${C.red}25`, width:"fit-content" }}>
               $1.00 in {startYr} → ${latest?.cadValue.toFixed(2)} today
             </span>
-            <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
               {[`${Math.round(totalLost)}¢ lost per dollar`, `Over ${data?.length||0} months`, `Avg ~${cagr}%/yr erosion`].map((t,i) => (
-                <span key={i} style={{ fontSize:10, fontWeight:600, color:C.textMuted, background:C.surface2, border:`1px solid ${C.border}`, borderRadius:5, padding:"3px 8px" }}>{t}</span>
+                <span key={i} style={{ fontSize:11, fontWeight:600, color:C.textMuted, background:C.surface2, border:`1px solid ${C.border}`, borderRadius:5, padding:"3px 8px" }}>{t}</span>
               ))}
             </div>
           </div>
@@ -723,8 +723,8 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
           { label:"Cost Multiplier",  val:`${multiplier}×`,                   color:C.yellow },
           { label:"Period",           val:`${startYr}–Now`,                   color:C.white  },
         ].map((s,i) => (
-          <div key={i} style={{ padding:"14px 16px", borderRight:i<3?`1px solid ${C.border}`:"none" }}>
-            <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:5 }}>{s.label}</div>
+          <div key={i} style={{ padding:"14px 16px", borderRight:"none" }}>
+            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
             <div style={{ fontSize:18, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px" }}>{s.val}</div>
           </div>
         ))}
@@ -732,12 +732,12 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
     </div>
 
     <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"22px 20px 16px", marginBottom:16, transitionDelay:".06s" }}>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:10 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:12 }}>
         <div>
           <div style={{ fontSize:14, fontWeight:700 }}>Purchasing Power of $1.00</div>
-          <div style={{ fontSize:10, color:C.textSecondary, marginTop:2 }}>Real value — compound erosion since {startYr}</div>
+          <div style={{ fontSize:11, color:C.textSecondary, marginTop:2 }}>Real value — compound erosion since {startYr}</div>
         </div>
-        <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
           {Object.keys(RANGES).map(r => <button key={r} className={`rb ${range===r?"on":""}`} onClick={() => setRange(r)}>{r}</button>)}
         </div>
       </div>
@@ -750,23 +750,23 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
-          <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`$${v.toFixed(2)}`} domain={["auto","auto"]}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+          <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`$${v.toFixed(2)}`} domain={["auto","auto"]}/>
           <Tooltip content={<SingleTip prefix="$" suffix="" note={v=>`Lost ${((1-v)*100).toFixed(1)}¢ of every dollar`}/>}/>
-          <ReferenceLine y={1} stroke={C.border2} strokeDasharray="4 3" label={{ value:"$1.00 baseline", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
+          <ReferenceLine y={1} stroke={C.border2} strokeDasharray="4 3" label={{ value:"$1.00 baseline", fill:C.textMuted, fontSize:11, position:"insideTopRight" }}/>
           <Area type="monotone" dataKey="cadValue" stroke={C.red} strokeWidth={2} fill="url(#cadGrad)" dot={false} activeDot={{ r:4, fill:C.red, stroke:C.surface, strokeWidth:2 }}/>
         </AreaChart>
       </ResponsiveContainer>
     </div>
 
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:14, marginBottom:16 }}>
-      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", transitionDelay:".11s" }}>
-        <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Cumulative by Category</div>
-        <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>Compound total since {catCumHistory?.[0]?.year}</div>
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16, marginBottom:16 }}>
+      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", transitionDelay:".11s" }}>
+        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative by Category</div>
+        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Compound total since {catCumHistory?.[0]?.year}</div>
         {sortedCat.map((comp, i) => (
-          <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"9px 0", borderBottom:i<sortedCat.length-1?`1px solid ${C.border}`:"none" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:9 }}>
-              <span style={{ width:28, height:28, borderRadius:7, background:cumBg(comp.cumValue), display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, flexShrink:0 }}>{comp.icon}</span>
+          <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<sortedCat.length-1?`1px solid ${C.border}`:"none" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <span style={{ width:28, height:28, borderRadius:8, background:cumBg(comp.cumValue), display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, flexShrink:0 }}>{comp.icon}</span>
               <span style={{ fontSize:12, fontWeight:600, color:C.textPrimary }}>{comp.label}</span>
             </div>
             <span style={{ fontSize:14, fontWeight:700, color:cumColor(comp.cumValue), fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px", flexShrink:0 }}>
@@ -775,15 +775,15 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
           </div>
         ))}
       </div>
-      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", transitionDelay:".15s" }}>
-        <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Cumulative by Province</div>
-        <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>Compound total since {provCumHistory?.[0]?.year}</div>
+      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", transitionDelay:".15s" }}>
+        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative by Province</div>
+        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Compound total since {provCumHistory?.[0]?.year}</div>
         {sortedProv.map((p, i) => {
           const clr = cumColor(p.cumValue);
           return (
-            <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"9px 0", borderBottom:i<sortedProv.length-1?`1px solid ${C.border}`:"none" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:9 }}>
-                <span style={{ width:28, height:28, borderRadius:7, background:cumBg(p.cumValue), display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, color:clr, flexShrink:0 }}>{p.code}</span>
+            <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<sortedProv.length-1?`1px solid ${C.border}`:"none" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                <span style={{ width:28, height:28, borderRadius:8, background:cumBg(p.cumValue), display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:clr, flexShrink:0 }}>{p.code}</span>
                 <span style={{ fontSize:12, fontWeight:500, color:C.textPrimary }}>{p.name}</span>
               </div>
               <span style={{ fontSize:14, fontWeight:700, color:clr, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px", flexShrink:0 }}>
@@ -795,17 +795,17 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
       </div>
     </div>
 
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:16, transitionDelay:".18s" }}>
-      <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Cumulative Category Inflation</div>
-      <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Compounded total since {catCumHistory?.[0]?.year} · each year builds on the last</div>
-      <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:16 }}>
+    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:16, transitionDelay:".18s" }}>
+      <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative Category Inflation</div>
+      <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Compounded total since {catCumHistory?.[0]?.year} · each year builds on the last</div>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:16 }}>
         {CAT_KEYS.map(k => <FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={() => setActiveCats(p => ({ ...p, [k]:!p[k] }))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={catCumHistory} margin={{ top:4, right:8, left:-10, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
-          <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
           <Tooltip content={<MultiTip suffix="%"/>}/>
           <ReferenceLine y={0} stroke={C.border}/>
           {CAT_KEYS.map(k => activeCats[k] ? <Line key={k} type="monotone" dataKey={k} stroke={CAT_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{ r:3, stroke:C.surface, strokeWidth:2 }}/> : null)}
@@ -813,17 +813,17 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
       </ResponsiveContainer>
     </div>
 
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:4, transitionDelay:".22s" }}>
-      <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Cumulative Provincial Inflation</div>
-      <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Compounded total since {provCumHistory?.[0]?.year} · each year builds on the last</div>
-      <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:16 }}>
+    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:4, transitionDelay:".22s" }}>
+      <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative Provincial Inflation</div>
+      <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Compounded total since {provCumHistory?.[0]?.year} · each year builds on the last</div>
+      <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:16 }}>
         {PROV_META.map(p => <FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={() => setActiveProvs(prev => ({ ...prev, [p.key]:!prev[p.key] }))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart data={provCumHistory} margin={{ top:4, right:8, left:-10, bottom:0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
-          <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
           <Tooltip content={<MultiTip suffix="%"/>}/>
           {PROV_KEYS.map(k => activeProvs[k] ? <Line key={k} type="monotone" dataKey={k} stroke={PROV_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{ r:3, stroke:C.surface, strokeWidth:2 }}/> : null)}
         </LineChart>
@@ -868,7 +868,7 @@ function CalcField({ label, value, onChange, placeholder, hint, isRate }) {
         value={displayVal}
         onChange={handleChange}
         placeholder={placeholder}
-        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:14, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 16px", fontSize:14, color:C.textPrimary, fontFamily:"inherit", outline:"none", transition:"border-color .12s" }}
       />
     </div>
   );
@@ -960,8 +960,8 @@ function CompoundTab({ vis, liveCpi }) {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
         {/* Input panel */}
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>Interest Calculator</div>
-          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:20 }}>See how your money grows over time</div>
+          <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Interest Calculator</div>
+          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:24 }}>See how your money grows over time</div>
 
           <CalcField label="Initial Investment" value={principal} onChange={setPrincipal} placeholder="e.g. 10000" hint="Amount you have available to invest today"/>
           <CalcField label="Monthly Contribution" value={monthly} onChange={setMonthly} placeholder="e.g. 500" hint="Amount added every month (use negative to withdraw)"/>
@@ -970,33 +970,33 @@ function CompoundTab({ vis, liveCpi }) {
           <CalcField label="Rate Variance (%)" value={variance} onChange={setVariance} placeholder="e.g. 2" hint="Shows low/high range above and below your rate" isRate/>
           <CalcField label="Assumed Inflation Rate (%)" value={inflRate} onChange={setInflRate} placeholder="e.g. 1.8" hint="Pre-filled from live CPI — adjust to model scenarios" isRate/>
 
-          <div style={{ marginBottom:20 }}>
+          <div style={{ marginBottom:24 }}>
             <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Compound Frequency</div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
               {CI_FREQS.map(f => (
                 <button key={f.n} onClick={() => setFreq(f.n)} style={{
                   background: freq===f.n ? C.action : C.surface2,
                   color:      freq===f.n ? C.actionText : C.textSecondary,
                   border:     `1px solid ${freq===f.n ? C.action : C.border2}`,
-                  borderRadius:7, padding:"6px 12px", fontSize:11, fontWeight:600,
+                  borderRadius:8, padding:"6px 12px", fontSize:11, fontWeight:600,
                   cursor:"pointer", fontFamily:"inherit",
                 }}>{f.label}</button>
               ))}
             </div>
           </div>
 
-          <div style={{ display:"flex", gap:10 }}>
+          <div style={{ display:"flex", gap:12 }}>
             <button onClick={calculate} style={{ flex:1, background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
               Calculate
             </button>
-            <button onClick={() => { setPrincipal(""); setMonthly(""); setYears(""); setRate(""); setVariance(""); setFreq(12); setResult(null); }} style={{ background:C.surface2, color:C.textSecondary, border:`1px solid ${C.border2}`, borderRadius:10, padding:"12px 18px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
+            <button onClick={() => { setPrincipal(""); setMonthly(""); setYears(""); setRate(""); setVariance(""); setFreq(12); setResult(null); }} style={{ background:C.surface2, color:C.textSecondary, border:`1px solid ${C.border2}`, borderRadius:8, padding:"12px 18px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
               Reset
             </button>
           </div>
         </div>
 
         {/* Results panel */}
-        <div ref={resultsRef} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+        <div ref={resultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:12, minHeight:200 }}>
               <div style={{ fontSize:28 }}>📈</div>
@@ -1005,11 +1005,11 @@ function CompoundTab({ vis, liveCpi }) {
           ) : (<>
             {/* Nominal / Real toggle */}
             {result.inf > 0 && (
-              <div style={{ display:"flex", background:C.surface2, borderRadius:10, padding:3, border:`1px solid ${C.border}` }}>
+              <div style={{ display:"flex", background:C.surface2, borderRadius:8, padding:3, border:`1px solid ${C.border}` }}>
                 {["Nominal","Inflation-Adjusted"].map((label,i) => (
                   <button key={i} onClick={() => setShowReal(i===1)} style={{
                     flex:1, padding:"8px 12px", borderRadius:8, border:"none", fontFamily:"inherit",
-                    fontSize:12, fontWeight:600, cursor:"pointer", transition:"all .15s",
+                    fontSize:12, fontWeight:600, cursor:"pointer", transition:"background .12s, border-color .12s, color .12s",
                     background: showReal===(i===1) ? C.action : "transparent",
                     color:      showReal===(i===1) ? C.actionText : C.textSecondary,
                   }}>{label}</button>
@@ -1019,7 +1019,7 @@ function CompoundTab({ vis, liveCpi }) {
 
             {/* Hero result */}
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
                 {showReal ? "Real (Today's Dollars)" : "Nominal"} Balance after {years} years
               </div>
               {showReal && result.inf > 0 && (
@@ -1027,17 +1027,17 @@ function CompoundTab({ vis, liveCpi }) {
                   Assuming {(result.inf*100).toFixed(1)}% avg inflation · real return {result.realRateAnn > 0 ? "+" : ""}{result.realRateAnn}%/yr
                 </div>
               )}
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:showReal ? C.blue : C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:14 }}>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:showReal ? C.blue : C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
                 {fmt(showReal ? result.realBase : result.base)}
               </div>
               {!showReal && result.low != null && (
-                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:16 }}>
                   <span style={{ fontSize:11, background:C.redBg, color:C.red, border:`1px solid ${C.red}25`, borderRadius:6, padding:"4px 10px", fontWeight:600 }}>Low: {fmt(result.low)}</span>
                   <span style={{ fontSize:11, background:C.greenBg, color:C.green, border:`1px solid ${C.green}25`, borderRadius:6, padding:"4px 10px", fontWeight:600 }}>High: {fmt(result.high)}</span>
                 </div>
               )}
               {showReal && result.inf > 0 && (
-                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:14 }}>
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:16 }}>
                   <span style={{ fontSize:11, background:C.surface2, color:C.textSecondary, border:`1px solid ${C.border2}`, borderRadius:6, padding:"4px 10px", fontWeight:600 }}>
                     Nominal: {fmt(result.base)}
                   </span>
@@ -1059,7 +1059,7 @@ function CompoundTab({ vis, liveCpi }) {
                   { label:"Interest/Contrib ratio", val:`${(result.interest/Math.max(result.totalContrib,1)).toFixed(2)}×`, color:C.purple },
                 ]).map((s,i) => (
                   <div key={i} style={{ padding:"12px 0" }}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
                     <div style={{ fontSize:18, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
                   </div>
                 ))}
@@ -1067,12 +1067,12 @@ function CompoundTab({ vis, liveCpi }) {
             </div>
 
             {/* Growth chart */}
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Growth Over Time</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Total value vs. your contributions each year</div>
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
+              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Growth Over Time</div>
+              <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Total value vs. your contributions each year</div>
               <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
                 {[{color:C.green,label:"Total Value"},{color:C.blue,label:"Contributions"}].map((l,i)=>(
-                  <div key={i} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSecondary }}>
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:8, fontSize:11, color:C.textSecondary }}>
                     <span style={{ width:12, height:12, borderRadius:3, background:l.color, display:"inline-block" }}/>
                     {l.label}
                   </div>
@@ -1084,7 +1084,7 @@ function CompoundTab({ vis, liveCpi }) {
                   ...(result.inf > 0 ? [{ color:C.blue, label:"Real Value (today's $)" }] : []),
                   { color:`${C.yellow}99`, label:"Contributions" },
                 ].map((l,i) => (
-                  <div key={i} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSecondary }}>
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:8, fontSize:11, color:C.textSecondary }}>
                     <span style={{ width:12, height:12, borderRadius:3, background:l.color, display:"inline-block" }}/>
                     {l.label}
                   </div>
@@ -1093,9 +1093,9 @@ function CompoundTab({ vis, liveCpi }) {
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
-                  <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v => "$"+Math.round(v/1000)+"k"}/>
-                  <Tooltip formatter={(v,n) => [fmt(v), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v => "$"+Math.round(v/1000)+"k"}/>
+                  <Tooltip formatter={(v,n) => [fmt(v), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
                   <Line type="monotone" dataKey="Nominal Value"  stroke={C.green}  strokeWidth={2.5} dot={false} activeDot={{ r:4 }}/>
                   {result.inf > 0 && <Line type="monotone" dataKey="Real Value" stroke={C.blue} strokeWidth={2} dot={false} strokeDasharray="5 3" activeDot={{ r:4 }}/>}
                   <Line type="monotone" dataKey="Contributions" stroke={C.yellow} strokeWidth={1.5} dot={false} strokeDasharray="3 3" opacity={0.7}/>
@@ -1118,13 +1118,13 @@ function MortField({ label, value, set, ph, isSmall }) {
   };
   const displayVal = isSmall ? value : fmtInput(value);
   return (
-    <div style={{ marginBottom:14 }}>
-      {label && <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>{label}</div>}
+    <div style={{ marginBottom:16 }}>
+      {label && <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>{label}</div>}
       <input
         type="text" inputMode="decimal"
         value={displayVal} placeholder={ph}
         onChange={handleChange}
-        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 16px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none", transition:"border-color .12s" }}
       />
     </div>
   );
@@ -1145,7 +1145,7 @@ function DebtField({ label, value, set, ph, isSmall, section }) {
         type="text" inputMode="decimal"
         value={displayVal} placeholder={ph}
         onChange={handleChange}
-        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"9px 12px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"8px 12px", fontSize:13, color:C.textPrimary, fontFamily:"inherit", outline:"none", transition:"border-color .12s" }}
       />
     </div>
   );
@@ -1237,21 +1237,21 @@ function MortgageTab({ vis, liveCpi }) {
           <MortField label="Interest Rate (%)"    value={rate}  set={setRate}  ph="e.g. 4.5" isSmall/>
           <MortField label="Amortization (Years)" value={amort} set={setAmort} ph="e.g. 25"  isSmall/>
 
-          <div style={{ marginBottom:14 }}>
-            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>Down Payment</div>
-            <div style={{ display:"flex", gap:6, marginBottom:8 }}>
+          <div style={{ marginBottom:16 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>Down Payment</div>
+            <div style={{ display:"flex", gap:8, marginBottom:8 }}>
               {[["$",false],["%",true]].map(([lbl,val])=>(
-                <button key={lbl} onClick={()=>setDownPct(val)} style={{ flex:1, background:downPct===val?C.action:C.surface2, color:downPct===val?C.actionText:C.textSecondary, border:`1px solid ${downPct===val?C.action:C.border2}`, borderRadius:7, padding:"7px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>{lbl}</button>
+                <button key={lbl} onClick={()=>setDownPct(val)} style={{ flex:1, background:downPct===val?C.action:C.surface2, color:downPct===val?C.actionText:C.textSecondary, border:`1px solid ${downPct===val?C.action:C.border2}`, borderRadius:8, padding:"8px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>{lbl}</button>
               ))}
             </div>
             <MortField label="" value={down} set={setDown} ph={downPct?"e.g. 20":"e.g. 130,000"} isSmall={downPct}/>
           </div>
 
-          <div style={{ marginBottom:20 }}>
+          <div style={{ marginBottom:24 }}>
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Payment Frequency</div>
-            <div style={{ display:"flex", gap:6 }}>
+            <div style={{ display:"flex", gap:8 }}>
               {["monthly","biweekly","weekly"].map(f=>(
-                <button key={f} onClick={()=>setPayFreq(f)} style={{ flex:1, background:payFreq===f?C.action:C.surface2, color:payFreq===f?C.actionText:C.textSecondary, border:`1px solid ${payFreq===f?C.action:C.border2}`, borderRadius:7, padding:"7px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit", textTransform:"capitalize" }}>{f}</button>
+                <button key={f} onClick={()=>setPayFreq(f)} style={{ flex:1, background:payFreq===f?C.action:C.surface2, color:payFreq===f?C.actionText:C.textSecondary, border:`1px solid ${payFreq===f?C.action:C.border2}`, borderRadius:8, padding:"8px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit", textTransform:"capitalize" }}>{f}</button>
               ))}
             </div>
           </div>
@@ -1260,7 +1260,7 @@ function MortgageTab({ vis, liveCpi }) {
           <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>Calculate</button>
         </div>
 
-        <div ref={mortResultsRef} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+        <div ref={mortResultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12 }}>
               <div style={{ fontSize:28 }}>🏠</div>
@@ -1268,11 +1268,11 @@ function MortgageTab({ vis, liveCpi }) {
             </div>
           ) : (<>
             {result.inf > 0 && (
-              <div style={{ display:"flex", background:C.surface2, borderRadius:10, padding:3, border:`1px solid ${C.border}` }}>
+              <div style={{ display:"flex", background:C.surface2, borderRadius:8, padding:3, border:`1px solid ${C.border}` }}>
                 {["Nominal","Inflation-Adjusted"].map((label,i) => (
                   <button key={i} onClick={() => setShowReal(i===1)} style={{
                     flex:1, padding:"8px 12px", borderRadius:8, border:"none", fontFamily:"inherit",
-                    fontSize:12, fontWeight:600, cursor:"pointer", transition:"all .15s",
+                    fontSize:12, fontWeight:600, cursor:"pointer", transition:"background .12s, border-color .12s, color .12s",
                     background: showReal===(i===1) ? C.action : "transparent",
                     color:      showReal===(i===1) ? C.actionText : C.textSecondary,
                   }}>{label}</button>
@@ -1280,7 +1280,7 @@ function MortgageTab({ vis, liveCpi }) {
               </div>
             )}
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
                 {payFreq.charAt(0).toUpperCase()+payFreq.slice(1)} Payment · {showReal && result.inf > 0 ? "Inflation-Adjusted" : "Nominal"}
               </div>
               {showReal && result.inf > 0 && (
@@ -1308,26 +1308,26 @@ function MortgageTab({ vis, liveCpi }) {
                   result.cmhc > 0 ? { label:"CMHC Insurance", val:fmt(result.cmhc), color:C.yellow } : null,
                 ]).filter(Boolean).map((s,i)=>(
                   <div key={i}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
-                    <div style={{ fontSize:16, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
-                    {s.note && <div style={{ fontSize:10, color:C.textMuted, marginTop:3, lineHeight:1.4 }}>{s.note}</div>}
+                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                    <div style={{ fontSize:15, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+                    {s.note && <div style={{ fontSize:11, color:C.textMuted, marginTop:3, lineHeight:1.4 }}>{s.note}</div>}
                   </div>
                 ))}
               </div>
-              {result.cmhc > 0 && <div style={{ marginTop:10, fontSize:10, color:C.textMuted, background:C.surface2, borderRadius:6, padding:"6px 10px" }}>⚠ CMHC mortgage insurance required (down payment under 20%)</div>}
+              {result.cmhc > 0 && <div style={{ marginTop:10, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:6, padding:"6px 10px" }}>⚠ CMHC mortgage insurance required (down payment under 20%)</div>}
               {showReal && result.inf > 0 && (
-                <div style={{ marginTop:12, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 14px", lineHeight:1.6 }}>
+                <div style={{ marginTop:12, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6 }}>
                   💡 Inflation benefits borrowers: your fixed mortgage payment stays the same in dollars, but its real value shrinks over time as prices rise. You effectively repay with cheaper dollars.
                 </div>
               )}
             </div>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Amortization Schedule</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:8 }}>Remaining balance by year</div>
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
+              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Amortization Schedule</div>
+              <div style={{ fontSize:11, color:C.textSecondary, marginBottom:8 }}>Remaining balance by year</div>
               {result.inf > 0 && (
                 <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
                   {[{ color:C.blue, label:"Nominal Balance" },{ color:C.green, label:"Real Balance (today's $)" }].map((l,i) => (
-                    <div key={i} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSecondary }}>
+                    <div key={i} style={{ display:"flex", alignItems:"center", gap:8, fontSize:11, color:C.textSecondary }}>
                       <span style={{ width:12, height:3, background:l.color, borderRadius:2, display:"inline-block" }}/>{l.label}
                     </div>
                   ))}
@@ -1336,9 +1336,9 @@ function MortgageTab({ vis, liveCpi }) {
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
-                  <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
-                  <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
+                  <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
                   <Line type="monotone" dataKey="Balance"      stroke={C.blue}  strokeWidth={2} dot={false} name="Nominal Balance"/>
                   {result.inf > 0 && <Line type="monotone" dataKey="Real Balance" stroke={C.green} strokeWidth={2} dot={false} strokeDasharray="5 3" name="Real Balance"/>}
                 </LineChart>
@@ -1415,11 +1415,11 @@ function MortgageTab({ vis, liveCpi }) {
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
           <div style={{ fontSize:14, fontWeight:700, marginBottom:16 }}>Estimated Transfer Tax</div>
 
-          <div style={{ marginBottom:14 }}>
+          <div style={{ marginBottom:16 }}>
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:6 }}>Province</div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
               {Object.keys(PROV_TAX).map(p=>(
-                <button key={p} onClick={()=>setProvince(p)} style={{ background:province===p?C.action:C.surface2, color:province===p?C.actionText:C.textSecondary, border:`1px solid ${province===p?C.action:C.border2}`, borderRadius:7, padding:"5px 12px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
+                <button key={p} onClick={()=>setProvince(p)} style={{ background:province===p?C.action:C.surface2, color:province===p?C.actionText:C.textSecondary, border:`1px solid ${province===p?C.action:C.border2}`, borderRadius:8, padding:"5px 12px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
               ))}
             </div>
           </div>
@@ -1428,7 +1428,7 @@ function MortgageTab({ vis, liveCpi }) {
           <MortField label="Municipal Assessment (optional)" value={assess} set={setAssess} ph="Leave blank to use purchase price"/>
 
           <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>Calculate</button>
-          <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>Estimates only — consult a notary for exact figures. Municipal surcharges (e.g. Montreal) not included.</div>
+          <div style={{ marginTop:10, fontSize:11, color:C.textMuted }}>Estimates only — consult a notary for exact figures. Municipal surcharges (e.g. Montreal) not included.</div>
         </div>
 
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
@@ -1439,14 +1439,14 @@ function MortgageTab({ vis, liveCpi }) {
             </div>
           ) : (
             <>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>{result.prov}</div>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>{result.prov}</div>
               <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(36px,7vw,60px)", fontWeight:700, color:C.red, lineHeight:1, letterSpacing:"-1px", marginBottom:12 }}>
                 {fmt(result.base)}
               </div>
               {result.onAssess != null && result.onAssess !== result.base && (
                 <div style={{ fontSize:12, color:C.textSecondary, marginBottom:12 }}>On assessment value: <strong style={{ color:C.yellow }}>{fmt(result.onAssess)}</strong></div>
               )}
-              <div style={{ fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 14px", lineHeight:1.6 }}>
+              <div style={{ fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6 }}>
                 This is an estimate based on provincial tax brackets only. Municipal taxes, first-time buyer rebates, and notary fees are not included.
               </div>
             </>
@@ -1484,18 +1484,18 @@ function MortgageTab({ vis, liveCpi }) {
     return (
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:4 }}>Calculate Borrowing Capacity</div>
+          <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Calculate Borrowing Capacity</div>
           <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>How much can you borrow based on your payment budget?</div>
 
           <MortField label="Payment Amount"           value={payment} set={setPayment} ph="e.g. 2,000"/>
           <MortField label="Annual Interest Rate (%)" value={rate}    set={setRate}    ph="e.g. 4.5" isSmall/>
           <MortField label="Amortization (Years)"     value={amort}   set={setAmort}   ph="e.g. 25"  isSmall/>
 
-          <div style={{ marginBottom:20 }}>
+          <div style={{ marginBottom:24 }}>
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Payment Frequency</div>
-            <div style={{ display:"flex", gap:6 }}>
+            <div style={{ display:"flex", gap:8 }}>
               {["monthly","biweekly","weekly"].map(f=>(
-                <button key={f} onClick={()=>setFreq(f)} style={{ flex:1, background:freq===f?C.action:C.surface2, color:freq===f?C.actionText:C.textSecondary, border:`1px solid ${freq===f?C.action:C.border2}`, borderRadius:7, padding:"7px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit", textTransform:"capitalize" }}>{f}</button>
+                <button key={f} onClick={()=>setFreq(f)} style={{ flex:1, background:freq===f?C.action:C.surface2, color:freq===f?C.actionText:C.textSecondary, border:`1px solid ${freq===f?C.action:C.border2}`, borderRadius:8, padding:"8px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit", textTransform:"capitalize" }}>{f}</button>
               ))}
             </div>
           </div>
@@ -1511,7 +1511,7 @@ function MortgageTab({ vis, liveCpi }) {
             </div>
           ) : (
             <>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>Maximum Mortgage Amount</div>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Maximum Mortgage Amount</div>
               <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
                 {fmt(result.pv)}
               </div>
@@ -1523,12 +1523,12 @@ function MortgageTab({ vis, liveCpi }) {
                   { label:"Payment Budget",   val:"$"+parseFloat(payment).toFixed(2)+"/"+freq.replace("biweekly","2wk"), color:C.blue },
                 ].map((s,i)=>(
                   <div key={i}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
-                    <div style={{ fontSize:16, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                    <div style={{ fontSize:15, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop:14, fontSize:10, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"8px 12px" }}>
+              <div style={{ marginTop:14, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"8px 12px" }}>
                 This is a mathematical estimate. Actual borrowing capacity depends on income, credit score, GDS/TDS ratios, and lender policies.
               </div>
             </>
@@ -1675,32 +1675,32 @@ function MortgageTab({ vis, liveCpi }) {
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
         {/* ── Input panel ── */}
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Debt Load Impact Calculator</div>
-          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:20 }}>See how existing debt reduces your maximum home price using Canadian GDS/TDS rules</div>
+          <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Debt Load Impact Calculator</div>
+          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:24 }}>See how existing debt reduces your maximum home price using Canadian GDS/TDS rules</div>
 
           {/* Income & Property */}
-          <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:12 }}>Income & Property</div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:12 }}>Income & Property</div>
           <DebtField label="Gross Annual Income *" value={income} set={setIncome} ph="e.g. 120,000"/>
           <DebtField label="Down Payment (%)" value={downPct} set={setDownPct} ph="e.g. 20" isSmall/>
           <DebtField label="Home Price (optional — leave blank to auto-solve)" value={homePrice} set={setHomePrice} ph="Auto-calculated"/>
           <DebtField label="Mortgage Rate (%)" value={mortRate} set={setMortRate} ph="e.g. 5.5" isSmall/>
           <div style={{ marginBottom:12 }}>
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>Amortization (Years)</div>
-            <div style={{ display:"flex", gap:6 }}>
+            <div style={{ display:"flex", gap:8 }}>
               {["25","30"].map(y => (
-                <button key={y} onClick={()=>setAmort(y)} style={{ flex:1, padding:"8px", borderRadius:7, border:`1px solid ${amort===y ? C.action : C.border2}`, background:amort===y ? C.action : C.surface2, color:amort===y ? C.actionText : C.textSecondary, fontWeight:600, fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>{y} years</button>
+                <button key={y} onClick={()=>setAmort(y)} style={{ flex:1, padding:"8px", borderRadius:8, border:`1px solid ${amort===y ? C.action : C.border2}`, background:amort===y ? C.action : C.surface2, color:amort===y ? C.actionText : C.textSecondary, fontWeight:600, fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>{y} years</button>
               ))}
             </div>
           </div>
           <DebtField label="Annual Property Tax (leave blank for ~1% estimate)" value={propTax} set={setPropTax} ph="e.g. 6,000"/>
           <div style={{ marginBottom:12 }}>
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>Monthly Energy Bill ($)</div>
-            <div style={{ fontSize:10, color:C.textMuted, marginBottom:6 }}>Gas, electricity, heating oil — lenders use $100–200/mo if unknown</div>
+            <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>Gas, electricity, heating oil — lenders use $100–200/mo if unknown</div>
             <DebtField label="" value={heat} set={setHeat} ph="e.g. 150" isSmall/>
           </div>
           <div style={{ marginBottom:12 }}>
-            <button onClick={() => { setIsCondo(v => !v); if (isCondo) setCondoFee("0"); }} style={{ display:"flex", alignItems:"center", gap:10, background:"none", border:`1px solid ${isCondo ? C.action : C.border2}`, borderRadius:8, padding:"9px 14px", cursor:"pointer", fontFamily:"inherit", width:"100%", textAlign:"left" }}>
-              <span style={{ width:16, height:16, borderRadius:4, border:`2px solid ${isCondo ? C.action : C.textMuted}`, background:isCondo ? C.action : "transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:10, color:"#000", fontWeight:700 }}>{isCondo ? "✓" : ""}</span>
+            <button onClick={() => { setIsCondo(v => !v); if (isCondo) setCondoFee("0"); }} style={{ display:"flex", alignItems:"center", gap:12, background:"none", border:`1px solid ${isCondo ? C.action : C.border2}`, borderRadius:8, padding:"9px 14px", cursor:"pointer", fontFamily:"inherit", width:"100%", textAlign:"left" }}>
+              <span style={{ width:16, height:16, borderRadius:4, border:`2px solid ${isCondo ? C.action : C.textMuted}`, background:isCondo ? C.action : "transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:11, color:"#000", fontWeight:700 }}>{isCondo ? "✓" : ""}</span>
               <span style={{ fontSize:12, fontWeight:600, color:isCondo ? C.action : C.textSecondary }}>I'm buying a condo or apartment</span>
             </button>
             {isCondo && (
@@ -1712,7 +1712,7 @@ function MortgageTab({ vis, liveCpi }) {
           </div>
 
           {/* Existing Debt */}
-          <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Existing Monthly Debt Payments</div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Existing Monthly Debt Payments</div>
           <DebtField label="Student Loans ($/mo)" value={student} set={setStudent} ph="e.g. 400" isSmall/>
           <DebtField label="Car Loans ($/mo)" value={carLoan} set={setCarLoan} ph="e.g. 500" isSmall/>
           <DebtField label="Credit Card Balance ($) — 3% used as min payment" value={ccBal} set={setCcBal} ph="e.g. 10,000"/>
@@ -1720,12 +1720,12 @@ function MortgageTab({ vis, liveCpi }) {
           <DebtField label="Child / Spousal Support ($/mo)" value={support} set={setSupport} ph="e.g. 0" isSmall/>
 
           {/* Credit Score */}
-          <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Credit Score</div>
-          <div style={{ display:"flex", flexDirection:"column", gap:6, marginBottom:20 }}>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Credit Score</div>
+          <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:24 }}>
             {[["excellent","Excellent (760+)","Full capacity"],["good","Good (660–759)","−5% capacity"],["fair","Fair (<660)","−10% capacity"]].map(([val, label, note]) => (
               <button key={val} onClick={() => setCreditScore(val)} style={{
                 display:"flex", alignItems:"center", justifyContent:"space-between",
-                padding:"10px 14px", borderRadius:10, border:`1px solid ${creditScore===val ? C.action : C.border2}`,
+                padding:"10px 16px", borderRadius:8, border:`1px solid ${creditScore===val ? C.action : C.border2}`,
                 background: creditScore===val ? C.surface2 : C.surface2,
                 cursor:"pointer", fontFamily:"inherit", textAlign:"left",
               }}>
@@ -1738,13 +1738,13 @@ function MortgageTab({ vis, liveCpi }) {
           <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
             Calculate Impact
           </button>
-          <div style={{ marginTop:10, fontSize:10, color:C.textMuted, lineHeight:1.6 }}>
+          <div style={{ marginTop:10, fontSize:11, color:C.textMuted, lineHeight:1.6 }}>
             Uses OSFI stress test (contract rate +2%, min 5.25%). GDS ≤39% · TDS ≤44%. For guidance only — consult a mortgage broker for qualification.
           </div>
         </div>
 
         {/* ── Results panel ── */}
-        <div ref={debtResultsRef} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+        <div ref={debtResultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:300 }}>
               <div style={{ fontSize:32 }}>🏡</div>
@@ -1754,18 +1754,18 @@ function MortgageTab({ vis, liveCpi }) {
           ) : (<>
             {/* Hero */}
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
                 Maximum Home Price · Stress-Tested at {result.sr.toFixed(2)}%
               </div>
               <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:16 }}>
                 <div>
-                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>With all debts</div>
+                  <div style={{ fontSize:11, color:C.textMuted, marginBottom:4 }}>With all debts</div>
                   <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(36px,7vw,60px)", fontWeight:700, color:C.action, lineHeight:1, letterSpacing:"-1px" }}>
                     {fmt(result.withAll.price)}
                   </div>
                 </div>
                 <div style={{ paddingBottom:6 }}>
-                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>Debt-free baseline</div>
+                  <div style={{ fontSize:11, color:C.textMuted, marginBottom:4 }}>Debt-free baseline</div>
                   <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:28, fontWeight:700, color:C.green, letterSpacing:"-.5px" }}>
                     {fmt(result.base.price)}
                   </div>
@@ -1778,35 +1778,35 @@ function MortgageTab({ vis, liveCpi }) {
                   { label:"TDS Ratio",      val:`${result.withAll.tds.toFixed(1)}%`,           color:result.withAll.tds > 44 ? C.red : C.green, note:"Limit: 44%" },
                 ].map((s,i) => (
                   <div key={i} style={{ padding:"10px 0" }}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:3 }}>{s.label}</div>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
                     <div style={{ fontSize:18, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
-                    <div style={{ fontSize:10, color:C.textMuted }}>{s.note}</div>
+                    <div style={{ fontSize:11, color:C.textMuted }}>{s.note}</div>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Debt impact table */}
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Debt-by-Debt Breakdown</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:16 }}>How each debt reduces your maximum home price</div>
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
+              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Debt-by-Debt Breakdown</div>
+              <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>How each debt reduces your maximum home price</div>
               <div style={{ overflowX:"auto" }}>
                 <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
                   <thead>
                     <tr style={{ borderBottom:`1px solid ${C.border2}` }}>
                       {["Scenario","Max Home Price","GDS","TDS","Impact"].map((h,i) => (
-                        <th key={i} style={{ padding:"8px 10px", textAlign:i===0?"left":"right", fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", whiteSpace:"nowrap" }}>{h}</th>
+                        <th key={i} style={{ padding:"8px 10px", textAlign:i===0?"left":"right", fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", whiteSpace:"nowrap" }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {result.rows.map((row, i) => (
                       <tr key={i} style={{ borderBottom:`1px solid ${C.border}`, background: row.isCreditRow ? `${C.purple}08` : i===0 ? `${C.green}08` : "transparent" }}>
-                        <td style={{ padding:"10px 10px", color: i===0 ? C.green : row.isCreditRow ? C.purple : C.textPrimary, fontWeight: i===0 ? 700 : 500, fontSize:12 }}>{row.label}</td>
-                        <td style={{ padding:"10px 10px", textAlign:"right", fontFamily:"'Barlow Condensed',sans-serif", fontSize:15, fontWeight:700, color: i===0 ? C.green : C.textPrimary }}>{fmt(row.price)}</td>
-                        <td style={{ padding:"10px 10px", textAlign:"right", color:row.gds > 39 ? C.red : C.textSecondary, fontSize:11 }}>{row.gds.toFixed(1)}%</td>
-                        <td style={{ padding:"10px 10px", textAlign:"right", color:row.tds > 44 ? C.red : C.textSecondary, fontSize:11 }}>{row.tds.toFixed(1)}%</td>
-                        <td style={{ padding:"10px 10px", textAlign:"right", whiteSpace:"nowrap" }}>
+                        <td style={{ padding:"10px 12px", color: i===0 ? C.green : row.isCreditRow ? C.purple : C.textPrimary, fontWeight: i===0 ? 700 : 500, fontSize:12 }}>{row.label}</td>
+                        <td style={{ padding:"10px 12px", textAlign:"right", fontFamily:"'Barlow Condensed',sans-serif", fontSize:15, fontWeight:700, color: i===0 ? C.green : C.textPrimary }}>{fmt(row.price)}</td>
+                        <td style={{ padding:"10px 12px", textAlign:"right", color:row.gds > 39 ? C.red : C.textSecondary, fontSize:11 }}>{row.gds.toFixed(1)}%</td>
+                        <td style={{ padding:"10px 12px", textAlign:"right", color:row.tds > 44 ? C.red : C.textSecondary, fontSize:11 }}>{row.tds.toFixed(1)}%</td>
+                        <td style={{ padding:"10px 12px", textAlign:"right", whiteSpace:"nowrap" }}>
                           {row.delta != null ? (
                             <span style={{ fontSize:12, fontWeight:700, color:C.red, background:C.redBg, borderRadius:5, padding:"2px 8px" }}>
                               {fmtK(row.delta)}
@@ -1828,14 +1828,14 @@ function MortgageTab({ vis, liveCpi }) {
 
             {/* Debt payoff simulator */}
             {(result.ccGain > 0 || result.locGain > 0) && (
-              <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
-                <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>💡 Debt Payoff Simulator</div>
-                <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>Paying off these debts before buying would unlock additional home price</div>
+              <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
+                <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>💡 Debt Payoff Simulator</div>
+                <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Paying off these debts before buying would unlock additional home price</div>
                 {[
                   result.ccMo > 0  && { label:`Pay off $${Math.round(parseFloat(ccBal)||0).toLocaleString("en-CA")} credit card balance`, gain:result.ccGain,  color:C.green },
                   result.locMo > 0 && { label:`Pay off $${Math.round(parseFloat(locBal)||0).toLocaleString("en-CA")} line of credit`,      gain:result.locGain, color:C.blue  },
                 ].filter(Boolean).map((item, i) => (
-                  <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 14px", background:C.surface2, borderRadius:10, marginBottom:8, gap:12, flexWrap:"wrap" }}>
+                  <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:C.surface2, borderRadius:8, marginBottom:8, gap:12, flexWrap:"wrap" }}>
                     <span style={{ fontSize:12, color:C.textPrimary, flex:1 }}>{item.label}</span>
                     <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:18, fontWeight:700, color:item.color, whiteSpace:"nowrap" }}>
                       → +{fmt(item.gain)} buying power
@@ -1866,14 +1866,14 @@ function MortgageTab({ vis, liveCpi }) {
 
   return (
     <div className={`reveal ${vis?"in":""}`}>
-      <div style={{ display:"flex", gap:8, marginBottom:20, overflowX:"auto", WebkitOverflowScrolling:"touch", paddingBottom:4, scrollbarWidth:"none" }}>
+      <div style={{ display:"flex", gap:8, marginBottom:24, overflowX:"auto", WebkitOverflowScrolling:"touch", paddingBottom:4, scrollbarWidth:"none" }}>
         {SUBS.map((s,i) => (
           <button key={i} onClick={()=>setSub(i)} style={{
             background: sub===i ? C.surface2 : "transparent",
             border:     `1px solid ${sub===i ? C.border : C.border}`,
             color:      sub===i ? C.action : C.textMuted,
-            borderRadius:10, padding:"8px 18px", fontSize:12, fontWeight:600,
-            cursor:"pointer", fontFamily:"inherit", transition:"all .15s",
+            borderRadius:8, padding:"8px 18px", fontSize:12, fontWeight:600,
+            cursor:"pointer", fontFamily:"inherit", transition:"background .12s, border-color .12s, color .12s",
             whiteSpace:"nowrap", flexShrink:0,
           }}>{s}</button>
         ))}
@@ -1970,12 +1970,12 @@ function RetirementTab({ vis, liveCpi }) {
 
         {/* ── Inputs ── */}
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>Retirement Calculator</div>
+          <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Retirement Calculator</div>
           <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>See how long your savings will last — adjusted for inflation</div>
 
-          <div style={{ display:"flex", background:C.surface2, borderRadius:10, padding:3, border:`1px solid ${C.border}`, marginBottom:20 }}>
+          <div style={{ display:"flex", background:C.surface2, borderRadius:8, padding:3, border:`1px solid ${C.border}`, marginBottom:24 }}>
             {[["howlong","How long will it last?"],["howmuch","How much can I withdraw?"]].map(([val,lbl])=>(
-              <button key={val} onClick={()=>{ setMode(val); setResult(null); }} style={{ flex:1, padding:"8px 10px", borderRadius:8, border:"none", fontFamily:"inherit", fontSize:11, fontWeight:600, cursor:"pointer", transition:"all .15s", background:mode===val?C.action:"transparent", color:mode===val?C.actionText:C.textSecondary }}>{lbl}</button>
+              <button key={val} onClick={()=>{ setMode(val); setResult(null); }} style={{ flex:1, padding:"8px 10px", borderRadius:8, border:"none", fontFamily:"inherit", fontSize:11, fontWeight:600, cursor:"pointer", transition:"background .12s, border-color .12s, color .12s", background:mode===val?C.action:"transparent", color:mode===val?C.actionText:C.textSecondary }}>{lbl}</button>
             ))}
           </div>
 
@@ -1989,7 +1989,7 @@ function RetirementTab({ vis, liveCpi }) {
 
           <div style={{ marginBottom:16 }}>
             <div style={{ fontSize:11, color:C.textMuted, marginBottom:8 }}>Quick examples:</div>
-            <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
               {EXAMPLES.map((ex,i)=>(
                 <button key={i} onClick={()=>{ setSavings(ex.savings); setMonthly(ex.monthly); }} style={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"7px 12px", fontSize:11, color:C.textSecondary, cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
                   ↗ {ex.label}
@@ -2001,13 +2001,13 @@ function RetirementTab({ vis, liveCpi }) {
           <button onClick={calculate} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>
             Calculate
           </button>
-          <div style={{ marginTop:10, fontSize:10, color:C.textMuted, lineHeight:1.6 }}>
+          <div style={{ marginTop:10, fontSize:11, color:C.textMuted, lineHeight:1.6 }}>
             Inflation rate pre-filled from live Statistics Canada CPI. For planning purposes only — not financial advice.
           </div>
         </div>
 
         {/* ── Results ── */}
-        <div ref={retResultsRef} style={{ display:"flex", flexDirection:"column", gap:14 }}>
+        <div ref={retResultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:280 }}>
               <div style={{ fontSize:32 }}>🏖️</div>
@@ -2016,23 +2016,23 @@ function RetirementTab({ vis, liveCpi }) {
             </div>
           ) : result.mode === "howlong" ? (<>
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>Your money lasts</div>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Your money lasts</div>
               <div style={{ display:"flex", gap:24, flexWrap:"wrap", marginBottom:16 }}>
                 <div>
-                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>Nominal</div>
+                  <div style={{ fontSize:11, color:C.textMuted, marginBottom:4 }}>Nominal</div>
                   <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,48px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px" }}>
                     {result.nomYears}
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>Real (inflation-adjusted)</div>
+                  <div style={{ fontSize:11, color:C.textMuted, marginBottom:4 }}>Real (inflation-adjusted)</div>
                   <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,48px)", fontWeight:700, color:C.blue, lineHeight:1, letterSpacing:"-1px" }}>
                     {result.realYears}
                   </div>
                 </div>
               </div>
               {result.nomYearsNum && result.realYearsNum && (
-                <div style={{ fontSize:12, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 14px", lineHeight:1.6, marginBottom:16 }}>
+                <div style={{ fontSize:12, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6, marginBottom:16 }}>
                   💡 Inflation shortens your runway by approximately <strong style={{ color:C.yellow }}>{Math.max(0, result.nomYearsNum - result.realYearsNum).toFixed(1)} years</strong> — withdrawals lose purchasing power over time.
                 </div>
               )}
@@ -2043,18 +2043,18 @@ function RetirementTab({ vis, liveCpi }) {
                   { label:"Inflation Rate",     val:`${(result.inf*12*100).toFixed(1)}%/yr`,  color:C.textSecondary },
                 ].map((s,i)=>(
                   <div key={i}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", marginBottom:3 }}>{s.label}</div>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", marginBottom:4 }}>{s.label}</div>
                     <div style={{ fontSize:15, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
                   </div>
                 ))}
               </div>
             </div>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Savings Balance Over Time</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Nominal vs. real balance year by year</div>
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
+              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Savings Balance Over Time</div>
+              <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Nominal vs. real balance year by year</div>
               <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
                 {[{color:C.green,label:"Nominal"},{color:C.blue,label:"Real (today's $)"}].map((l,i)=>(
-                  <div key={i} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSecondary }}>
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:8, fontSize:11, color:C.textSecondary }}>
                     <span style={{ width:12,height:3,background:l.color,borderRadius:2,display:"inline-block" }}/>{l.label}
                   </div>
                 ))}
@@ -2062,9 +2062,9 @@ function RetirementTab({ vis, liveCpi }) {
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
-                  <YAxis tick={{ fill:C.textMuted, fontSize:10 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
-                  <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"),n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
+                  <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"),n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
                   <ReferenceLine y={0} stroke={C.border}/>
                   <Line type="monotone" dataKey="Nominal"          stroke={C.green} strokeWidth={2} dot={false}/>
                   <Line type="monotone" dataKey="Real (today's $)" stroke={C.blue}  strokeWidth={2} dot={false} strokeDasharray="5 3"/>
@@ -2073,37 +2073,37 @@ function RetirementTab({ vis, liveCpi }) {
             </div>
           </>) : (<>
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>
                 Max Monthly Withdrawal over {result.targetYrs} years
               </div>
               <div style={{ display:"flex", gap:24, flexWrap:"wrap", marginBottom:16 }}>
                 <div>
-                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>Nominal</div>
+                  <div style={{ fontSize:11, color:C.textMuted, marginBottom:4 }}>Nominal</div>
                   <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,48px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px" }}>
                     {fmt(result.maxNom)}/mo
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>Real purchasing power</div>
+                  <div style={{ fontSize:11, color:C.textMuted, marginBottom:4 }}>Real purchasing power</div>
                   <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,48px)", fontWeight:700, color:C.blue, lineHeight:1, letterSpacing:"-1px" }}>
                     {fmt(result.maxReal)}/mo
                   </div>
                 </div>
               </div>
-              <div style={{ fontSize:12, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 14px", lineHeight:1.6 }}>
+              <div style={{ fontSize:12, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6 }}>
                 💡 In today's dollars, {fmt(result.maxNom)}/mo will feel like {fmt(result.maxReal)}/mo after inflation over {result.targetYrs} years.
               </div>
             </div>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Balance Drawdown</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Savings balance year by year at max nominal withdrawal</div>
+            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
+              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Balance Drawdown</div>
+              <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Savings balance year by year at max nominal withdrawal</div>
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                   <defs><linearGradient id="retGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.blue} stopOpacity={0.2}/><stop offset="95%" stopColor={C.blue} stopOpacity={0}/></linearGradient></defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
-                  <YAxis tick={{ fill:C.textMuted, fontSize:10 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
-                  <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Balance"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
+                  <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Balance"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
                   <Area type="monotone" dataKey="Balance" stroke={C.blue} strokeWidth={2} fill="url(#retGrad)" dot={false}/>
                 </AreaChart>
               </ResponsiveContainer>
@@ -2157,22 +2157,22 @@ function TFSACalc() {
   return (
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
       <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-        <div style={{ fontSize:14, fontWeight:700, marginBottom:4 }}>TFSA Contribution Room</div>
-        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:20 }}>Calculate your total available room based on eligibility year and contribution history</div>
+        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>TFSA Contribution Room</div>
+        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:24 }}>Calculate your total available room based on eligibility year and contribution history</div>
         <DebtField label="Year of Birth"                         value={birthYear}   set={setBirthYear}   ph="e.g. 1990" isSmall/>
         <DebtField label="Total Contributions Made to Date ($)"  value={contributed} set={setContributed} ph="e.g. 40,000"/>
         <DebtField label="Total Withdrawals Made to Date ($)"    value={withdrawn}   set={setWithdrawn}   ph="e.g. 5,000"/>
-        <div style={{ marginBottom:16, background:C.surface2, borderRadius:10, padding:"12px 14px", fontSize:11, color:C.textMuted, lineHeight:1.7 }}>
+        <div style={{ marginBottom:16, background:C.surface2, borderRadius:8, padding:"12px 16px", fontSize:11, color:C.textMuted, lineHeight:1.7 }}>
           💡 TFSA withdrawals re-add to your room the following January 1. Enter lifetime withdrawals for accurate room.
         </div>
         <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>
           Calculate Room
         </button>
-        <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>
+        <div style={{ marginTop:10, fontSize:11, color:C.textMuted }}>
           Based on official CRA annual limits. Verify at <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account.html" target="_blank" rel="noopener noreferrer" style={{ color:C.green }}>CRA.gc.ca</a>
         </div>
       </div>
-      <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+      <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
         {!result ? (
           <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:220 }}>
             <div style={{ fontSize:32 }}>🏦</div>
@@ -2184,12 +2184,12 @@ function TFSACalc() {
           </div>
         ) : (<>
           <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-            <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>Available TFSA Room</div>
-            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:result.remaining>=0?C.green:C.red, lineHeight:1, letterSpacing:"-1px", marginBottom:14 }}>
+            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Available TFSA Room</div>
+            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:result.remaining>=0?C.green:C.red, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
               {result.remaining>=0 ? fmt(result.remaining) : `Over by ${fmt(Math.abs(result.remaining))}`}
             </div>
             {result.remaining < 0 && (
-              <div style={{ fontSize:12, color:C.red, background:C.redBg, borderRadius:8, padding:"10px 14px", marginBottom:14 }}>⚠ You may have over-contributed. Contact CRA — penalty is 1%/month on excess.</div>
+              <div style={{ fontSize:12, color:C.red, background:C.redBg, borderRadius:8, padding:"10px 16px", marginBottom:16 }}>⚠ You may have over-contributed. Contact CRA — penalty is 1%/month on excess.</div>
             )}
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
               {[
@@ -2198,22 +2198,22 @@ function TFSACalc() {
                 { label:"Withdrawals Added", val:fmt(result.withdrawn), color:C.green },
               ].map((s,i)=>(
                 <div key={i}>
-                  <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", marginBottom:3 }}>{s.label}</div>
-                  <div style={{ fontSize:16, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+                  <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", marginBottom:4 }}>{s.label}</div>
+                  <div style={{ fontSize:15, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
                 </div>
               ))}
             </div>
           </div>
-          <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px" }}>
-            <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Cumulative Room by Year</div>
-            <div style={{ fontSize:10, color:C.textSecondary, marginBottom:12 }}>Total TFSA room accumulated since eligibility</div>
+          <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
+            <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative Room by Year</div>
+            <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Total TFSA room accumulated since eligibility</div>
             <ResponsiveContainer width="100%" height={180}>
               <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
                 <defs><linearGradient id="tfsaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.green} stopOpacity={0.2}/><stop offset="95%" stopColor={C.green} stopOpacity={0}/></linearGradient></defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
-                <YAxis tick={{ fill:C.textMuted, fontSize:10 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
-                <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Cumulative Room"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
+                <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
+                <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Cumulative Room"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
                 <Area type="stepAfter" dataKey="Cumulative Room" stroke={C.green} strokeWidth={2} fill="url(#tfsaGrad)" dot={false}/>
               </AreaChart>
             </ResponsiveContainer>
@@ -2272,28 +2272,28 @@ function RRSPCalc() {
   return (
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
       <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-        <div style={{ fontSize:14, fontWeight:700, marginBottom:4 }}>RRSP Contribution Room</div>
-        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:20 }}>Estimate your 2025 RRSP deduction limit and potential tax savings</div>
+        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>RRSP Contribution Room</div>
+        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:24 }}>Estimate your 2025 RRSP deduction limit and potential tax savings</div>
         <DebtField label="Earned Income — Prior Year ($)"     value={income}      set={setIncome}      ph="e.g. 95,000"/>
         <DebtField label="Prior Year's RRSP Limit ($)"        value={prevLimit}   set={setPrevLimit}   ph="e.g. 15,000" hint="From your CRA Notice of Assessment"/>
         <DebtField label="Pension Adjustment ($)"             value={pensionAdj}  set={setPensionAdj}  ph="0 if none" isSmall/>
         <DebtField label="Contributions Made This Year ($)"   value={contributed} set={setContributed} ph="e.g. 5,000"/>
         <div style={{ marginBottom:16 }}>
           <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Province (for tax savings estimate)</div>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
             {Object.keys(PROV_RATES).map(p=>(
-              <button key={p} onClick={()=>setProvince(p)} style={{ background:province===p?C.action:C.surface2, color:province===p?C.actionText:C.textSecondary, border:`1px solid ${province===p?C.action:C.border2}`, borderRadius:7, padding:"5px 10px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
+              <button key={p} onClick={()=>setProvince(p)} style={{ background:province===p?C.action:C.surface2, color:province===p?C.actionText:C.textSecondary, border:`1px solid ${province===p?C.action:C.border2}`, borderRadius:8, padding:"5px 10px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
             ))}
           </div>
         </div>
         <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>
           Calculate Room
         </button>
-        <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>
+        <div style={{ marginTop:10, fontSize:11, color:C.textMuted }}>
           2025 limit: ${MAX_RRSP.toLocaleString()}. Verify at <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/contributing-a-rrsp-prpp/how-much-can-you-contribute.html" target="_blank" rel="noopener noreferrer" style={{ color:C.green }}>CRA.gc.ca</a>
         </div>
       </div>
-      <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+      <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
         {!result ? (
           <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:220 }}>
             <div style={{ fontSize:32 }}>📋</div>
@@ -2301,8 +2301,8 @@ function RRSPCalc() {
           </div>
         ) : (<>
           <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-            <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>Available RRSP Room (2025)</div>
-            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:14 }}>
+            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Available RRSP Room (2025)</div>
+            <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
               {fmt(result.remaining)}
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
@@ -2315,12 +2315,12 @@ function RRSPCalc() {
                 { label:"Est. Tax Savings",       val:fmt(result.taxSaving), color:C.green },
               ].map((s,i)=>(
                 <div key={i}>
-                  <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", marginBottom:3 }}>{s.label}</div>
-                  <div style={{ fontSize:16, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+                  <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", marginBottom:4 }}>{s.label}</div>
+                  <div style={{ fontSize:15, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
                 </div>
               ))}
             </div>
-            <div style={{ marginTop:14, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 14px", lineHeight:1.6 }}>
+            <div style={{ marginTop:14, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6 }}>
               💡 Contributing {fmt(result.remaining)} to your RRSP could save approximately <strong style={{ color:C.green }}>{fmt(result.taxSaving)}</strong> in taxes at your {(result.margRate*100).toFixed(1)}% marginal rate.
             </div>
           </div>
@@ -2335,14 +2335,14 @@ function ContributionTab({ vis }) {
   const [sub, setSub] = useState(0);
   return (
     <div className={`reveal ${vis?"in":""}`}>
-      <div style={{ display:"flex", gap:8, marginBottom:20, overflowX:"auto", WebkitOverflowScrolling:"touch", paddingBottom:4, scrollbarWidth:"none" }}>
+      <div style={{ display:"flex", gap:8, marginBottom:24, overflowX:"auto", WebkitOverflowScrolling:"touch", paddingBottom:4, scrollbarWidth:"none" }}>
         {["TFSA","RRSP"].map((s,i) => (
           <button key={i} onClick={()=>setSub(i)} style={{
             background: sub===i ? C.surface2 : "transparent",
             border:     `1px solid ${sub===i ? C.border : C.border}`,
             color:      sub===i ? C.action : C.textMuted,
-            borderRadius:10, padding:"8px 18px", fontSize:12, fontWeight:600,
-            cursor:"pointer", fontFamily:"inherit", transition:"all .15s", whiteSpace:"nowrap", flexShrink:0,
+            borderRadius:8, padding:"8px 18px", fontSize:12, fontWeight:600,
+            cursor:"pointer", fontFamily:"inherit", transition:"background .12s, border-color .12s, color .12s", whiteSpace:"nowrap", flexShrink:0,
           }}>{s}</button>
         ))}
       </div>
@@ -2445,7 +2445,7 @@ function GroceryTab({ vis }) {
       {loading ? (
         <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:300, gap:16 }}>
           <div className="spin" style={{ width:32, height:32 }}/>
-          <p style={{ color:C.textMuted, fontSize:12 }}>Loading food price data…</p>
+          <p style={{ color:C.textMuted, fontSize:13 }}>Retrieving live data.</p>
         </div>
       ) : error ? (
         <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
@@ -2455,7 +2455,7 @@ function GroceryTab({ vis }) {
       ) : (<>
         {/* Hero */}
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px", marginBottom:16 }}>
-          <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
             Canadian Food Prices · Year-over-Year · {latestDate}
           </div>
           <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,44px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 16px" }}>
@@ -2466,15 +2466,15 @@ function GroceryTab({ vis }) {
               { label:"Groceries & Food at Home", key:"Food from stores" },
               { label:"Restaurants & Takeout",     key:"Food from restaurants" },
             ].map(({label,key},i) => (
-              <div key={i} style={{ background:C.surface2, borderRadius:10, padding:"12px 14px" }}>
-                <div style={{ fontSize:10, color:C.textMuted, fontWeight:600, marginBottom:4 }}>{label}</div>
+              <div key={i} style={{ background:C.surface2, borderRadius:8, padding:"12px 16px" }}>
+                <div style={{ fontSize:11, color:C.textMuted, fontWeight:600, marginBottom:4 }}>{label}</div>
                 <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:28, fontWeight:700, color:valColor(latest[key]||0), letterSpacing:"-.5px" }}>
                   {fmt(latest[key])}
                 </div>
               </div>
             ))}
           </div>
-          <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>
+          <div style={{ marginTop:10, fontSize:11, color:C.textMuted }}>
             Source: Statistics Canada · Table 18-10-0004-01
           </div>
         </div>
@@ -2487,7 +2487,7 @@ function GroceryTab({ vis }) {
               <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:24, fontWeight:700, color:valColor(latest[k]||0), letterSpacing:"-.3px" }}>
                 {fmt(latest[k])}
               </div>
-              <div style={{ fontSize:9, color:valColor(latest[k]||0), marginTop:3 }}>
+              <div style={{ fontSize:11, color:valColor(latest[k]||0), marginTop:3 }}>
                 {(latest[k]||0) > BOC_TARGET ? `${((latest[k]||0) - BOC_TARGET).toFixed(1)}pp above BoC target` : "Within BoC target range"}
               </div>
             </div>
@@ -2495,24 +2495,24 @@ function GroceryTab({ vis }) {
         </div>
 
         {/* Trend chart */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:4 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12, flexWrap:"wrap", gap:10 }}>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:4 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12, flexWrap:"wrap", gap:12 }}>
             <div>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Food Price Trends</div>
-              <div style={{ fontSize:10, color:C.textSecondary }}>Year-over-year change · Statistics Canada table 18-10-0004-01</div>
+              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Food Price Trends</div>
+              <div style={{ fontSize:11, color:C.textSecondary }}>Year-over-year change · Statistics Canada table 18-10-0004-01</div>
             </div>
-            <div style={{ display:"flex", gap:5 }}>
+            <div style={{ display:"flex", gap:8 }}>
               {["2Y","5Y","10Y"].map(r=><button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>)}
             </div>
           </div>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:14 }}>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:16 }}>
             {sortedCategories.map(k=><FilterPill key={k} label={k} color={GROCERY_COLORS[k]} active={active[k]} onClick={()=>setActive(p=>({...p,[k]:!p[k]}))}/>)}
           </div>
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={chartData} margin={{ top:4, right:8, left:-20, bottom:36 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={55} height={36}/>
-              <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
+              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={55} height={36}/>
+              <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
               <Tooltip content={<MultiTip/>}/>
               <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
               <ReferenceLine y={0} stroke={C.border}/>
@@ -2602,7 +2602,7 @@ function ExchangeRatesTab({ vis }) {
       {loading ? (
         <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:300, gap:16 }}>
           <div className="spin" style={{ width:32, height:32 }}/>
-          <p style={{ color:C.textMuted, fontSize:12 }}>Loading exchange rates from Bank of Canada…</p>
+          <p style={{ color:C.textMuted, fontSize:13 }}>Retrieving live data.</p>
         </div>
       ) : error ? (
         <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
@@ -2612,26 +2612,26 @@ function ExchangeRatesTab({ vis }) {
       ) : (<>
         {/* Hero */}
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px", marginBottom:16 }}>
-          <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
             Canadian Dollar Exchange Rates · {latest?.date}
           </div>
           <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(22px,5vw,38px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 10px" }}>
             CAD vs Major Currencies
           </h1>
-          <div style={{ fontSize:10, color:C.textMuted, marginBottom:6 }}>
+          <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>
             Source: Bank of Canada Valet API · Daily rates published by 16:30 ET
           </div>
         </div>
 
         {/* Currency rate table */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:16 }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:14 }}>Live Rates — 1 Foreign Currency = X CAD</div>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:16 }}>
+          <div style={{ fontSize:14, fontWeight:700, marginBottom:16 }}>Live Rates — 1 Foreign Currency = X CAD</div>
           <div style={{ overflowX:"auto", WebkitOverflowScrolling:"touch" }}>
             <table style={{ width:"100%", borderCollapse:"collapse", minWidth:360 }}>
               <thead>
                 <tr style={{ borderBottom:`1px solid ${C.border2}` }}>
                   {["Currency","Rate (→ CAD)","1Y Change","Select"].map((h,i)=>(
-                    <th key={i} style={{ padding:"8px 12px", textAlign:i===0?"left":"right", fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", whiteSpace:"nowrap" }}>{h}</th>
+                    <th key={i} style={{ padding:"8px 12px", textAlign:i===0?"left":"right", fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".08em", whiteSpace:"nowrap" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -2665,7 +2665,7 @@ function ExchangeRatesTab({ vis }) {
                         ) : "—"}
                       </td>
                       <td style={{ padding:"12px 12px", textAlign:"right" }}>
-                        <button onClick={()=>setSelected(code)} style={{ background:isSelected?C.action:C.surface2, color:isSelected?C.actionText:C.textSecondary, border:`1px solid ${isSelected?C.action:C.border2}`, borderRadius:7, padding:"5px 12px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
+                        <button onClick={()=>setSelected(code)} style={{ background:isSelected?C.action:C.surface2, color:isSelected?C.actionText:C.textSecondary, border:`1px solid ${isSelected?C.action:C.border2}`, borderRadius:8, padding:"5px 12px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
                           Chart
                         </button>
                       </td>
@@ -2678,18 +2678,18 @@ function ExchangeRatesTab({ vis }) {
         </div>
 
         {/* Historical chart for selected currency */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:4 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14, flexWrap:"wrap", gap:10 }}>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:4 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:12 }}>
             <div>
               <div style={{ fontSize:14, fontWeight:700 }}>{FX_SERIES[selected].flag} {FX_SERIES[selected].label} / CAD History</div>
-              <div style={{ fontSize:10, color:C.textSecondary, marginTop:2 }}>Monthly average rate · Source: Bank of Canada</div>
+              <div style={{ fontSize:11, color:C.textSecondary, marginTop:2 }}>Monthly average rate · Source: Bank of Canada</div>
             </div>
-            <div style={{ display:"flex", gap:5 }}>
+            <div style={{ display:"flex", gap:8 }}>
               {["1Y","5Y","10Y","All"].map(r=><button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>)}
             </div>
           </div>
           {change1Y != null && (
-            <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:change1Y>0?C.greenBg:C.redBg, color:change1Y>0?C.green:C.red, borderRadius:6, padding:"4px 10px", fontSize:12, fontWeight:700, marginBottom:14, border:`1px solid ${change1Y>0?C.green:C.red}25` }}>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:8, background:change1Y>0?C.greenBg:C.redBg, color:change1Y>0?C.green:C.red, borderRadius:6, padding:"4px 10px", fontSize:12, fontWeight:700, marginBottom:16, border:`1px solid ${change1Y>0?C.green:C.red}25` }}>
               {change1Y>0?"▲":"▼"} {Math.abs(change1Y).toFixed(2)}% vs 1 year ago · 1 {selected} = ${latest?.rate.toFixed(4)} CAD
             </div>
           )}
@@ -2702,9 +2702,9 @@ function ExchangeRatesTab({ vis }) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={55} height={36}/>
-              <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>`$${v.toFixed(2)}`} domain={["auto","auto"]}/>
-              <Tooltip formatter={(v,n)=>[`$${v.toFixed(4)} CAD`,`1 ${selected}`]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
+              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={55} height={36}/>
+              <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>`$${v.toFixed(2)}`} domain={["auto","auto"]}/>
+              <Tooltip formatter={(v,n)=>[`$${v.toFixed(4)} CAD`,`1 ${selected}`]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
               <Area type="monotone" dataKey="rate" stroke={FX_SERIES[selected].color} strokeWidth={2} fill="url(#fxGrad)" dot={false}/>
             </AreaChart>
           </ResponsiveContainer>
@@ -2776,7 +2776,7 @@ function RealWagesTab({ vis }) {
       {loading ? (
         <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:300, gap:16 }}>
           <div className="spin" style={{ width:32, height:32 }}/>
-          <p style={{ color:C.textMuted, fontSize:12 }}>Loading wage data from Statistics Canada…</p>
+          <p style={{ color:C.textMuted, fontSize:13 }}>Retrieving live data.</p>
         </div>
       ) : error ? (
         <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
@@ -2787,7 +2787,7 @@ function RealWagesTab({ vis }) {
         {/* Hero */}
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, marginBottom:16, overflow:"hidden" }}>
           <div style={{ padding:"24px 20px 0" }}>
-            <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
+            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
               Canadian Wages vs Inflation · {latest?.date}
             </div>
             <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,48px)", fontWeight:700, letterSpacing:"-.5px", margin:"0 0 14px" }}>
@@ -2798,7 +2798,7 @@ function RealWagesTab({ vis }) {
               <span style={{ color:C.white }}> with inflation?</span>
             </h1>
             {latest && (
-              <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:20 }}>
+              <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:24 }}>
                 <span style={{ fontSize:12, fontWeight:700, color:C.blue, background:C.blueBg, border:`1px solid ${C.blue}25`, borderRadius:6, padding:"4px 10px" }}>
                   Wages: +{latest.wages.toFixed(1)}% YoY
                 </span>
@@ -2817,28 +2817,28 @@ function RealWagesTab({ vis }) {
               { label:"CPI Inflation", val:`${latest?.cpi?.toFixed(1)}%`,     color:valColor(latest?.cpi||0) },
               { label:"Real Gain/Loss",val:`${latest?.realGain>=0?"+":""}${latest?.realGain?.toFixed(1)}pp`, color:latest?.realGain>=0?C.green:C.red },
             ].map((s,i)=>(
-              <div key={i} style={{ padding:"14px 16px", borderRight:i<2?`1px solid ${C.border}`:"none" }}>
-                <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
-                <div style={{ fontSize:22, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+              <div key={i} style={{ padding:"14px 16px", borderRight:"none" }}>
+                <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                <div style={{ fontSize:20, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Wages vs CPI chart */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:16 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14, flexWrap:"wrap", gap:10 }}>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:16 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:12 }}>
             <div>
-              <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Wage Growth vs CPI Inflation</div>
-              <div style={{ fontSize:10, color:C.textSecondary }}>Year-over-year % · Source: Statistics Canada table 14-10-0063-01</div>
+              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Wage Growth vs CPI Inflation</div>
+              <div style={{ fontSize:11, color:C.textSecondary }}>Year-over-year % · Source: Statistics Canada table 14-10-0063-01</div>
             </div>
-            <div style={{ display:"flex", gap:5 }}>
+            <div style={{ display:"flex", gap:8 }}>
               {["2Y","5Y","10Y","All"].map(r=><button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>)}
             </div>
           </div>
           <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
             {[{color:C.blue,label:"Wage Growth"},{color:C.yellow,label:"CPI Inflation"}].map((l,i)=>(
-              <div key={i} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSecondary }}>
+              <div key={i} style={{ display:"flex", alignItems:"center", gap:8, fontSize:11, color:C.textSecondary }}>
                 <span style={{ width:16,height:3,background:l.color,borderRadius:2,display:"inline-block" }}/>{l.label}
               </div>
             ))}
@@ -2846,8 +2846,8 @@ function RealWagesTab({ vis }) {
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={chart} margin={{ top:4, right:8, left:-20, bottom:36 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
-              <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
+              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+              <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
               <Tooltip content={<MultiTip suffix="%"/>}/>
               <ReferenceLine y={0} stroke={C.border}/>
               <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
@@ -2858,9 +2858,9 @@ function RealWagesTab({ vis }) {
         </div>
 
         {/* Real wage gain/loss chart */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:4 }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Real Wage Gain / Loss</div>
-          <div style={{ fontSize:10, color:C.textSecondary, marginBottom:14 }}>Wage growth minus inflation — positive means workers are gaining purchasing power</div>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:4 }}>
+          <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Real Wage Gain / Loss</div>
+          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Wage growth minus inflation — positive means workers are gaining purchasing power</div>
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={chart} margin={{ top:4, right:8, left:-20, bottom:36 }}>
               <defs>
@@ -2874,10 +2874,10 @@ function RealWagesTab({ vis }) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
-              <YAxis tick={{ fill:C.textMuted, fontSize:9 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}pp`}/>
-              <Tooltip formatter={(v,n)=>[`${v>0?"+":""}${v.toFixed(2)}pp`,"Real Wage Change"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:10, fontFamily:"inherit", fontSize:12 }}/>
-              <ReferenceLine y={0} stroke={C.border2} strokeDasharray="4 3" label={{ value:"Break even", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
+              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+              <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}pp`}/>
+              <Tooltip formatter={(v,n)=>[`${v>0?"+":""}${v.toFixed(2)}pp`,"Real Wage Change"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
+              <ReferenceLine y={0} stroke={C.border2} strokeDasharray="4 3" label={{ value:"Break even", fill:C.textMuted, fontSize:11, position:"insideTopRight" }}/>
               <Area type="monotone" dataKey="realGain" stroke={C.green} strokeWidth={2} fill="url(#wageGainGrad)" dot={false} name="Real Wage Change"/>
             </AreaChart>
           </ResponsiveContainer>
@@ -3049,6 +3049,8 @@ export default function App() {
       onClick={() => { setDataDropOpen(false); setCalcDropOpen(false); }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600;700&display=swap');
+        html{font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+        h1,h2,h3,h4{margin:0}
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:4px}
         ::-webkit-scrollbar-track{background:#000}
@@ -3081,12 +3083,12 @@ export default function App() {
       `}</style>
 
       {/* ── Nav ── */}
-      <nav style={{ background:C.surface, borderBottom:`1px solid ${C.border}`, padding:"0 20px", height:56, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(16px)" }}>
+      <nav style={{ background:"rgba(17,17,17,0.95)", borderBottom:`1px solid ${C.border}`, padding:"0 24px", height:56, display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(20px) saturate(180%)" }}>
         {/* Wordmark */}
         <button onClick={() => { closeAll(); navigate("/", 5); }}
           style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:0 }}>
-          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:700, letterSpacing:"-.4px", color:C.white }}>Canadian</span>
-          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:700, letterSpacing:"-.4px", color:C.red }}>flation</span>
+          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:15, fontWeight:700, letterSpacing:"-.4px", color:C.white }}>Canadian</span>
+          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:15, fontWeight:700, letterSpacing:"-.4px", color:C.red }}>flation</span>
         </button>
 
         {/* Desktop nav links */}
@@ -3095,9 +3097,9 @@ export default function App() {
           <div style={{ position:"relative" }} onClick={e => e.stopPropagation()}>
             <button
               onClick={() => { setDataDropOpen(v => !v); setCalcDropOpen(false); }}
-              style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
+              style={{ display:"flex", alignItems:"center", gap:8, background:"none", border:"none", cursor:"pointer",
                 color: isTrackActive ? C.action : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
-                padding:"8px 12px", borderRadius:8, transition:"all .15s",
+                padding:"8px 12px", borderRadius:8, transition:"background .12s, border-color .12s, color .12s",
               }}>
               Track Inflation
               <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ transform: dataDropOpen?"rotate(180deg)":"none", transition:"transform .2s" }}>
@@ -3120,9 +3122,9 @@ export default function App() {
           <div style={{ position:"relative" }} onClick={e => e.stopPropagation()}>
             <button
               onClick={() => { setCalcDropOpen(v => !v); setDataDropOpen(false); }}
-              style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
+              style={{ display:"flex", alignItems:"center", gap:8, background:"none", border:"none", cursor:"pointer",
                 color: isToolsActive ? C.action : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
-                padding:"8px 12px", borderRadius:8, transition:"all .15s",
+                padding:"8px 12px", borderRadius:8, transition:"background .12s, border-color .12s, color .12s",
               }}>
               Financial Tools
               <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ transform: calcDropOpen?"rotate(180deg)":"none", transition:"transform .2s" }}>
@@ -3152,21 +3154,21 @@ export default function App() {
 
       {/* ── Mobile menu ── */}
       <div className={`mobile-menu${mobileOpen?" open":""}`}>
-        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>Track Inflation</div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Track Inflation</div>
         {TRACK_PAGES.map(p => (
           <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
             style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
-              border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:10, padding:"12px 14px",
+              border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:8, padding:"12px 16px",
               marginBottom:6, cursor:"pointer", fontFamily:"inherit" }}>
             <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.action : C.textPrimary }}>{p.label}</div>
             <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
           </button>
         ))}
-        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 10px" }}>Financial Tools</div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 10px" }}>Financial Tools</div>
         {TOOLS_PAGES.map(p => (
           <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
             style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
-              border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:10, padding:"12px 14px",
+              border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:8, padding:"12px 16px",
               marginBottom:6, cursor:"pointer", fontFamily:"inherit" }}>
             <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.action : C.textPrimary }}>{p.label}</div>
             <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
@@ -3179,12 +3181,12 @@ export default function App() {
         {loading ? (
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:360, gap:16 }}>
             <div className="spin" style={{ width:36, height:36 }}/>
-            <p style={{ color:C.textMuted, fontSize:12, fontWeight:500 }}>Retrieving live data.</p>
+            <p style={{ color:C.textMuted, fontSize:13 }}>Retrieving live data.</p>
           </div>
         ) : error ? (
-          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:360, gap:20, textAlign:"center" }}>
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:360, gap:24, textAlign:"center" }}>
             <div style={{ fontSize:32 }}>📡</div>
-            <div style={{ fontSize:17, fontWeight:700, color:C.textPrimary }}>Statistics Canada is unavailable</div>
+            <div style={{ fontSize:15, fontWeight:700, color:C.textPrimary }}>Statistics Canada is unavailable</div>
             <div style={{ fontSize:13, color:C.textSecondary, maxWidth:380, lineHeight:1.6 }}>
               We only display verified data from official sources. Please try again in a few minutes.
             </div>
@@ -3212,7 +3214,7 @@ export default function App() {
           <span style={{ margin:"0 8px", color:C.border2 }}>·</span>
           CPI data from Statistics Canada · Interest rates from the Bank of Canada
           <br/>
-          <span style={{ fontSize:10 }}>Not an official government product · For informational purposes only</span>
+          <span style={{ fontSize:11 }}>Not an official government product · For informational purposes only</span>
         </div>
       </div>
     </div>
