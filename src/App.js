@@ -2939,7 +2939,7 @@ export default function App() {
           <span style={{ transform: mobileOpen?"rotate(45deg) translate(5px,5px)":"none" }}/>
           <span style={{ opacity: mobileOpen?0:1 }}/>
           <span style={{ transform: mobileOpen?"rotate(-45deg) translate(5px,-5px)":"none" }}/>
-          <span className="hamburger-label" style={{ fontSize:10, color:"inherit", fontWeight:600, letterSpacing:".08em", marginTop:2, background:"none", border:"none", display:"block", width:"100%", textAlign:"center" }}>{mobileOpen?"CLOSE":"MENU"}</span>
+          <span className="hamburger-label" style={{ fontSize:9, color:C.textMuted, fontWeight:600, letterSpacing:".1em", marginTop:2, display:"block", textAlign:"center", fontFamily:"inherit" }}>{mobileOpen?"CLOSE":"MENU"}</span>
         </button>
       </nav>
 
