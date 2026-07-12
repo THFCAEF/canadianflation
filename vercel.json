@@ -9,7 +9,7 @@
     { "source": "/mortgage-calculator",     "destination": "/index.html" },
     { "source": "/retirement-calculator",   "destination": "/index.html" },
     { "source": "/contribution-calculator", "destination": "/index.html" },
-    { "source": "/grocery-prices",          "destination": "/index.html" },
+    { "source": "/grocery-prices",          "destination": "/inflation-rates" },
     { "source": "/exchange-rates",          "destination": "/index.html" },
     { "source": "/real-wages",              "destination": "/index.html" }
   ],
