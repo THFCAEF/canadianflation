@@ -2857,7 +2857,7 @@ export default function App() {
         .nav-drop-right{position:absolute;top:calc(100% + 8px);right:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
         .nav-drop-item{display:block;width:100%;padding:10px 14px;border-radius:8px;border:none;background:none;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s}
         .nav-drop-item:hover{background:${C.surface2}}
-        .hamburger{display:none;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:8px}
+        .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;background:none;border:none;cursor:pointer;padding:8px;width:36px;height:36px}
         .hamburger span{display:block;width:20px;height:1.5px;background:${C.textPrimary};border-radius:2px;transition:transform .22s ease,opacity .22s ease}
         .mobile-overlay{display:none;position:fixed;inset:0;top:56px;background:rgba(0,0,0,.6);z-index:140;backdrop-filter:blur(4px);opacity:0;transition:opacity .25s ease;pointer-events:none}
         .mobile-overlay.open{opacity:1;pointer-events:auto}
@@ -2939,7 +2939,6 @@ export default function App() {
           <span style={{ transform: mobileOpen?"rotate(45deg) translate(5px,5px)":"none" }}/>
           <span style={{ opacity: mobileOpen?0:1 }}/>
           <span style={{ transform: mobileOpen?"rotate(-45deg) translate(5px,-5px)":"none" }}/>
-          <span className="hamburger-label" style={{ fontSize:9, color:C.textMuted, fontWeight:600, letterSpacing:".1em", marginTop:2, display:"block", textAlign:"center", fontFamily:"inherit" }}>{mobileOpen?"CLOSE":"MENU"}</span>
         </button>
       </nav>
 
