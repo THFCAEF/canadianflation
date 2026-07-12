@@ -2279,7 +2279,7 @@ function RRSPCalc() {
       </div>
       <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
         {!result ? (
-          <div style={{ display:"flex", flexDirection:"column", alignItems:"center" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", minHeight:220 }}>
             <div style={{ fontSize:13, color:C.textMuted, textAlign:"center" }}>Enter your income and prior-year limit to calculate your RRSP room</div>
           </div>
         ) : (<>
