@@ -2825,7 +2825,7 @@ export default function App() {
     { label:"Retirement Calculator",   path:"/retirement-calculator",  idx:6, desc:"How long will your money last?" },
     { label:"Contribution Calculator", path:"/contribution-calculator",idx:7, desc:"RRSP & TFSA room calculator"    },
   ];
-    const closeAll = () => { setDataDropOpen(false); setCalcDropOpen(false); setMobileOpen(false); };
+    const closeAll = () => { setDataDropOpen(false); setCalcDropOpen(false); setMobileOpen(false); document.body.classList.remove('menu-open'); };
 
   const isTrackActive = [0,1,9,10].includes(page);
   const isToolsActive = [3,4,6,7].includes(page);
@@ -2836,6 +2836,7 @@ export default function App() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600;700&display=swap');
         html{font-size:14px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+        body.menu-open{overflow:hidden}
         h1,h2,h3,h4{margin:0}
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:4px}
@@ -2856,13 +2857,15 @@ export default function App() {
         .nav-drop-right{position:absolute;top:calc(100% + 8px);right:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
         .nav-drop-item{display:block;width:100%;padding:10px 14px;border-radius:8px;border:none;background:none;cursor:pointer;text-align:left;font-family:inherit;transition:background .12s}
         .nav-drop-item:hover{background:${C.surface2}}
-        .hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px}
-        .hamburger span{display:block;width:22px;height:2px;background:${C.textSecondary};border-radius:2px;transition:all .2s}
-        .mobile-menu{display:none;position:fixed;inset:0;top:56px;background:${C.surface};z-index:150;overflow-y:auto;padding:20px 16px 40px}
-        @media(max-width:640px){
+        .hamburger{display:none;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:8px}
+        .hamburger span{display:block;width:20px;height:1.5px;background:${C.textPrimary};border-radius:2px;transition:transform .22s ease,opacity .22s ease}
+        .mobile-overlay{display:none;position:fixed;inset:0;top:56px;background:rgba(0,0,0,.6);z-index:140;backdrop-filter:blur(4px);opacity:0;transition:opacity .25s ease;pointer-events:none}
+        .mobile-overlay.open{opacity:1;pointer-events:auto}
+        .mobile-menu{position:fixed;top:56px;right:0;bottom:0;width:min(300px,88vw);background:${C.surface};z-index:150;overflow-y:auto;padding:24px 20px 48px;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);border-left:1px solid ${C.border}}
+        .mobile-menu.open{transform:translateX(0)}
+        @media(max-width:768px){
           .hamburger{display:flex}
           .nav-links{display:none!important}
-          .mobile-menu.open{display:block}
         }
         @media(max-width:480px){
           .calc-grid{grid-template-columns:1fr!important}
@@ -2932,34 +2935,40 @@ export default function App() {
         </div>
 
         {/* Hamburger */}
-        <button className="hamburger" onClick={e => { e.stopPropagation(); setMobileOpen(v => !v); setDataDropOpen(false); setCalcDropOpen(false); }} aria-label="Menu">
+        <button className="hamburger" onClick={e => { e.stopPropagation(); setMobileOpen(v => { document.body.classList.toggle('menu-open', !v); return !v; }); setDataDropOpen(false); setCalcDropOpen(false); }} aria-label="Menu">
           <span style={{ transform: mobileOpen?"rotate(45deg) translate(5px,5px)":"none" }}/>
           <span style={{ opacity: mobileOpen?0:1 }}/>
           <span style={{ transform: mobileOpen?"rotate(-45deg) translate(5px,-5px)":"none" }}/>
+          <span className="hamburger-label" style={{ fontSize:10, color:"inherit", fontWeight:600, letterSpacing:".08em", marginTop:2, background:"none", border:"none", display:"block", width:"100%", textAlign:"center" }}>{mobileOpen?"CLOSE":"MENU"}</span>
         </button>
       </nav>
 
       {/* ── Mobile menu ── */}
+      <div className={`mobile-overlay${mobileOpen?" open":""}`} onClick={closeAll}/>
       <div className={`mobile-menu${mobileOpen?" open":""}`}>
-        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Track Inflation</div>
-        {TRACK_PAGES.map(p => (
-          <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
-            style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
-              border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:8, padding:"12px 16px",
-              marginBottom:6, cursor:"pointer", fontFamily:"inherit" }}>
-            <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.action : C.textPrimary }}>{p.label}</div>
-            <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
-          </button>
-        ))}
-        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", margin:"20px 0 10px" }}>Financial Tools</div>
-        {TOOLS_PAGES.map(p => (
-          <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
-            style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
-              border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:8, padding:"12px 16px",
-              marginBottom:6, cursor:"pointer", fontFamily:"inherit" }}>
-            <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.action : C.textPrimary }}>{p.label}</div>
-            <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
-          </button>
+        {[
+          { heading:"Track Inflation", pages:TRACK_PAGES },
+          { heading:"Financial Tools", pages:TOOLS_PAGES },
+        ].map(({ heading, pages }, gi) => (
+          <div key={gi} style={{ marginBottom:32 }}>
+            <div style={{ fontSize:10, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".16em", marginBottom:12, paddingBottom:8, borderBottom:`1px solid ${C.border}` }}>{heading}</div>
+            {pages.map(p => (
+              <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
+                style={{
+                  display:"flex", alignItems:"center", width:"100%", textAlign:"left",
+                  background:"transparent", border:"none",
+                  borderLeft:`2px solid ${page===p.idx ? C.action : "transparent"}`,
+                  padding:"10px 0 10px 14px", marginBottom:2,
+                  cursor:"pointer", fontFamily:"inherit",
+                  transition:"border-color .12s",
+                }}>
+                <div>
+                  <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.action : C.textPrimary, letterSpacing:"-.1px" }}>{p.label}</div>
+                  <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
+                </div>
+              </button>
+            ))}
+          </div>
         ))}
       </div>
 
