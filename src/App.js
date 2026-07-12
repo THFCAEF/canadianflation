@@ -47,24 +47,32 @@ import {
 
 // ── Colours ───────────────────────────────────────────────────────────────────
 const C = {
+  // Surfaces — clear depth model
   bg:            "#000000",
-  surface:       "#0F0F0F",
-  surface2:      "#1A1A1A",
-  border:        "#222222",
-  border2:       "#2E2E2E",
-  textPrimary:   "#F5F5F5",
+  surface:       "#111111",
+  surface2:      "#1C1C1C",
+  border:        "#2A2A2A",
+  border2:       "#383838",
+  // Text
+  textPrimary:   "#F0F0F0",
   textSecondary: "#888888",
-  textMuted:     "#444444",
-  red:           "#E05A4A",
-  redBg:         "rgba(224,90,74,0.13)",
-  yellow:        "#F5C842",
-  yellowBg:      "rgba(245,200,66,0.12)",
-  green:         "#3ECFA0",
-  greenBg:       "rgba(62,207,160,0.11)",
+  textMuted:     "#555555",
+  // Signal colours — each has one job
+  red:           "#E05A4A",   // above target / danger
+  redBg:         "rgba(224,90,74,0.12)",
+  green:         "#3ECFA0",   // below target / positive
+  greenBg:       "rgba(62,207,160,0.10)",
+  // Chart-only colours (not used in UI chrome)
   blue:          "#6B9FE4",
-  blueBg:        "rgba(107,159,228,0.12)",
+  blueBg:        "rgba(107,159,228,0.10)",
   purple:        "#B07FE8",
-  white:         "#F5F5F5",
+  // Action — white is the primary action colour
+  action:        "#FFFFFF",
+  actionText:    "#000000",
+  // Legacy aliases — keeps chart data working
+  yellow:        "#F5C842",
+  yellowBg:      "rgba(245,200,66,0.10)",
+  white:         "#F0F0F0",
 };
 
 function valColor(v) { return v > 2 ? C.red : v > 0 ? C.yellow : C.green; }
@@ -382,7 +390,7 @@ function HomepageHero({ navigate, cur }) {
         )}
 
         <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
-          <button onClick={() => navigate("/inflation-rates", 0)} style={{ background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px 24px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+          <button onClick={() => navigate("/inflation-rates", 0)} style={{ background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"11px 22px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>
             View Live Inflation Data
           </button>
         </div>
@@ -508,8 +516,14 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     {/* Hero */}
     <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, marginBottom:16, overflow:"hidden" }}>
       <div style={{ padding:"28px 24px 0" }}>
-        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:12 }}>
+        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
           Canada · All-Items CPI · Year-over-Year · {cur?.date}
+        </div>
+        <div style={{ fontSize:10, color:C.textMuted, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
+          <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810000401" target="_blank" rel="noopener noreferrer" style={{ color:C.textMuted, textDecoration:"none", display:"flex", alignItems:"center", gap:4 }}>
+            <span style={{ color:C.green, fontSize:11 }}>↗</span>
+            Statistics Canada · Table 18-10-0004-01 · Vector v41690973
+          </a>
         </div>
         <div style={{ fontSize:10, fontWeight:600, color:C.textMuted, marginBottom:12, display:"flex", alignItems:"center", gap:6 }}>
           <span style={{ display:"inline-block", width:6, height:6, borderRadius:"50%", background:C.green }}></span>
@@ -968,9 +982,9 @@ function CompoundTab({ vis, liveCpi }) {
             <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
               {CI_FREQS.map(f => (
                 <button key={f.n} onClick={() => setFreq(f.n)} style={{
-                  background: freq===f.n ? C.yellow : C.surface2,
-                  color:      freq===f.n ? "#000" : C.textSecondary,
-                  border:     `1px solid ${freq===f.n ? C.yellow : C.border2}`,
+                  background: freq===f.n ? C.action : C.surface2,
+                  color:      freq===f.n ? C.actionText : C.textSecondary,
+                  border:     `1px solid ${freq===f.n ? C.action : C.border2}`,
                   borderRadius:7, padding:"6px 12px", fontSize:11, fontWeight:600,
                   cursor:"pointer", fontFamily:"inherit",
                 }}>{f.label}</button>
@@ -979,7 +993,7 @@ function CompoundTab({ vis, liveCpi }) {
           </div>
 
           <div style={{ display:"flex", gap:10 }}>
-            <button onClick={calculate} style={{ flex:1, background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+            <button onClick={calculate} style={{ flex:1, background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
               Calculate
             </button>
             <button onClick={() => { setPrincipal(""); setMonthly(""); setYears(""); setRate(""); setVariance(""); setFreq(12); setResult(null); }} style={{ background:C.surface2, color:C.textSecondary, border:`1px solid ${C.border2}`, borderRadius:10, padding:"12px 18px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
@@ -1003,8 +1017,8 @@ function CompoundTab({ vis, liveCpi }) {
                   <button key={i} onClick={() => setShowReal(i===1)} style={{
                     flex:1, padding:"8px 12px", borderRadius:8, border:"none", fontFamily:"inherit",
                     fontSize:12, fontWeight:600, cursor:"pointer", transition:"all .15s",
-                    background: showReal===(i===1) ? C.yellow : "transparent",
-                    color:      showReal===(i===1) ? "#000" : C.textSecondary,
+                    background: showReal===(i===1) ? C.action : "transparent",
+                    color:      showReal===(i===1) ? C.actionText : C.textSecondary,
                   }}>{label}</button>
                 ))}
               </div>
@@ -1234,7 +1248,7 @@ function MortgageTab({ vis, liveCpi }) {
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:5 }}>Down Payment</div>
             <div style={{ display:"flex", gap:6, marginBottom:8 }}>
               {[["$",false],["%",true]].map(([lbl,val])=>(
-                <button key={lbl} onClick={()=>setDownPct(val)} style={{ flex:1, background:downPct===val?C.yellow:C.surface2, color:downPct===val?"#000":C.textSecondary, border:`1px solid ${downPct===val?C.yellow:C.border2}`, borderRadius:7, padding:"7px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>{lbl}</button>
+                <button key={lbl} onClick={()=>setDownPct(val)} style={{ flex:1, background:downPct===val?C.action:C.surface2, color:downPct===val?C.actionText:C.textSecondary, border:`1px solid ${downPct===val?C.action:C.border2}`, borderRadius:7, padding:"7px", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>{lbl}</button>
               ))}
             </div>
             <MortField label="" value={down} set={setDown} ph={downPct?"e.g. 20":"e.g. 130,000"} isSmall={downPct}/>
@@ -1244,13 +1258,13 @@ function MortgageTab({ vis, liveCpi }) {
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Payment Frequency</div>
             <div style={{ display:"flex", gap:6 }}>
               {["monthly","biweekly","weekly"].map(f=>(
-                <button key={f} onClick={()=>setPayFreq(f)} style={{ flex:1, background:payFreq===f?C.yellow:C.surface2, color:payFreq===f?"#000":C.textSecondary, border:`1px solid ${payFreq===f?C.yellow:C.border2}`, borderRadius:7, padding:"7px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit", textTransform:"capitalize" }}>{f}</button>
+                <button key={f} onClick={()=>setPayFreq(f)} style={{ flex:1, background:payFreq===f?C.action:C.surface2, color:payFreq===f?C.actionText:C.textSecondary, border:`1px solid ${payFreq===f?C.action:C.border2}`, borderRadius:7, padding:"7px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit", textTransform:"capitalize" }}>{f}</button>
               ))}
             </div>
           </div>
 
           <MortField label="Assumed Inflation Rate (%)" value={inflRate} set={setInflRate} ph="e.g. 1.8" isSmall/>
-          <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Calculate</button>
+          <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>Calculate</button>
         </div>
 
         <div ref={mortResultsRef} style={{ display:"flex", flexDirection:"column", gap:14 }}>
@@ -1266,8 +1280,8 @@ function MortgageTab({ vis, liveCpi }) {
                   <button key={i} onClick={() => setShowReal(i===1)} style={{
                     flex:1, padding:"8px 12px", borderRadius:8, border:"none", fontFamily:"inherit",
                     fontSize:12, fontWeight:600, cursor:"pointer", transition:"all .15s",
-                    background: showReal===(i===1) ? C.yellow : "transparent",
-                    color:      showReal===(i===1) ? "#000" : C.textSecondary,
+                    background: showReal===(i===1) ? C.action : "transparent",
+                    color:      showReal===(i===1) ? C.actionText : C.textSecondary,
                   }}>{label}</button>
                 ))}
               </div>
@@ -1281,7 +1295,7 @@ function MortgageTab({ vis, liveCpi }) {
                   Assuming {(result.inf*100).toFixed(1)}% avg inflation · future payments worth less in today's dollars
                 </div>
               )}
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.yellow, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.action, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
                 {fmtM(result.payment)}
               </div>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
@@ -1412,7 +1426,7 @@ function MortgageTab({ vis, liveCpi }) {
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:6 }}>Province</div>
             <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
               {Object.keys(PROV_TAX).map(p=>(
-                <button key={p} onClick={()=>setProvince(p)} style={{ background:province===p?C.yellow:C.surface2, color:province===p?"#000":C.textSecondary, border:`1px solid ${province===p?C.yellow:C.border2}`, borderRadius:7, padding:"5px 12px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
+                <button key={p} onClick={()=>setProvince(p)} style={{ background:province===p?C.action:C.surface2, color:province===p?C.actionText:C.textSecondary, border:`1px solid ${province===p?C.action:C.border2}`, borderRadius:7, padding:"5px 12px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
               ))}
             </div>
           </div>
@@ -1420,7 +1434,7 @@ function MortgageTab({ vis, liveCpi }) {
           <MortField label="Purchase Price"                  value={price}  set={setPrice}  ph="e.g. 650,000"/>
           <MortField label="Municipal Assessment (optional)" value={assess} set={setAssess} ph="Leave blank to use purchase price"/>
 
-          <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Calculate</button>
+          <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>Calculate</button>
           <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>Estimates only — consult a notary for exact figures. Municipal surcharges (e.g. Montreal) not included.</div>
         </div>
 
@@ -1488,12 +1502,12 @@ function MortgageTab({ vis, liveCpi }) {
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Payment Frequency</div>
             <div style={{ display:"flex", gap:6 }}>
               {["monthly","biweekly","weekly"].map(f=>(
-                <button key={f} onClick={()=>setFreq(f)} style={{ flex:1, background:freq===f?C.yellow:C.surface2, color:freq===f?"#000":C.textSecondary, border:`1px solid ${freq===f?C.yellow:C.border2}`, borderRadius:7, padding:"7px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit", textTransform:"capitalize" }}>{f}</button>
+                <button key={f} onClick={()=>setFreq(f)} style={{ flex:1, background:freq===f?C.action:C.surface2, color:freq===f?C.actionText:C.textSecondary, border:`1px solid ${freq===f?C.action:C.border2}`, borderRadius:7, padding:"7px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit", textTransform:"capitalize" }}>{f}</button>
               ))}
             </div>
           </div>
 
-          <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Calculate</button>
+          <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>Calculate</button>
         </div>
 
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
@@ -1681,7 +1695,7 @@ function MortgageTab({ vis, liveCpi }) {
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>Amortization (Years)</div>
             <div style={{ display:"flex", gap:6 }}>
               {["25","30"].map(y => (
-                <button key={y} onClick={()=>setAmort(y)} style={{ flex:1, padding:"8px", borderRadius:7, border:`1px solid ${amort===y ? C.yellow : C.border2}`, background:amort===y ? C.yellow : C.surface2, color:amort===y ? "#000" : C.textSecondary, fontWeight:600, fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>{y} years</button>
+                <button key={y} onClick={()=>setAmort(y)} style={{ flex:1, padding:"8px", borderRadius:7, border:`1px solid ${amort===y ? C.action : C.border2}`, background:amort===y ? C.action : C.surface2, color:amort===y ? C.actionText : C.textSecondary, fontWeight:600, fontSize:12, cursor:"pointer", fontFamily:"inherit" }}>{y} years</button>
               ))}
             </div>
           </div>
@@ -1692,9 +1706,9 @@ function MortgageTab({ vis, liveCpi }) {
             <DebtField label="" value={heat} set={setHeat} ph="e.g. 150" isSmall/>
           </div>
           <div style={{ marginBottom:12 }}>
-            <button onClick={() => { setIsCondo(v => !v); if (isCondo) setCondoFee("0"); }} style={{ display:"flex", alignItems:"center", gap:10, background:"none", border:`1px solid ${isCondo ? C.yellow : C.border2}`, borderRadius:8, padding:"9px 14px", cursor:"pointer", fontFamily:"inherit", width:"100%", textAlign:"left" }}>
-              <span style={{ width:16, height:16, borderRadius:4, border:`2px solid ${isCondo ? C.yellow : C.textMuted}`, background:isCondo ? C.yellow : "transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:10, color:"#000", fontWeight:700 }}>{isCondo ? "✓" : ""}</span>
-              <span style={{ fontSize:12, fontWeight:600, color:isCondo ? C.yellow : C.textSecondary }}>I'm buying a condo or apartment</span>
+            <button onClick={() => { setIsCondo(v => !v); if (isCondo) setCondoFee("0"); }} style={{ display:"flex", alignItems:"center", gap:10, background:"none", border:`1px solid ${isCondo ? C.action : C.border2}`, borderRadius:8, padding:"9px 14px", cursor:"pointer", fontFamily:"inherit", width:"100%", textAlign:"left" }}>
+              <span style={{ width:16, height:16, borderRadius:4, border:`2px solid ${isCondo ? C.action : C.textMuted}`, background:isCondo ? C.action : "transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:10, color:"#000", fontWeight:700 }}>{isCondo ? "✓" : ""}</span>
+              <span style={{ fontSize:12, fontWeight:600, color:isCondo ? C.action : C.textSecondary }}>I'm buying a condo or apartment</span>
             </button>
             {isCondo && (
               <div style={{ marginTop:8 }}>
@@ -1718,17 +1732,17 @@ function MortgageTab({ vis, liveCpi }) {
             {[["excellent","Excellent (760+)","Full capacity"],["good","Good (660–759)","−5% capacity"],["fair","Fair (<660)","−10% capacity"]].map(([val, label, note]) => (
               <button key={val} onClick={() => setCreditScore(val)} style={{
                 display:"flex", alignItems:"center", justifyContent:"space-between",
-                padding:"10px 14px", borderRadius:10, border:`1px solid ${creditScore===val ? C.yellow : C.border2}`,
-                background: creditScore===val ? `${C.yellow}15` : C.surface2,
+                padding:"10px 14px", borderRadius:10, border:`1px solid ${creditScore===val ? C.action : C.border2}`,
+                background: creditScore===val ? C.surface2 : C.surface2,
                 cursor:"pointer", fontFamily:"inherit", textAlign:"left",
               }}>
-                <span style={{ fontSize:12, fontWeight:600, color: creditScore===val ? C.yellow : C.textPrimary }}>{label}</span>
+                <span style={{ fontSize:12, fontWeight:600, color: creditScore===val ? C.action : C.textPrimary }}>{label}</span>
                 <span style={{ fontSize:11, color:C.textMuted }}>{note}</span>
               </button>
             ))}
           </div>
 
-          <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+          <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
             Calculate Impact
           </button>
           <div style={{ marginTop:10, fontSize:10, color:C.textMuted, lineHeight:1.6 }}>
@@ -1753,7 +1767,7 @@ function MortgageTab({ vis, liveCpi }) {
               <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:16 }}>
                 <div>
                   <div style={{ fontSize:10, color:C.textMuted, marginBottom:4 }}>With all debts</div>
-                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(36px,7vw,60px)", fontWeight:700, color:C.yellow, lineHeight:1, letterSpacing:"-1px" }}>
+                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(36px,7vw,60px)", fontWeight:700, color:C.action, lineHeight:1, letterSpacing:"-1px" }}>
                     {fmt(result.withAll.price)}
                   </div>
                 </div>
@@ -1840,8 +1854,8 @@ function MortgageTab({ vis, liveCpi }) {
 
             {/* CMHC note */}
             {result.dp < 20 && (
-              <div style={{ background:`${C.yellow}10`, border:`1px solid ${C.yellow}30`, borderRadius:12, padding:"14px 16px" }}>
-                <div style={{ fontSize:12, fontWeight:700, color:C.yellow, marginBottom:4 }}>⚠ CMHC Insurance Required</div>
+              <div style={{ background:`${C.red}08`, border:`1px solid ${C.red}20`, borderRadius:12, padding:"14px 16px" }}>
+                <div style={{ fontSize:12, fontWeight:700, color:C.red, marginBottom:4 }}>⚠ CMHC Insurance Required</div>
                 <div style={{ fontSize:11, color:C.textSecondary, lineHeight:1.6 }}>
                   Down payment under 20% requires CMHC mortgage insurance. Premium added to your loan:
                   {result.withAll.cmhc > 0 ? ` ${fmt(result.withAll.cmhc)} (${result.dp < 5 ? "4.00" : result.dp < 10 ? "3.10" : "2.80"}% of insured loan)` : " N/A at this home price."} Max insured home price is $1.5M.
@@ -1863,8 +1877,8 @@ function MortgageTab({ vis, liveCpi }) {
         {SUBS.map((s,i) => (
           <button key={i} onClick={()=>setSub(i)} style={{
             background: sub===i ? C.surface2 : "transparent",
-            border:     `1px solid ${sub===i ? C.border2 : C.border}`,
-            color:      sub===i ? C.textPrimary : C.textMuted,
+            border:     `1px solid ${sub===i ? C.border : C.border}`,
+            color:      sub===i ? C.action : C.textMuted,
             borderRadius:10, padding:"8px 18px", fontSize:12, fontWeight:600,
             cursor:"pointer", fontFamily:"inherit", transition:"all .15s",
             whiteSpace:"nowrap", flexShrink:0,
@@ -1968,7 +1982,7 @@ function RetirementTab({ vis, liveCpi }) {
 
           <div style={{ display:"flex", background:C.surface2, borderRadius:10, padding:3, border:`1px solid ${C.border}`, marginBottom:20 }}>
             {[["howlong","How long will it last?"],["howmuch","How much can I withdraw?"]].map(([val,lbl])=>(
-              <button key={val} onClick={()=>{ setMode(val); setResult(null); }} style={{ flex:1, padding:"8px 10px", borderRadius:8, border:"none", fontFamily:"inherit", fontSize:11, fontWeight:600, cursor:"pointer", transition:"all .15s", background:mode===val?C.yellow:"transparent", color:mode===val?"#000":C.textSecondary }}>{lbl}</button>
+              <button key={val} onClick={()=>{ setMode(val); setResult(null); }} style={{ flex:1, padding:"8px 10px", borderRadius:8, border:"none", fontFamily:"inherit", fontSize:11, fontWeight:600, cursor:"pointer", transition:"all .15s", background:mode===val?C.action:"transparent", color:mode===val?C.actionText:C.textSecondary }}>{lbl}</button>
             ))}
           </div>
 
@@ -1991,7 +2005,7 @@ function RetirementTab({ vis, liveCpi }) {
             </div>
           </div>
 
-          <button onClick={calculate} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+          <button onClick={calculate} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>
             Calculate
           </button>
           <div style={{ marginTop:10, fontSize:10, color:C.textMuted, lineHeight:1.6 }}>
@@ -2158,7 +2172,7 @@ function TFSACalc() {
         <div style={{ marginBottom:16, background:C.surface2, borderRadius:10, padding:"12px 14px", fontSize:11, color:C.textMuted, lineHeight:1.7 }}>
           💡 TFSA withdrawals re-add to your room the following January 1. Enter lifetime withdrawals for accurate room.
         </div>
-        <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+        <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>
           Calculate Room
         </button>
         <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>
@@ -2275,11 +2289,11 @@ function RRSPCalc() {
           <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:8 }}>Province (for tax savings estimate)</div>
           <div style={{ display:"flex", flexWrap:"wrap", gap:5 }}>
             {Object.keys(PROV_RATES).map(p=>(
-              <button key={p} onClick={()=>setProvince(p)} style={{ background:province===p?C.yellow:C.surface2, color:province===p?"#000":C.textSecondary, border:`1px solid ${province===p?C.yellow:C.border2}`, borderRadius:7, padding:"5px 10px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
+              <button key={p} onClick={()=>setProvince(p)} style={{ background:province===p?C.action:C.surface2, color:province===p?C.actionText:C.textSecondary, border:`1px solid ${province===p?C.action:C.border2}`, borderRadius:7, padding:"5px 10px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
             ))}
           </div>
         </div>
-        <button onClick={calc} style={{ width:"100%", background:C.yellow, color:"#000", border:"none", borderRadius:10, padding:"12px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+        <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>
           Calculate Room
         </button>
         <div style={{ marginTop:10, fontSize:10, color:C.textMuted }}>
@@ -2332,8 +2346,8 @@ function ContributionTab({ vis }) {
         {["TFSA","RRSP"].map((s,i) => (
           <button key={i} onClick={()=>setSub(i)} style={{
             background: sub===i ? C.surface2 : "transparent",
-            border:     `1px solid ${sub===i ? C.border2 : C.border}`,
-            color:      sub===i ? C.textPrimary : C.textMuted,
+            border:     `1px solid ${sub===i ? C.border : C.border}`,
+            color:      sub===i ? C.action : C.textMuted,
             borderRadius:10, padding:"8px 18px", fontSize:12, fontWeight:600,
             cursor:"pointer", fontFamily:"inherit", transition:"all .15s", whiteSpace:"nowrap", flexShrink:0,
           }}>{s}</button>
@@ -2635,18 +2649,18 @@ function ExchangeRatesTab({ vis }) {
                   const chg   = rate && prev ? ((rate-prev)/prev*100) : null;
                   const isSelected = selected === code;
                   return (
-                    <tr key={code} style={{ borderBottom:`1px solid ${C.border}`, background:isSelected?`${C.yellow}08`:"transparent" }}>
+                    <tr key={code} style={{ borderBottom:`1px solid ${C.border}`, background:isSelected?`${C.action}10`:"transparent" }}>
                       <td style={{ padding:"12px 12px" }}>
                         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                           <span style={{ fontSize:18 }}>{s.flag}</span>
                           <div>
-                            <div style={{ fontSize:13, fontWeight:700, color:isSelected?C.yellow:C.textPrimary }}>{code}</div>
+                            <div style={{ fontSize:13, fontWeight:700, color:isSelected?C.action:C.textPrimary }}>{code}</div>
                             <div style={{ fontSize:11, color:C.textMuted }}>{s.label}</div>
                           </div>
                         </div>
                       </td>
                       <td style={{ padding:"12px 12px", textAlign:"right" }}>
-                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, fontWeight:700, color:isSelected?C.yellow:C.textPrimary }}>
+                        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:20, fontWeight:700, color:isSelected?C.action:C.textPrimary }}>
                           {rate ? `$${rate.toFixed(4)}` : "—"}
                         </div>
                       </td>
@@ -2658,7 +2672,7 @@ function ExchangeRatesTab({ vis }) {
                         ) : "—"}
                       </td>
                       <td style={{ padding:"12px 12px", textAlign:"right" }}>
-                        <button onClick={()=>setSelected(code)} style={{ background:isSelected?C.yellow:C.surface2, color:isSelected?"#000":C.textSecondary, border:`1px solid ${isSelected?C.yellow:C.border2}`, borderRadius:7, padding:"5px 12px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
+                        <button onClick={()=>setSelected(code)} style={{ background:isSelected?C.action:C.surface2, color:isSelected?C.actionText:C.textSecondary, border:`1px solid ${isSelected?C.action:C.border2}`, borderRadius:7, padding:"5px 12px", fontSize:11, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>
                           Chart
                         </button>
                       </td>
@@ -3038,10 +3052,10 @@ export default function App() {
   const isToolsActive = [3,4,6,7].includes(page);
 
   return (
-    <div style={{ minHeight:"100vh", background:C.bg, color:C.textPrimary, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
+    <div style={{ minHeight:"100vh", background:C.bg, color:C.textPrimary, fontFamily:"'Inter',sans-serif" }}
       onClick={() => { setDataDropOpen(false); setCalcDropOpen(false); }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:4px}
         ::-webkit-scrollbar-track{background:#000}
@@ -3049,10 +3063,10 @@ export default function App() {
         .reveal{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease}
         .reveal.in{opacity:1;transform:translateY(0)}
         .rb{background:none;border:1px solid ${C.border};color:${C.textSecondary};padding:4px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;-webkit-tap-highlight-color:transparent}
-        .rb.on{background:${C.yellow};border-color:${C.yellow};color:#000}
+        .rb.on{background:${C.action};border-color:${C.action};color:${C.actionText}}
         .rb:hover:not(.on){border-color:${C.border2};color:${C.textPrimary}}
         @keyframes spin{to{transform:rotate(360deg)}}
-        .spin{border:2px solid ${C.border};border-top-color:${C.yellow};border-radius:50%;animation:spin .7s linear infinite}
+        .spin{border:2px solid ${C.border};border-top-color:${C.action};border-radius:50%;animation:spin .7s linear infinite}
         .sub-scroll::-webkit-scrollbar{display:none}
         .overflow-table::-webkit-scrollbar{height:3px}
         .overflow-table::-webkit-scrollbar-thumb{background:${C.border2};border-radius:2px}
@@ -3078,8 +3092,8 @@ export default function App() {
         {/* Wordmark */}
         <button onClick={() => { closeAll(); navigate("/", 5); }}
           style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:0 }}>
-          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:18, fontWeight:700, letterSpacing:"-.3px", color:C.white }}>Canadian</span>
-          <span style={{ fontFamily:"'DM Sans',sans-serif", fontSize:18, fontWeight:700, letterSpacing:"-.3px", color:C.red }}>flation</span>
+          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:700, letterSpacing:"-.4px", color:C.white }}>Canadian</span>
+          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:17, fontWeight:700, letterSpacing:"-.4px", color:C.red }}>flation</span>
         </button>
 
         {/* Desktop nav links */}
@@ -3089,7 +3103,7 @@ export default function App() {
             <button
               onClick={() => { setDataDropOpen(v => !v); setCalcDropOpen(false); }}
               style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
-                color: isTrackActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
+                color: isTrackActive ? C.action : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
                 padding:"8px 12px", borderRadius:8, transition:"all .15s",
               }}>
               Track Inflation
@@ -3101,7 +3115,7 @@ export default function App() {
               <div className="nav-drop">
                 {TRACK_PAGES.map(p => (
                   <button key={p.idx} className="nav-drop-item" onClick={() => { navigate(p.path, p.idx); closeAll(); }}>
-                    <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
+                    <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.action : C.textPrimary }}>{p.label}</div>
                     <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
                   </button>
                 ))}
@@ -3114,7 +3128,7 @@ export default function App() {
             <button
               onClick={() => { setCalcDropOpen(v => !v); setDataDropOpen(false); }}
               style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
-                color: isToolsActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
+                color: isToolsActive ? C.action : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
                 padding:"8px 12px", borderRadius:8, transition:"all .15s",
               }}>
               Financial Tools
@@ -3126,7 +3140,7 @@ export default function App() {
               <div className="nav-drop-right">
                 {TOOLS_PAGES.map(p => (
                   <button key={p.idx} className="nav-drop-item" onClick={() => { navigate(p.path, p.idx); closeAll(); }}>
-                    <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
+                    <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.action : C.textPrimary }}>{p.label}</div>
                     <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
                   </button>
                 ))}
@@ -3151,7 +3165,7 @@ export default function App() {
             style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
               border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:10, padding:"12px 14px",
               marginBottom:6, cursor:"pointer", fontFamily:"inherit" }}>
-            <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
+            <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.action : C.textPrimary }}>{p.label}</div>
             <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
           </button>
         ))}
@@ -3161,7 +3175,7 @@ export default function App() {
             style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
               border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:10, padding:"12px 14px",
               marginBottom:6, cursor:"pointer", fontFamily:"inherit" }}>
-            <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
+            <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.action : C.textPrimary }}>{p.label}</div>
             <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
           </button>
         ))}
@@ -3182,7 +3196,7 @@ export default function App() {
               We only display verified data from official sources. Please try again in a few minutes.
             </div>
             <button onClick={() => { setError(false); setLoading(true); load(); }}
-              style={{ background:C.yellow, color:"#000", border:"none", borderRadius:8, padding:"10px 24px", fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+              style={{ background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"10px 22px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>
               Try again
             </button>
           </div>
