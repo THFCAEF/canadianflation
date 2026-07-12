@@ -2624,7 +2624,7 @@ function RealWagesTab({ vis }) {
           <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:12 }}>
             <div>
               <div style={{ fontSize:11, color:C.textMuted, marginBottom:4 }}>Real wage change</div>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(64px,12vw,104px)", fontWeight:700, lineHeight:.9, letterSpacing:"-2.5px", color:latest?.realGain>=0?C.green:C.red }}>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(64px,12vw,104px)", fontWeight:700, lineHeight:.9, letterSpacing:"-2.5px", color:latest?.realGain>=0?C.green:C.red, paddingBottom:16 }}>
                 {latest?.realGain>=0?"+":""}{latest?.realGain?.toFixed(1)}pp
               </div>
             </div>
