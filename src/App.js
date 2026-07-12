@@ -595,7 +595,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
 
     {/* Snapshot lists */}
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16, marginBottom:16 }}>
-      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", transitionDelay:".11s" }}>
+      <div className={`reveal ${vis?"in":""}`} style={{ paddingTop:16, borderTop:`1px solid ${C.border}`, transitionDelay:".11s" }}>
         <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:16 }}>By Category</div>
         {COMPONENTS.map((comp, i) => (
           <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<COMPONENTS.length-1?`1px solid ${C.border}`:"none" }}>
@@ -652,7 +652,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     </div>
 
     {/* Province trend chart */}
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:4, transitionDelay:".22s" }}>
+    <div className={`reveal ${vis?"in":""}`} style={{ paddingTop:16, borderTop:`1px solid ${C.border}`, marginBottom:4, transitionDelay:".22s" }}>
       <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Provincial Trends</div>
       <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>
         Annual year-over-year % · {provStartYr}–{provEndYr} · Data: Statistics Canada
@@ -762,7 +762,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
     </div>
 
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16, marginBottom:16 }}>
-      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", transitionDelay:".11s" }}>
+      <div className={`reveal ${vis?"in":""}`} style={{ paddingTop:16, borderTop:`1px solid ${C.border}`, transitionDelay:".11s" }}>
         <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative by Category</div>
         <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Compound total since {catCumHistory?.[0]?.year}</div>
         {sortedCat.map((comp, i) => (
@@ -815,7 +815,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
       </ResponsiveContainer>
     </div>
 
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:4, transitionDelay:".22s" }}>
+    <div className={`reveal ${vis?"in":""}`} style={{ paddingTop:16, borderTop:`1px solid ${C.border}`, marginBottom:4, transitionDelay:".22s" }}>
       <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative Provincial Inflation</div>
       <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Compounded total since {provCumHistory?.[0]?.year} · each year builds on the last</div>
       <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:16 }}>
@@ -959,11 +959,10 @@ function CompoundTab({ vis, liveCpi }) {
 
   return (
     <div className={`reveal ${vis?"in":""}`}>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
+      <div className="calc-grid" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:32 }}>
         {/* Input panel */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Interest Calculator</div>
-          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:24 }}>See how your money grows over time</div>
+        <div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:24 }}>Interest Calculator</div>
 
           <CalcField label="Initial Investment" value={principal} onChange={setPrincipal} placeholder="e.g. 10000" hint="Amount you have available to invest today"/>
           <CalcField label="Monthly Contribution" value={monthly} onChange={setMonthly} placeholder="e.g. 500" hint="Amount added every month (use negative to withdraw)"/>
@@ -1000,9 +999,8 @@ function CompoundTab({ vis, liveCpi }) {
         {/* Results panel */}
         <div ref={resultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:12, minHeight:200 }}>
-              <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
-              <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Fill in the fields and hit Calculate to see your results</div>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", minHeight:200 }}>
+              <div style={{ fontSize:13, color:C.textMuted, textAlign:"center" }}>Fill in the fields and hit Calculate</div>
             </div>
           ) : (<>
             {/* Nominal / Real toggle */}
@@ -1020,7 +1018,7 @@ function CompoundTab({ vis, liveCpi }) {
             )}
 
             {/* Hero result */}
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+            <div style={{ paddingBottom:8 }}>
               <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
                 {showReal ? "Real (Today's Dollars)" : "Nominal"} Balance after {years} years
               </div>
@@ -1053,12 +1051,12 @@ function CompoundTab({ vis, liveCpi }) {
                   { label:"Real Final Balance",    val:fmt(result.realBase),     color:C.blue   },
                   { label:"Real Interest Earned",  val:fmt(result.realInterest), color:C.green },
                   { label:"Real ROI",              val:`${((result.realInterest/Math.max(result.totalContrib,1))*100).toFixed(1)}%`, color:C.green },
-                  { label:"Real Annual Return",    val:`${result.realRateAnn > 0 ? "+" : ""}${result.realRateAnn}%`, color:C.purple },
+                  { label:"Real Annual Return",    val:`${result.realRateAnn > 0 ? "+" : ""}${result.realRateAnn}%`, color:C.white },
                 ] : [
                   { label:"Total Contributions",   val:fmt(result.totalContrib), color:C.blue   },
                   { label:"Total Interest",         val:fmt(result.interest),    color:C.green  },
                   { label:"Return on Investment",   val:`${((result.interest/Math.max(result.totalContrib,1))*100).toFixed(1)}%`, color:C.green },
-                  { label:"Interest/Contrib ratio", val:`${(result.interest/Math.max(result.totalContrib,1)).toFixed(2)}×`, color:C.purple },
+                  { label:"Interest/Contrib ratio", val:`${(result.interest/Math.max(result.totalContrib,1)).toFixed(2)}×`, color:C.white },
                 ]).map((s,i) => (
                   <div key={i} style={{ padding:"12px 0" }}>
                     <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
@@ -1069,9 +1067,8 @@ function CompoundTab({ vis, liveCpi }) {
             </div>
 
             {/* Growth chart */}
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
-              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Growth Over Time</div>
-              <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Total value vs. your contributions each year</div>
+            <div style={{ paddingTop:16, borderTop:`1px solid ${C.border}` }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Growth Over Time</div>
               <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
                 {[{color:C.green,label:"Total Value"},{color:C.blue,label:"Contributions"}].map((l,i)=>(
                   <div key={i} style={{ display:"flex", alignItems:"center", gap:8, fontSize:11, color:C.textSecondary }}>
@@ -1231,9 +1228,9 @@ function MortgageTab({ vis, liveCpi }) {
     const fmtM = v => "$" + v.toFixed(2);
 
     return (
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:16 }}>Calculate Mortgage Payments</div>
+      <div className="calc-grid" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:32 }}>
+        <div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:24 }}>Mortgage Payments</div>
 
           <MortField label="Price of Property"   value={price} set={setPrice} ph="e.g. 650,000"/>
           <MortField label="Interest Rate (%)"    value={rate}  set={setRate}  ph="e.g. 4.5" isSmall/>
@@ -1264,9 +1261,8 @@ function MortgageTab({ vis, liveCpi }) {
 
         <div ref={mortResultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12 }}>
-              <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
-              <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your mortgage details to see your payment breakdown</div>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", minHeight:180 }}>
+              <div style={{ fontSize:13, color:C.textMuted, textAlign:"center" }}>Enter your mortgage details to see your payment</div>
             </div>
           ) : (<>
             {result.inf > 0 && (
@@ -1281,8 +1277,8 @@ function MortgageTab({ vis, liveCpi }) {
                 ))}
               </div>
             )}
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
+            <div style={{ paddingBottom:8 }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:6 }}>
                 {payFreq.charAt(0).toUpperCase()+payFreq.slice(1)} Payment · {showReal && result.inf > 0 ? "Inflation-Adjusted" : "Nominal"}
               </div>
               {showReal && result.inf > 0 && (
@@ -1318,14 +1314,13 @@ function MortgageTab({ vis, liveCpi }) {
               </div>
               {result.cmhc > 0 && <div style={{ marginTop:10, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:6, padding:"6px 10px" }}>⚠ CMHC mortgage insurance required (down payment under 20%)</div>}
               {showReal && result.inf > 0 && (
-                <div style={{ marginTop:12, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6 }}>
+                <div style={{ marginTop:12, fontSize:11, color:C.textMuted, lineHeight:1.6, paddingTop:8 }}>
                   Note: Inflation benefits borrowers — your fixed mortgage payment stays the same in dollars, but its real value shrinks over time as prices rise. You effectively repay with cheaper dollars.
                 </div>
               )}
             </div>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
-              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Amortization Schedule</div>
-              <div style={{ fontSize:11, color:C.textSecondary, marginBottom:8 }}>Remaining balance by year</div>
+            <div style={{ paddingTop:16, borderTop:`1px solid ${C.border}` }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Amortization Schedule</div>
               {result.inf > 0 && (
                 <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
                   {[{ color:C.blue, label:"Nominal Balance" },{ color:C.green, label:"Real Balance (today's $)" }].map((l,i) => (
@@ -1413,9 +1408,9 @@ function MortgageTab({ vis, liveCpi }) {
     const fmt = v => "$" + Math.round(v).toLocaleString("en-CA");
 
     return (
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:16 }}>Estimated Transfer Tax</div>
+      <div className="calc-grid" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:32 }}>
+        <div style={{ }}>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:24 }}>Transfer Tax</div>
 
           <div style={{ marginBottom:16 }}>
             <div style={{ fontSize:12, fontWeight:700, color:C.textPrimary, marginBottom:6 }}>Province</div>
@@ -1433,7 +1428,7 @@ function MortgageTab({ vis, liveCpi }) {
           <div style={{ marginTop:10, fontSize:11, color:C.textMuted }}>Estimates only — consult a notary for exact figures. Municipal surcharges (e.g. Montreal) not included.</div>
         </div>
 
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+        <div style={{ paddingBottom:8 }}>
           {!result ? (
             <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", gap:12, minHeight:180 }}>
               <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
@@ -1484,8 +1479,8 @@ function MortgageTab({ vis, liveCpi }) {
     const fmt = v => "$" + Math.round(v).toLocaleString("en-CA");
 
     return (
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+      <div className="calc-grid" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:32 }}>
+        <div style={{ paddingBottom:8 }}>
           <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Calculate Borrowing Capacity</div>
           <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>How much can you borrow based on your payment budget?</div>
 
@@ -1505,7 +1500,7 @@ function MortgageTab({ vis, liveCpi }) {
           <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>Calculate</button>
         </div>
 
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+        <div style={{ paddingBottom:8 }}>
           {!result ? (
             <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", gap:12, minHeight:180 }}>
               <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
@@ -1674,11 +1669,10 @@ function MortgageTab({ vis, liveCpi }) {
     const fmtK = v => v >= 0 ? `+$${Math.round(v/1000)}K` : `−$${Math.round(Math.abs(v)/1000)}K`;
 
     return (
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
+      <div className="calc-grid" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:32 }}>
         {/* ── Input panel ── */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Debt Load Impact Calculator</div>
-          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:24 }}>See how existing debt reduces your maximum home price using Canadian GDS/TDS rules</div>
+        <div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:24 }}>Debt Load Impact</div>
 
           {/* Income & Property */}
           <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:12 }}>Income & Property</div>
@@ -1748,15 +1742,13 @@ function MortgageTab({ vis, liveCpi }) {
         {/* ── Results panel ── */}
         <div ref={debtResultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:300 }}>
-              <div style={{ width:36, height:36, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
-              <div style={{ fontSize:14, fontWeight:600, color:C.textPrimary, textAlign:"center" }}>Enter your income and debt to see your max home price</div>
-              <div style={{ fontSize:12, color:C.textMuted, textAlign:"center", maxWidth:260, lineHeight:1.6 }}>Each debt row shows exactly how much it reduces your buying power</div>
+            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", minHeight:280, gap:8 }}>
+              <div style={{ fontSize:13, color:C.textMuted, textAlign:"center" }}>Enter your income and debt to see your max home price</div>
             </div>
           ) : (<>
             {/* Hero */}
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
+            <div style={{ paddingBottom:8 }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:6 }}>
                 Maximum Home Price · Stress-Tested at {result.sr.toFixed(2)}%
               </div>
               <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:16 }}>
@@ -1789,9 +1781,8 @@ function MortgageTab({ vis, liveCpi }) {
             </div>
 
             {/* Debt impact table */}
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
-              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Debt-by-Debt Breakdown</div>
-              <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>How each debt reduces your maximum home price</div>
+            <div style={{ paddingTop:16, borderTop:`1px solid ${C.border}` }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Debt-by-Debt Breakdown</div>
               <div style={{ overflowX:"auto" }}>
                 <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12 }}>
                   <thead>
@@ -1830,9 +1821,9 @@ function MortgageTab({ vis, liveCpi }) {
 
             {/* Debt payoff simulator */}
             {(result.ccGain > 0 || result.locGain > 0) && (
-              <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
-                <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Debt Payoff Simulator</div>
-                <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Paying off these debts before buying would unlock additional home price</div>
+              <div style={{ paddingTop:16, borderTop:`1px solid ${C.border}` }}>
+                <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Debt Payoff Simulator</div>
+                <div style={{ fontSize:11, color:C.textMuted, marginBottom:16 }}>Paying off these debts before buying would unlock additional home price</div>
                 {[
                   result.ccMo > 0  && { label:`Pay off $${Math.round(parseFloat(ccBal)||0).toLocaleString("en-CA")} credit card balance`, gain:result.ccGain,  color:C.green },
                   result.locMo > 0 && { label:`Pay off $${Math.round(parseFloat(locBal)||0).toLocaleString("en-CA")} line of credit`,      gain:result.locGain, color:C.blue  },
@@ -1968,12 +1959,11 @@ function RetirementTab({ vis, liveCpi }) {
 
   return (
     <div className={`reveal ${vis?"in":""}`}>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
+      <div className="calc-grid" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:32 }}>
 
         {/* ── Inputs ── */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-          <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Retirement Calculator</div>
-          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>See how long your savings will last — adjusted for inflation</div>
+        <div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:24 }}>Retirement Calculator</div>
 
           <div style={{ display:"flex", background:C.surface2, borderRadius:8, padding:3, border:`1px solid ${C.border}`, marginBottom:24 }}>
             {[["howlong","How long will it last?"],["howmuch","How much can I withdraw?"]].map(([val,lbl])=>(
@@ -2011,13 +2001,11 @@ function RetirementTab({ vis, liveCpi }) {
         {/* ── Results ── */}
         <div ref={retResultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:280 }}>
-              <div style={{ width:36, height:36, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
-              <div style={{ fontSize:14, fontWeight:600, color:C.textPrimary, textAlign:"center" }}>Enter your savings and monthly withdrawal to see your retirement runway</div>
-              <div style={{ fontSize:12, color:C.textMuted, textAlign:"center", maxWidth:260, lineHeight:1.6 }}>The inflation-adjusted view shows real purchasing power of withdrawals over time</div>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", minHeight:280 }}>
+              <div style={{ fontSize:13, color:C.textMuted, textAlign:"center" }}>Enter your savings and withdrawal to see your retirement runway</div>
             </div>
           ) : result.mode === "howlong" ? (<>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+            <div style={{ paddingBottom:8 }}>
               <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Your money lasts</div>
               <div style={{ display:"flex", gap:24, flexWrap:"wrap", marginBottom:16 }}>
                 <div>
@@ -2051,9 +2039,8 @@ function RetirementTab({ vis, liveCpi }) {
                 ))}
               </div>
             </div>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
-              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Savings Balance Over Time</div>
-              <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Nominal vs. real balance year by year</div>
+            <div style={{ paddingTop:16, borderTop:`1px solid ${C.border}` }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:12 }}>Savings Balance Over Time</div>
               <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
                 {[{color:C.green,label:"Nominal"},{color:C.blue,label:"Real (today's $)"}].map((l,i)=>(
                   <div key={i} style={{ display:"flex", alignItems:"center", gap:8, fontSize:11, color:C.textSecondary }}>
@@ -2074,7 +2061,7 @@ function RetirementTab({ vis, liveCpi }) {
               </ResponsiveContainer>
             </div>
           </>) : (<>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+            <div style={{ paddingBottom:8 }}>
               <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>
                 Max Monthly Withdrawal over {result.targetYrs} years
               </div>
@@ -2096,9 +2083,9 @@ function RetirementTab({ vis, liveCpi }) {
                 Note: In today's dollars, {fmt(result.maxNom)}/mo will feel like {fmt(result.maxReal)}/mo after inflation over {result.targetYrs} years.
               </div>
             </div>
-            <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
-              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Balance Drawdown</div>
-              <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Savings balance year by year at max nominal withdrawal</div>
+            <div style={{ paddingTop:16, borderTop:`1px solid ${C.border}` }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:12 }}>Balance Drawdown</div>
+              <div style={{ fontSize:11, color:C.textMuted, marginBottom:12 }}>Savings balance year by year at max nominal withdrawal</div>
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:44 }}>
                   <defs><linearGradient id="retGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.blue} stopOpacity={0.2}/><stop offset="95%" stopColor={C.blue} stopOpacity={0}/></linearGradient></defs>
@@ -2157,10 +2144,9 @@ function TFSACalc() {
   }
 
   return (
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
-      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>TFSA Contribution Room</div>
-        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:24 }}>Calculate your total available room based on eligibility year and contribution history</div>
+    <div className="calc-grid" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:32 }}>
+      <div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:24 }}>TFSA Contribution Room</div>
         <DebtField label="Year of Birth"                         value={birthYear}   set={setBirthYear}   ph="e.g. 1990" isSmall/>
         <DebtField label="Total Contributions Made to Date ($)"  value={contributed} set={setContributed} ph="e.g. 40,000"/>
         <DebtField label="Total Withdrawals Made to Date ($)"    value={withdrawn}   set={setWithdrawn}   ph="e.g. 5,000"/>
@@ -2176,16 +2162,15 @@ function TFSACalc() {
       </div>
       <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
         {!result ? (
-          <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:220 }}>
-            <div style={{ width:36, height:36, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
-            <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your birth year to see your TFSA room</div>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", minHeight:220 }}>
+            <div style={{ fontSize:13, color:C.textMuted, textAlign:"center" }}>Enter your birth year to see your TFSA room</div>
           </div>
         ) : result.notEligible ? (
-          <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+          <div style={{ paddingBottom:8 }}>
             <div style={{ fontSize:14, color:C.textSecondary }}>You become eligible in <strong style={{ color:C.white }}>{result.eligible}</strong>. No room has accumulated yet.</div>
           </div>
         ) : (<>
-          <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+          <div style={{ paddingBottom:8 }}>
             <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Available TFSA Room</div>
             <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:result.remaining>=0?C.green:C.red, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
               {result.remaining>=0 ? fmt(result.remaining) : `Over by ${fmt(Math.abs(result.remaining))}`}
@@ -2206,9 +2191,8 @@ function TFSACalc() {
               ))}
             </div>
           </div>
-          <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
-            <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative Room by Year</div>
-            <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Total TFSA room accumulated since eligibility</div>
+          <div style={{ paddingTop:16, borderTop:`1px solid ${C.border}` }}>
+            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:12 }}>Cumulative Room by Year</div>
             <ResponsiveContainer width="100%" height={180}>
               <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:44 }}>
                 <defs><linearGradient id="tfsaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.green} stopOpacity={0.2}/><stop offset="95%" stopColor={C.green} stopOpacity={0}/></linearGradient></defs>
@@ -2272,10 +2256,9 @@ function RRSPCalc() {
   }
 
   return (
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:16 }}>
-      <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>RRSP Contribution Room</div>
-        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:24 }}>Estimate your 2025 RRSP deduction limit and potential tax savings</div>
+    <div className="calc-grid" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:32 }}>
+      <div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:24 }}>RRSP Contribution Room</div>
         <DebtField label="Earned Income — Prior Year ($)"     value={income}      set={setIncome}      ph="e.g. 95,000"/>
         <DebtField label="Prior Year's RRSP Limit ($)"        value={prevLimit}   set={setPrevLimit}   ph="e.g. 15,000" hint="From your CRA Notice of Assessment"/>
         <DebtField label="Pension Adjustment ($)"             value={pensionAdj}  set={setPensionAdj}  ph="0 if none" isSmall/>
@@ -2302,7 +2285,7 @@ function RRSPCalc() {
             <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your income and prior-year limit to calculate your RRSP room</div>
           </div>
         ) : (<>
-          <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
+          <div style={{ paddingBottom:8 }}>
             <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Available RRSP Room (2025)</div>
             <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
               {fmt(result.remaining)}
@@ -2886,7 +2869,7 @@ export default function App() {
         @keyframes spin{to{transform:rotate(360deg)}}
         .spin{border:2px solid ${C.border};border-top-color:${C.action};border-radius:50%;animation:spin .7s linear infinite}
         .sub-scroll::-webkit-scrollbar{display:none}
-        @media(max-width:600px){.mobile-hide{display:none!important}.mobile-full{grid-template-columns:1fr!important}}
+        @media(max-width:600px){.mobile-hide{display:none!important}.mobile-full{grid-template-columns:1fr!important}.calc-grid{grid-template-columns:1fr!important}}
         .overflow-table::-webkit-scrollbar{height:3px}
         .overflow-table::-webkit-scrollbar-thumb{background:${C.border2};border-radius:2px}
         .nav-drop{position:absolute;top:calc(100% + 8px);left:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
