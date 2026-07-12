@@ -2352,7 +2352,7 @@ const GROCERY_VECTORS = {
   "Meat":                  41690985,
   "Fish & seafood":        41690998,
   "Dairy & eggs":          41691011,
-  "Bakery & cereals":      41691024,
+  "Bread & grains":      41691024,
   "Fresh vegetables":      41691049,
   "Fresh fruit":           41691037,
   "Food from stores":      41690974,
@@ -2360,7 +2360,7 @@ const GROCERY_VECTORS = {
 };
 const GROCERY_COLORS = {
   "Meat":"#E05A4A","Fish & seafood":"#6B9FE4","Dairy & eggs":"#F5C842",
-  "Bakery & cereals":"#F0814A","Fresh vegetables":"#3ECFA0","Fresh fruit":"#B07FE8",
+  "Bread & grains":"#F0814A","Fresh vegetables":"#3ECFA0","Fresh fruit":"#B07FE8",
   "Other food":"#4AC8E8","Food from stores":"#F5C842","Food from restaurants":"#E05A4A",
 };
 
@@ -2452,7 +2452,7 @@ function GroceryTab({ vis }) {
             Canadian Food Prices · Year-over-Year · {latestDate}
           </div>
           <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,44px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 16px" }}>
-            What's Getting More Expensive at the Grocery Store
+            Canadian Food Price Inflation
           </h1>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
             {[
