@@ -54,9 +54,9 @@ const C = {
   border:        "#2A2A2A",
   border2:       "#383838",
   // Text
-  textPrimary:   "#F0F0F0",
-  textSecondary: "#888888",
-  textMuted:     "#555555",
+  textPrimary:   "#FFFFFF",
+  textSecondary: "#666666",
+  textMuted:     "#444444",
   // Signal colours — each has one job
   red:           "#E05A4A",   // above target / danger
   redBg:         "rgba(224,90,74,0.12)",
@@ -119,14 +119,14 @@ const PROV_COLORS = {
   PE:"#A0C878", NL:"#E87AB0",
 };
 const CAT_META = {
-  "Shelter":               { label:"Shelter",                icon:"🏠" },
-  "Food":                  { label:"Food",                   icon:"🥦" },
-  "Transport":             { label:"Transport",              icon:"🚗" },
-  "Health":                { label:"Health & Personal",      icon:"💊" },
-  "Recreation & Education":{ label:"Recreation & Education", icon:"📚" },
-  "Household":             { label:"Household",              icon:"🛋️" },
-  "Clothing":              { label:"Clothing",               icon:"👗" },
-  "Alcohol & Tobacco":     { label:"Alcohol & Tobacco",      icon:"🍺" },
+  "Shelter":               { label:"Shelter",                icon:"SH" },
+  "Food":                  { label:"Food",                   icon:"FD" },
+  "Transport":             { label:"Transport",              icon:"TR" },
+  "Health":                { label:"Health & Personal",      icon:"HE" },
+  "Recreation & Education":{ label:"Recreation & Education", icon:"RE" },
+  "Household":             { label:"Household",              icon:"HO" },
+  "Clothing":              { label:"Clothing",               icon:"CL" },
+  "Alcohol & Tobacco":     { label:"Alcohol & Tobacco",      icon:"AT" },
 };
 const PROV_META = [
   { code:"BC", name:"British Columbia", key:"BC" },
@@ -294,15 +294,17 @@ function taylorRate(inflation) {
 function FilterPill({ label, color, active, onClick }) {
   return (
     <button onClick={onClick} style={{
-      display:"inline-flex", alignItems:"center", gap:8,
-      background: active ? `${color}1A` : "transparent",
-      border: `1px solid ${active ? color : C.border2}`,
-      color: active ? color : C.textMuted,
-      borderRadius:100, padding:"4px 11px", fontSize:11, fontWeight:600,
-      cursor:"pointer", fontFamily:"inherit", transition:"background .12s, border-color .12s, color .12s",
+      display:"inline-flex", alignItems:"center", gap:6,
+      background:"transparent",
+      border:`1px solid ${active ? C.border2 : C.border}`,
+      color: active ? C.textPrimary : C.textMuted,
+      borderRadius:6, padding:"4px 10px", fontSize:11, fontWeight:500,
+      cursor:"pointer", fontFamily:"inherit",
+      transition:"background .12s, border-color .12s, color .12s",
       WebkitTapHighlightColor:"transparent",
+      opacity: active ? 1 : 0.45,
     }}>
-      <span style={{ width:6, height:6, borderRadius:"50%", background:active?color:C.textMuted, flexShrink:0 }}/>
+      <span style={{ width:6, height:6, borderRadius:"50%", background:color, flexShrink:0, display:"inline-block" }}/>
       {label}
     </button>
   );
@@ -332,7 +334,7 @@ const SingleTip = ({ active, payload, label, prefix="", suffix="%", note }) => {
   return (
     <div style={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"12px 16px", boxShadow:"0 8px 32px rgba(0,0,0,.8)", fontFamily:"inherit" }}>
       <div style={{ fontSize:11, fontWeight:600, color:C.textSecondary, textTransform:"uppercase", letterSpacing:".08em", marginBottom:6 }}>{label}</div>
-      <div style={{ fontSize:26, fontWeight:700, color:payload[0].color||C.yellow, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.5px", lineHeight:1 }}>
+      <div style={{ fontSize:26, fontWeight:700, color:payload[0].color||C.white, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.5px", lineHeight:1 }}>
         {prefix}{v?.toFixed(2)}{suffix}
       </div>
       {note && <div style={{ fontSize:11, color:C.textMuted, marginTop:5 }}>{note(v)}</div>}
@@ -506,60 +508,62 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
   const provEndYr   = provHistory?.[provHistory.length-1]?.year;
 
   return (<>
-    {/* Hero */}
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, marginBottom:16, overflow:"hidden" }}>
-      <div style={{ padding:"28px 24px 0" }}>
-        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
-          Canada · All-Items CPI · Year-over-Year · {cur?.date}
+    {/* Hero — number is the page */}
+    <div className={`reveal ${vis?"in":""}`} style={{ marginBottom:24 }}>
+      <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16, display:"flex", alignItems:"center", gap:8 }}>
+        <span style={{ display:"inline-block", width:6, height:6, borderRadius:"50%", background:C.green }}/>
+        Canada · All-Items CPI · Year-over-Year · {cur?.date}
+      </div>
+
+      <div style={{ display:"flex", alignItems:"flex-end", gap:20, flexWrap:"wrap", marginBottom:16 }}>
+        <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(72px,14vw,120px)", fontWeight:700, lineHeight:.9, letterSpacing:"-3px", color:valColor(cur?.value ?? 0) }}>
+          {cur?.value.toFixed(1)}%
         </div>
-        <div style={{ fontSize:11, color:C.textMuted, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
-          <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810000401" target="_blank" rel="noopener noreferrer" style={{ color:C.textMuted, textDecoration:"none", display:"flex", alignItems:"center", gap:4 }}>
-            <span style={{ color:C.green, fontSize:11 }}>↗</span>
-            Statistics Canada · Table 18-10-0004-01 · Vector v41690973
-          </a>
-        </div>
-        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
-          <span style={{ display:"inline-block", width:6, height:6, borderRadius:"50%", background:C.green }}></span>
-          Live StatCan data · April 2026 · {(() => { const n=new Date(); const releases=[{ref:'May',date:new Date('2026-06-22')},{ref:'June',date:new Date('2026-07-17')}]; const next=releases.find(r=>r.date>n); return next?`Next: ${next.ref} releases ${next.date.toLocaleDateString('en-CA',{month:'long',day:'numeric'})}`:null; })()}
-        </div>
-        <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:24 }}>
-          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(60px,12vw,96px)", fontWeight:700, lineHeight:1, letterSpacing:"-2px", color:valColor(cur?.value ?? 0) }}>
-            {cur?.value.toFixed(1)}%
-          </div>
-          <div style={{ display:"flex", flexDirection:"column", gap:8, paddingBottom:8 }}>
-            {prev && (
-              <span style={{ display:"inline-flex", alignItems:"center", gap:8, background:valBg(delta), color:valColor(delta), borderRadius:6, padding:"4px 10px", fontSize:12, fontWeight:700, border:`1px solid ${valColor(delta)}25`, width:"fit-content" }}>
-                {delta>0?"▲":delta<0?"▼":"—"} {Math.abs(delta).toFixed(1)}pp vs {prev.date}
-              </span>
-            )}
-            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-              {[`BoC target ${BOC_TARGET}%`, peak?`Peak ${peak.value.toFixed(1)}% · ${peak.date}`:null, `${data?.length} months · ${startYr}–present`].filter(Boolean).map((t,i) => (
-                <span key={i} style={{ fontSize:11, fontWeight:600, color:C.textMuted, background:C.surface2, border:`1px solid ${C.border}`, borderRadius:5, padding:"3px 8px" }}>{t}</span>
-              ))}
-            </div>
-          </div>
+        <div style={{ display:"flex", flexDirection:"column", gap:8, paddingBottom:12 }}>
+          {prev && (
+            <span style={{ display:"inline-flex", alignItems:"center", gap:6, color:valColor(delta), fontSize:13, fontWeight:700 }}>
+              {delta>0?"▲":delta<0?"▼":"—"} {Math.abs(delta).toFixed(1)}pp vs {prev.date}
+            </span>
+          )}
+          <span style={{ fontSize:12, color:C.textMuted }}>
+            BoC target: {BOC_TARGET}%
+            {peak ? ` · Peak: ${peak.value.toFixed(1)}% (${peak.date})` : ""}
+          </span>
         </div>
       </div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", borderTop:`1px solid ${C.border}` }}>
+
+      {/* Stat row — below the number, no border box */}
+      <div style={{ display:"flex", gap:24, flexWrap:"wrap", paddingTop:16, borderTop:`1px solid ${C.border}` }}>
         {[
-          { label:"vs. BoC",    val:`${(cur?.value??0)>BOC_TARGET?"+":""}${((cur?.value??0)-BOC_TARGET).toFixed(1)}pp`, color:valColor(cur?.value??0) },
-          { label:"Prior Month",val:`${prev?.value.toFixed(1)}%`,  color:C.white },
-          { label:"12-Mo Low",  val:`${lo12.toFixed(1)}%`,         color:C.green },
-          { label:"12-Mo High", val:`${hi12.toFixed(1)}%`,         color:C.red   },
+          { label:"vs. BoC Target", val:`${(cur?.value??0)>BOC_TARGET?"+":""}${((cur?.value??0)-BOC_TARGET).toFixed(1)}pp`, color:valColor(cur?.value??0) },
+          { label:"Prior Month",    val:`${prev?.value.toFixed(1)}%`,  color:C.textPrimary },
+          { label:"12-Mo Low",      val:`${lo12.toFixed(1)}%`,         color:C.green },
+          { label:"12-Mo High",     val:`${hi12.toFixed(1)}%`,         color:C.red },
         ].map((s,i) => (
-          <div key={i} style={{ padding:"14px 16px", borderRight:"none" }}>
+          <div key={i}>
             <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
-            <div style={{ fontSize:20, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
+            <div style={{ fontSize:20, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.5px" }}>{s.val}</div>
           </div>
         ))}
+      </div>
+
+      <div style={{ marginTop:12 }}>
+        <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1810000401" target="_blank" rel="noopener noreferrer"
+          style={{ fontSize:11, color:C.textMuted, textDecoration:"none", display:"inline-flex", alignItems:"center", gap:4 }}>
+          <span style={{ color:C.green }}>↗</span>
+          Statistics Canada · Table 18-10-0004-01 · Vector v41690973
+        </a>
+        <span style={{ fontSize:11, color:C.textMuted, marginLeft:12 }}>
+          {(() => { const n=new Date(); const releases=[{ref:'May',date:new Date('2026-06-22')},{ref:'June',date:new Date('2026-07-17')}]; const next=releases.find(r=>r.date>n); return next?`Next: ${next.ref} releases ${next.date.toLocaleDateString('en-CA',{month:'long',day:'numeric'})}`:null; })()}
+        </span>
       </div>
     </div>
 
     {/* History chart */}
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"22px 20px 16px", marginBottom:16, transitionDelay:".06s" }}>
+    <div className={`reveal ${vis?"in":""}`} style={{ marginBottom:24, transitionDelay:".06s" }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:12 }}>
         <div>
-          <h2 style={{ fontSize:14, fontWeight:700, margin:0 }}>Inflation History</h2>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em" }}>Inflation History</div>
           <div style={{ fontSize:11, color:C.textSecondary, marginTop:2 }}>Year-over-year · {chart[0]?.date} – {chart[chart.length-1]?.date}</div>
         </div>
         <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
@@ -585,7 +589,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
           <Tooltip content={<SingleTip suffix="%" note={v=>`${v>BOC_TARGET?`+${(v-BOC_TARGET).toFixed(1)}pp above`:`${(BOC_TARGET-v).toFixed(1)}pp below`} BoC target`}/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3" label={{ value:"BoC 2%", fill:C.textMuted, fontSize:11, position:"insideTopRight" }}/>
           <ReferenceLine y={0} stroke={C.border}/>
-          <Area type="monotone" dataKey="value" stroke="url(#lineGrad)" strokeWidth={2} fill="url(#areaGrad)" dot={false} activeDot={{ r:4, fill:C.yellow, stroke:C.surface, strokeWidth:2 }}/>
+          <Area type="monotone" dataKey="value" stroke="url(#lineGrad)" strokeWidth={2} fill="url(#areaGrad)" dot={false} activeDot={{ r:4, fill:C.white, stroke:C.surface, strokeWidth:2 }}/>
         </AreaChart>
       </ResponsiveContainer>
     </div>
@@ -593,13 +597,12 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     {/* Snapshot lists */}
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16, marginBottom:16 }}>
       <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", transitionDelay:".11s" }}>
-        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>By Category</div>
-        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Year-over-year change · latest available data</div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:16 }}>By Category</div>
         {COMPONENTS.map((comp, i) => (
           <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<COMPONENTS.length-1?`1px solid ${C.border}`:"none" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ width:28, height:28, borderRadius:8, background:valBg(comp.value), display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, flexShrink:0 }}>{comp.icon}</span>
-              <span style={{ fontSize:12, fontWeight:600, color:C.textPrimary }}>{comp.label}</span>
+              <span style={{ width:8, height:8, borderRadius:"50%", background:CAT_COLORS[comp.key], flexShrink:0, display:"inline-block" }}/>
+              <span style={{ fontSize:13, fontWeight:500, color:C.textPrimary }}>{comp.label}</span>
             </div>
             <span style={{ fontSize:14, fontWeight:700, color:valColor(comp.value), fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px", flexShrink:0 }}>
               {comp.value >= 0 ? "+" : ""}{comp.value.toFixed(1)}%
@@ -607,16 +610,16 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
           </div>
         ))}
       </div>
-      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", transitionDelay:".15s" }}>
-        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>By Province</div>
-        <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Year-over-year change · latest available data</div>
+      <div className={`reveal ${vis?"in":""}`} style={{ transitionDelay:".15s" }}>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:16 }}>By Province</div>
         {PROVINCES.map((p, i) => {
           const clr = valColor(p.value);
           return (
             <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<PROVINCES.length-1?`1px solid ${C.border}`:"none" }}>
               <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                <span style={{ width:28, height:28, borderRadius:8, background:valBg(p.value), display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:clr, flexShrink:0 }}>{p.code}</span>
-                <span style={{ fontSize:12, fontWeight:500, color:C.textPrimary }}>{p.name}</span>
+                <span style={{ width:8, height:8, borderRadius:"50%", background:PROV_COLORS[p.key]||C.textMuted, flexShrink:0, display:"inline-block" }}/>
+                <span style={{ fontSize:13, fontWeight:500, color:C.textPrimary }}>{p.name}</span>
+                <span style={{ fontSize:11, color:C.textMuted, marginLeft:4 }}>{p.code}</span>
               </div>
               <span style={{ fontSize:14, fontWeight:700, color:clr, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px", flexShrink:0 }}>
                 {p.value.toFixed(1)}%
@@ -628,7 +631,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     </div>
 
     {/* Category trend chart */}
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:16, transitionDelay:".18s" }}>
+    <div className={`reveal mobile-hide ${vis?"in":""}`} style={{ marginBottom:24, transitionDelay:".18s" }}>
       <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Category Trends</div>
       <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>
         Annual year-over-year % · {catStartYr}–{catEndYr} · Data: Statistics Canada
@@ -695,7 +698,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
   const cagr = latest ? ((Math.pow(1/latest.cadValue, 1/((cadData.length||12)/12))-1)*100).toFixed(1) : "—";
 
   return (<>
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, marginBottom:16, overflow:"hidden" }}>
+    <div className={`reveal ${vis?"in":""}`} style={{ marginBottom:24 }}>
       <div style={{ padding:"28px 24px 0" }}>
         <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:12 }}>
           CAD Purchasing Power · {startYr}–Present · Compound Erosion
@@ -720,7 +723,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
         {[
           { label:"Purchasing Power", val:`${latest?.cadValue.toFixed(2)}¢`, color:C.red    },
           { label:"Total Lost",       val:`${totalLost.toFixed(1)}%`,         color:C.red    },
-          { label:"Cost Multiplier",  val:`${multiplier}×`,                   color:C.yellow },
+          { label:"Cost Multiplier",  val:`${multiplier}×`,                   color:C.white },
           { label:"Period",           val:`${startYr}–Now`,                   color:C.white  },
         ].map((s,i) => (
           <div key={i} style={{ padding:"14px 16px", borderRight:"none" }}>
@@ -775,7 +778,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
           </div>
         ))}
       </div>
-      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", transitionDelay:".15s" }}>
+      <div className={`reveal ${vis?"in":""}`} style={{ transitionDelay:".15s" }}>
         <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative by Province</div>
         <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Compound total since {provCumHistory?.[0]?.year}</div>
         {sortedProv.map((p, i) => {
@@ -795,7 +798,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
       </div>
     </div>
 
-    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:16, transitionDelay:".18s" }}>
+    <div className={`reveal ${vis?"in":""}`} style={{ marginBottom:24, transitionDelay:".18s" }}>
       <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative Category Inflation</div>
       <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Compounded total since {catCumHistory?.[0]?.year} · each year builds on the last</div>
       <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:16 }}>
@@ -999,7 +1002,7 @@ function CompoundTab({ vis, liveCpi }) {
         <div ref={resultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:12, minHeight:200 }}>
-              <div style={{ fontSize:28 }}>📈</div>
+              <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
               <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Fill in the fields and hit Calculate to see your results</div>
             </div>
           ) : (<>
@@ -1049,12 +1052,12 @@ function CompoundTab({ vis, liveCpi }) {
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:1, borderTop:`1px solid ${C.border}`, marginTop:8, paddingTop:16 }}>
                 {(showReal && result.inf > 0 ? [
                   { label:"Real Final Balance",    val:fmt(result.realBase),     color:C.blue   },
-                  { label:"Real Interest Earned",  val:fmt(result.realInterest), color:C.yellow },
+                  { label:"Real Interest Earned",  val:fmt(result.realInterest), color:C.green },
                   { label:"Real ROI",              val:`${((result.realInterest/Math.max(result.totalContrib,1))*100).toFixed(1)}%`, color:C.green },
                   { label:"Real Annual Return",    val:`${result.realRateAnn > 0 ? "+" : ""}${result.realRateAnn}%`, color:C.purple },
                 ] : [
                   { label:"Total Contributions",   val:fmt(result.totalContrib), color:C.blue   },
-                  { label:"Total Interest",         val:fmt(result.interest),    color:C.yellow  },
+                  { label:"Total Interest",         val:fmt(result.interest),    color:C.green  },
                   { label:"Return on Investment",   val:`${((result.interest/Math.max(result.totalContrib,1))*100).toFixed(1)}%`, color:C.green },
                   { label:"Interest/Contrib ratio", val:`${(result.interest/Math.max(result.totalContrib,1)).toFixed(2)}×`, color:C.purple },
                 ]).map((s,i) => (
@@ -1263,7 +1266,7 @@ function MortgageTab({ vis, liveCpi }) {
         <div ref={mortResultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12 }}>
-              <div style={{ fontSize:28 }}>🏠</div>
+              <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
               <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your mortgage details to see your payment breakdown</div>
             </div>
           ) : (<>
@@ -1299,13 +1302,13 @@ function MortgageTab({ vis, liveCpi }) {
                     note:"Less than nominal — inflation erodes the real cost of debt" },
                   { label:"Nominal Total Interest", val:fmt(result.totalInt),                color:C.textSecondary },
                   { label:"Real Total Cost",        val:fmt(result.realTotalPaid + result.downAmt), color:C.textPrimary },
-                  result.cmhc > 0 ? { label:"CMHC Insurance", val:fmt(result.cmhc), color:C.yellow } : null,
+                  result.cmhc > 0 ? { label:"CMHC Insurance", val:fmt(result.cmhc), color:C.white } : null,
                 ] : [
                   { label:"Mortgage Amount",        val:fmt(result.principal),               color:C.white },
                   { label:"Down Payment",           val:fmt(result.downAmt),                 color:C.blue  },
                   { label:"Total Interest",         val:fmt(result.totalInt),                color:C.red   },
                   { label:"Total Cost",             val:fmt(result.totalPaid + result.downAmt), color:C.textPrimary },
-                  result.cmhc > 0 ? { label:"CMHC Insurance", val:fmt(result.cmhc), color:C.yellow } : null,
+                  result.cmhc > 0 ? { label:"CMHC Insurance", val:fmt(result.cmhc), color:C.white } : null,
                 ]).filter(Boolean).map((s,i)=>(
                   <div key={i}>
                     <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
@@ -1317,7 +1320,7 @@ function MortgageTab({ vis, liveCpi }) {
               {result.cmhc > 0 && <div style={{ marginTop:10, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:6, padding:"6px 10px" }}>⚠ CMHC mortgage insurance required (down payment under 20%)</div>}
               {showReal && result.inf > 0 && (
                 <div style={{ marginTop:12, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6 }}>
-                  💡 Inflation benefits borrowers: your fixed mortgage payment stays the same in dollars, but its real value shrinks over time as prices rise. You effectively repay with cheaper dollars.
+                  Note: Inflation benefits borrowers — your fixed mortgage payment stays the same in dollars, but its real value shrinks over time as prices rise. You effectively repay with cheaper dollars.
                 </div>
               )}
             </div>
@@ -1434,7 +1437,7 @@ function MortgageTab({ vis, liveCpi }) {
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
           {!result ? (
             <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", gap:12, minHeight:180 }}>
-              <div style={{ fontSize:28 }}>🏛️</div>
+              <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
               <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Select a province and enter a purchase price</div>
             </div>
           ) : (
@@ -1444,7 +1447,7 @@ function MortgageTab({ vis, liveCpi }) {
                 {fmt(result.base)}
               </div>
               {result.onAssess != null && result.onAssess !== result.base && (
-                <div style={{ fontSize:12, color:C.textSecondary, marginBottom:12 }}>On assessment value: <strong style={{ color:C.yellow }}>{fmt(result.onAssess)}</strong></div>
+                <div style={{ fontSize:12, color:C.textSecondary, marginBottom:12 }}>On assessment value: <strong style={{ color:C.white }}>{fmt(result.onAssess)}</strong></div>
               )}
               <div style={{ fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6 }}>
                 This is an estimate based on provincial tax brackets only. Municipal taxes, first-time buyer rebates, and notary fees are not included.
@@ -1506,7 +1509,7 @@ function MortgageTab({ vis, liveCpi }) {
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
           {!result ? (
             <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", gap:12, minHeight:180 }}>
-              <div style={{ fontSize:28 }}>💰</div>
+              <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
               <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your budget to see your maximum mortgage</div>
             </div>
           ) : (
@@ -1519,7 +1522,7 @@ function MortgageTab({ vis, liveCpi }) {
                 {[
                   { label:"Total Payments",   val:fmt(result.totalPaid), color:C.white },
                   { label:"Total Interest",   val:fmt(result.totalInt),  color:C.red   },
-                  { label:"Interest Share",   val:`${((result.totalInt/result.totalPaid)*100).toFixed(1)}%`, color:C.yellow },
+                  { label:"Interest Share",   val:`${((result.totalInt/result.totalPaid)*100).toFixed(1)}%`, color:C.white },
                   { label:"Payment Budget",   val:"$"+parseFloat(payment).toFixed(2)+"/"+freq.replace("biweekly","2wk"), color:C.blue },
                 ].map((s,i)=>(
                   <div key={i}>
@@ -1747,7 +1750,7 @@ function MortgageTab({ vis, liveCpi }) {
         <div ref={debtResultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:300 }}>
-              <div style={{ fontSize:32 }}>🏡</div>
+              <div style={{ width:36, height:36, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
               <div style={{ fontSize:14, fontWeight:600, color:C.textPrimary, textAlign:"center" }}>Enter your income and debt to see your max home price</div>
               <div style={{ fontSize:12, color:C.textMuted, textAlign:"center", maxWidth:260, lineHeight:1.6 }}>Each debt row shows exactly how much it reduces your buying power</div>
             </div>
@@ -1829,7 +1832,7 @@ function MortgageTab({ vis, liveCpi }) {
             {/* Debt payoff simulator */}
             {(result.ccGain > 0 || result.locGain > 0) && (
               <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
-                <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>💡 Debt Payoff Simulator</div>
+                <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Debt Payoff Simulator</div>
                 <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Paying off these debts before buying would unlock additional home price</div>
                 {[
                   result.ccMo > 0  && { label:`Pay off $${Math.round(parseFloat(ccBal)||0).toLocaleString("en-CA")} credit card balance`, gain:result.ccGain,  color:C.green },
@@ -1848,7 +1851,7 @@ function MortgageTab({ vis, liveCpi }) {
             {/* CMHC note */}
             {result.dp < 20 && (
               <div style={{ background:`${C.red}08`, border:`1px solid ${C.red}20`, borderRadius:12, padding:"14px 16px" }}>
-                <div style={{ fontSize:12, fontWeight:700, color:C.red, marginBottom:4 }}>⚠ CMHC Insurance Required</div>
+                <div style={{ fontSize:12, fontWeight:700, color:C.red, marginBottom:4 }}>CMHC Insurance Required</div>
                 <div style={{ fontSize:11, color:C.textSecondary, lineHeight:1.6 }}>
                   Down payment under 20% requires CMHC mortgage insurance. Premium added to your loan:
                   {result.withAll.cmhc > 0 ? ` ${fmt(result.withAll.cmhc)} (${result.dp < 5 ? "4.00" : result.dp < 10 ? "3.10" : "2.80"}% of insured loan)` : " N/A at this home price."} Max insured home price is $1.5M.
@@ -2010,7 +2013,7 @@ function RetirementTab({ vis, liveCpi }) {
         <div ref={retResultsRef} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {!result ? (
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:280 }}>
-              <div style={{ fontSize:32 }}>🏖️</div>
+              <div style={{ width:36, height:36, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
               <div style={{ fontSize:14, fontWeight:600, color:C.textPrimary, textAlign:"center" }}>Enter your savings and monthly withdrawal to see your retirement runway</div>
               <div style={{ fontSize:12, color:C.textMuted, textAlign:"center", maxWidth:260, lineHeight:1.6 }}>The inflation-adjusted view shows real purchasing power of withdrawals over time</div>
             </div>
@@ -2033,13 +2036,13 @@ function RetirementTab({ vis, liveCpi }) {
               </div>
               {result.nomYearsNum && result.realYearsNum && (
                 <div style={{ fontSize:12, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6, marginBottom:16 }}>
-                  💡 Inflation shortens your runway by approximately <strong style={{ color:C.yellow }}>{Math.max(0, result.nomYearsNum - result.realYearsNum).toFixed(1)} years</strong> — withdrawals lose purchasing power over time.
+                  Note: Inflation shortens your runway by approximately <strong style={{ color:C.white }}>{Math.max(0, result.nomYearsNum - result.realYearsNum).toFixed(1)} years</strong> — withdrawals lose purchasing power over time.
                 </div>
               )}
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
                 {[
                   { label:"Starting Savings",   val:fmt(result.S),                            color:C.white },
-                  { label:"Monthly Withdrawal", val:fmt(result.W),                            color:C.yellow },
+                  { label:"Monthly Withdrawal", val:fmt(result.W),                            color:C.white },
                   { label:"Inflation Rate",     val:`${(result.inf*12*100).toFixed(1)}%/yr`,  color:C.textSecondary },
                 ].map((s,i)=>(
                   <div key={i}>
@@ -2091,7 +2094,7 @@ function RetirementTab({ vis, liveCpi }) {
                 </div>
               </div>
               <div style={{ fontSize:12, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6 }}>
-                💡 In today's dollars, {fmt(result.maxNom)}/mo will feel like {fmt(result.maxReal)}/mo after inflation over {result.targetYrs} years.
+                Note: In today's dollars, {fmt(result.maxNom)}/mo will feel like {fmt(result.maxReal)}/mo after inflation over {result.targetYrs} years.
               </div>
             </div>
             <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px" }}>
@@ -2163,7 +2166,7 @@ function TFSACalc() {
         <DebtField label="Total Contributions Made to Date ($)"  value={contributed} set={setContributed} ph="e.g. 40,000"/>
         <DebtField label="Total Withdrawals Made to Date ($)"    value={withdrawn}   set={setWithdrawn}   ph="e.g. 5,000"/>
         <div style={{ marginBottom:16, background:C.surface2, borderRadius:8, padding:"12px 16px", fontSize:11, color:C.textMuted, lineHeight:1.7 }}>
-          💡 TFSA withdrawals re-add to your room the following January 1. Enter lifetime withdrawals for accurate room.
+          Note: TFSA withdrawals re-add to your room the following January 1. Enter lifetime withdrawals for accurate room.
         </div>
         <button onClick={calc} style={{ width:"100%", background:C.action, color:C.actionText, border:"none", borderRadius:8, padding:"12px", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit", letterSpacing:"-.1px" }}>
           Calculate Room
@@ -2175,12 +2178,12 @@ function TFSACalc() {
       <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
         {!result ? (
           <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:220 }}>
-            <div style={{ fontSize:32 }}>🏦</div>
+            <div style={{ width:36, height:36, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
             <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your birth year to see your TFSA room</div>
           </div>
         ) : result.notEligible ? (
           <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
-            <div style={{ fontSize:14, color:C.textSecondary }}>You become eligible in <strong style={{ color:C.yellow }}>{result.eligible}</strong>. No room has accumulated yet.</div>
+            <div style={{ fontSize:14, color:C.textSecondary }}>You become eligible in <strong style={{ color:C.white }}>{result.eligible}</strong>. No room has accumulated yet.</div>
           </div>
         ) : (<>
           <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px" }}>
@@ -2189,7 +2192,7 @@ function TFSACalc() {
               {result.remaining>=0 ? fmt(result.remaining) : `Over by ${fmt(Math.abs(result.remaining))}`}
             </div>
             {result.remaining < 0 && (
-              <div style={{ fontSize:12, color:C.red, background:C.redBg, borderRadius:8, padding:"10px 16px", marginBottom:16 }}>⚠ You may have over-contributed. Contact CRA — penalty is 1%/month on excess.</div>
+              <div style={{ fontSize:12, color:C.red, background:C.redBg, borderRadius:8, padding:"10px 16px", marginBottom:16 }}>You may have over-contributed. Contact CRA — penalty is 1%/month on excess.</div>
             )}
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
               {[
@@ -2296,7 +2299,7 @@ function RRSPCalc() {
       <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
         {!result ? (
           <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:220 }}>
-            <div style={{ fontSize:32 }}>📋</div>
+            <div style={{ width:36, height:36, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
             <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your income and prior-year limit to calculate your RRSP room</div>
           </div>
         ) : (<>
@@ -2309,7 +2312,7 @@ function RRSPCalc() {
               {[
                 { label:"New Room Added (2025)", val:fmt(result.newRoom),   color:C.white },
                 { label:"Prior Unused Room",     val:fmt(result.prev),      color:C.white },
-                { label:"Total Deduction Limit", val:fmt(result.total),     color:C.yellow },
+                { label:"Total Deduction Limit", val:fmt(result.total),     color:C.white },
                 { label:"Already Contributed",   val:fmt(result.cont),      color:C.blue },
                 { label:"Marginal Tax Rate",      val:`${(result.margRate*100).toFixed(1)}%`, color:C.textSecondary },
                 { label:"Est. Tax Savings",       val:fmt(result.taxSaving), color:C.green },
@@ -2321,7 +2324,7 @@ function RRSPCalc() {
               ))}
             </div>
             <div style={{ marginTop:14, fontSize:11, color:C.textMuted, background:C.surface2, borderRadius:8, padding:"10px 16px", lineHeight:1.6 }}>
-              💡 Contributing {fmt(result.remaining)} to your RRSP could save approximately <strong style={{ color:C.green }}>{fmt(result.taxSaving)}</strong> in taxes at your {(result.margRate*100).toFixed(1)}% marginal rate.
+              Note: Contributing {fmt(result.remaining)} to your RRSP could save approximately <strong style={{ color:C.green }}>{fmt(result.taxSaving)}</strong> in taxes at your {(result.margRate*100).toFixed(1)}% marginal rate.
             </div>
           </div>
         </>)}
@@ -2449,7 +2452,7 @@ function GroceryTab({ vis }) {
         </div>
       ) : error ? (
         <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
-          <div style={{ fontSize:28, marginBottom:12 }}>📡</div>
+          <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:12 }}/>
           <div>Statistics Canada grocery data unavailable. Please try again later.</div>
         </div>
       ) : (<>
@@ -2606,7 +2609,7 @@ function ExchangeRatesTab({ vis }) {
         </div>
       ) : error ? (
         <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
-          <div style={{ fontSize:28, marginBottom:12 }}>📡</div>
+          <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:12 }}/>
           <div>Bank of Canada exchange rate data unavailable. Please try again later.</div>
         </div>
       ) : (<>
@@ -2780,7 +2783,7 @@ function RealWagesTab({ vis }) {
         </div>
       ) : error ? (
         <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
-          <div style={{ fontSize:28, marginBottom:12 }}>📡</div>
+          <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:12 }}/>
           <div>Statistics Canada wage data unavailable. Please try again later.</div>
         </div>
       ) : (<>
@@ -3063,6 +3066,7 @@ export default function App() {
         @keyframes spin{to{transform:rotate(360deg)}}
         .spin{border:2px solid ${C.border};border-top-color:${C.action};border-radius:50%;animation:spin .7s linear infinite}
         .sub-scroll::-webkit-scrollbar{display:none}
+        @media(max-width:600px){.mobile-hide{display:none!important}.mobile-full{grid-template-columns:1fr!important}}
         .overflow-table::-webkit-scrollbar{height:3px}
         .overflow-table::-webkit-scrollbar-thumb{background:${C.border2};border-radius:2px}
         .nav-drop{position:absolute;top:calc(100% + 8px);left:0;background:${C.surface};border:1px solid ${C.border2};border-radius:12px;padding:6px;min-width:220px;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
@@ -3185,7 +3189,7 @@ export default function App() {
           </div>
         ) : error ? (
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:360, gap:24, textAlign:"center" }}>
-            <div style={{ fontSize:32 }}>📡</div>
+            <div style={{ width:36, height:36, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}` }}/>
             <div style={{ fontSize:15, fontWeight:700, color:C.textPrimary }}>Statistics Canada is unavailable</div>
             <div style={{ fontSize:13, color:C.textSecondary, maxWidth:380, lineHeight:1.6 }}>
               We only display verified data from official sources. Please try again in a few minutes.
