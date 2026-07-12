@@ -351,7 +351,6 @@ function HomepageHero({ navigate, cur }) {
   const TRACK = [
     { label:"Inflation Rates",  desc:"Live CPI by category and province",  path:"/inflation-rates",  idx:0  },
     { label:"Purchasing Power", desc:"How far your dollar goes over time",  path:"/purchasing-power", idx:1  },
-    { label:"Food Prices",      desc:"What's rising at the grocery store",  path:"/grocery-prices",   idx:8  },
     { label:"Real Wages",       desc:"Are wages keeping up with inflation", path:"/real-wages",       idx:10 },
     { label:"Exchange Rates",   desc:"CAD vs major world currencies",       path:"/exchange-rates",   idx:9  },
   ];
@@ -571,7 +570,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
         </div>
       </div>
       <ResponsiveContainer width="100%" height={200}>
-        <AreaChart data={chart} margin={{ top:4, right:4, left:-24, bottom:0 }}>
+        <AreaChart data={chart} margin={{ top:4, right:4, left:-24, bottom:44 }}>
           <defs>
             <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%"   stopColor={C.yellow} stopOpacity={0.15}/>
@@ -584,7 +583,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:2 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={48} height={44}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
           <Tooltip content={<SingleTip suffix="%" note={v=>`${v>BOC_TARGET?`+${(v-BOC_TARGET).toFixed(1)}pp above`:`${(BOC_TARGET-v).toFixed(1)}pp below`} BoC target`}/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3" label={{ value:"BoC 2%", fill:C.textMuted, fontSize:11, position:"insideTopRight" }}/>
@@ -640,9 +639,9 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
         {CAT_KEYS.map(k => <FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={() => setActiveCats(p => ({ ...p, [k]:!p[k] }))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
-        <LineChart data={catHistory} margin={{ top:4, right:8, left:-24, bottom:0 }}>
+        <LineChart data={catHistory} margin={{ top:4, right:8, left:-24, bottom:44 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48} height={24}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
           <Tooltip content={<MultiTip/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
@@ -662,9 +661,9 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
         {PROVINCES.map(p => <FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={() => setActiveProvs(prev => ({ ...prev, [p.key]:!prev[p.key] }))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
-        <LineChart data={provHistory} margin={{ top:4, right:8, left:-24, bottom:0 }}>
+        <LineChart data={provHistory} margin={{ top:4, right:8, left:-24, bottom:44 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48} height={24}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
           <Tooltip content={<MultiTip/>}/>
           <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
@@ -753,7 +752,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:2 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={48} height={44}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`$${v.toFixed(2)}`} domain={["auto","auto"]}/>
           <Tooltip content={<SingleTip prefix="$" suffix="" note={v=>`Lost ${((1-v)*100).toFixed(1)}¢ of every dollar`}/>}/>
           <ReferenceLine y={1} stroke={C.border2} strokeDasharray="4 3" label={{ value:"$1.00 baseline", fill:C.textMuted, fontSize:11, position:"insideTopRight" }}/>
@@ -805,9 +804,9 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
         {CAT_KEYS.map(k => <FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={() => setActiveCats(p => ({ ...p, [k]:!p[k] }))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
-        <LineChart data={catCumHistory} margin={{ top:4, right:8, left:-10, bottom:0 }}>
+        <LineChart data={catCumHistory} margin={{ top:4, right:8, left:-10, bottom:44 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48} height={24}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
           <Tooltip content={<MultiTip suffix="%"/>}/>
           <ReferenceLine y={0} stroke={C.border}/>
@@ -823,9 +822,9 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
         {PROV_META.map(p => <FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={() => setActiveProvs(prev => ({ ...prev, [p.key]:!prev[p.key] }))}/>)}
       </div>
       <ResponsiveContainer width="100%" height={240}>
-        <LineChart data={provCumHistory} margin={{ top:4, right:8, left:-10, bottom:0 }}>
+        <LineChart data={provCumHistory} margin={{ top:4, right:8, left:-10, bottom:44 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+          <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48} height={24}/>
           <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`+${v}%`}/>
           <Tooltip content={<MultiTip suffix="%"/>}/>
           {PROV_KEYS.map(k => activeProvs[k] ? <Line key={k} type="monotone" dataKey={k} stroke={PROV_COLORS[k]} strokeWidth={2} dot={false} name={k} activeDot={{ r:3, stroke:C.surface, strokeWidth:2 }}/> : null)}
@@ -1094,9 +1093,9 @@ function CompoundTab({ vis, liveCpi }) {
                 ))}
               </div>
               <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
+                <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:44 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48} height={24}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:11, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v => "$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={(v,n) => [fmt(v), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
                   <Line type="monotone" dataKey="Nominal Value"  stroke={C.green}  strokeWidth={2.5} dot={false} activeDot={{ r:4 }}/>
@@ -1337,9 +1336,9 @@ function MortgageTab({ vis, liveCpi }) {
                 </div>
               )}
               <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
+                <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:44 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48} height={24}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"), n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
                   <Line type="monotone" dataKey="Balance"      stroke={C.blue}  strokeWidth={2} dot={false} name="Nominal Balance"/>
@@ -2063,9 +2062,9 @@ function RetirementTab({ vis, liveCpi }) {
                 ))}
               </div>
               <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
+                <LineChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:44 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48} height={24}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={(v,n)=>["$"+Math.round(v).toLocaleString("en-CA"),n]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
                   <ReferenceLine y={0} stroke={C.border}/>
@@ -2101,10 +2100,10 @@ function RetirementTab({ vis, liveCpi }) {
               <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Balance Drawdown</div>
               <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Savings balance year by year at max nominal withdrawal</div>
               <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
+                <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:44 }}>
                   <defs><linearGradient id="retGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.blue} stopOpacity={0.2}/><stop offset="95%" stopColor={C.blue} stopOpacity={0}/></linearGradient></defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                  <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48} height={24}/>
                   <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
                   <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Balance"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
                   <Area type="monotone" dataKey="Balance" stroke={C.blue} strokeWidth={2} fill="url(#retGrad)" dot={false}/>
@@ -2211,10 +2210,10 @@ function TFSACalc() {
             <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative Room by Year</div>
             <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Total TFSA room accumulated since eligibility</div>
             <ResponsiveContainer width="100%" height={180}>
-              <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:0 }}>
+              <AreaChart data={result.chartData} margin={{ top:4, right:8, left:-10, bottom:44 }}>
                 <defs><linearGradient id="tfsaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.green} stopOpacity={0.2}/><stop offset="95%" stopColor={C.green} stopOpacity={0}/></linearGradient></defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-                <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48}/>
+                <XAxis dataKey="year" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48} height={24}/>
                 <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>"$"+Math.round(v/1000)+"k"}/>
                 <Tooltip formatter={v=>["$"+Math.round(v).toLocaleString("en-CA"),"Cumulative Room"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
                 <Area type="stepAfter" dataKey="Cumulative Room" stroke={C.green} strokeWidth={2} fill="url(#tfsaGrad)" dot={false}/>
@@ -2355,178 +2354,6 @@ function ContributionTab({ vis }) {
 }
 
 
-// ── Food Prices Tab ────────────────────────────────────────────────────────
-// Food subcategory CPI vectors — table 18-10-0004-01 (same as main CPI)
-// These are proper CPI indexes suitable for YoY comparison
-const GROCERY_VECTORS = {
-  "Meat":                  41690985,
-  "Fish & seafood":        41690998,
-  "Dairy & eggs":          41691011,
-  "Bread & grains":      41691024,
-  "Fresh vegetables":      41691049,
-  "Fresh fruit":           41691037,
-  "Food from stores":      41690974,
-  "Food from restaurants": 41691062,
-};
-const GROCERY_COLORS = {
-  "Meat":"#E05A4A","Fish & seafood":"#6B9FE4","Dairy & eggs":"#F5C842",
-  "Bread & grains":"#F0814A","Fresh vegetables":"#3ECFA0","Fresh fruit":"#B07FE8",
-  "Other food":"#4AC8E8","Food from stores":"#F5C842","Food from restaurants":"#E05A4A",
-};
-
-function GroceryTab({ vis }) {
-  const [grocData, setGrocData] = useState(null);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(false);
-  const [active,   setActive]   = useState(Object.fromEntries(Object.keys(GROCERY_VECTORS).filter(k=>k!=="Food from stores"&&k!=="Food from restaurants").map(k=>[k,true])));
-  const [range,    setRange]    = useState("5Y");
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const ids = Object.values(GROCERY_VECTORS);
-        const res = await fetch(`${STATCAN_BASE}/getDataFromVectorsAndLatestNPeriods`, {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify(ids.map(id => ({ vectorId:id, latestN:600 }))),
-        });
-        if (!res.ok) throw new Error();
-        const json   = await res.json();
-        const rawMap = parseBatchWDS(json);
-
-        // Build monthly YoY for each category
-        const result = {};
-        Object.entries(GROCERY_VECTORS).forEach(([name, vid]) => {
-          const raw = rawMap[vid];
-          if (raw?.length) result[name] = computeYoY(raw);
-        });
-        setGrocData(result);
-      } catch { setError(true); }
-      finally  { setLoading(false); }
-    }
-    load();
-  }, []); // eslint-disable-line
-
-  const fmt = v => v != null ? `${v > 0 ? "+" : ""}${v.toFixed(1)}%` : "—";
-  const RANGE_N = { "2Y":24, "5Y":60, "10Y":120 };
-
-  // Build chart data — merge all categories by date
-  const chartData = useMemo(() => {
-    if (!grocData) return [];
-    const keys = Object.keys(GROCERY_VECTORS).filter(k=>k!=="Food from stores"&&k!=="Food from restaurants");
-    const allDates = [...new Set(keys.flatMap(k => (grocData[k]||[]).map(p=>p.iso)))].sort();
-    const n = RANGE_N[range] || 60;
-    return allDates.slice(-n).map(iso => {
-      const row = { date: fmtDate(iso), iso };
-      keys.forEach(k => {
-        const pt = (grocData[k]||[]).find(p=>p.iso===iso);
-        if (pt) row[k] = pt.value;
-      });
-      return row;
-    });
-  }, [grocData, range]);
-
-  // Latest values for snapshot
-  const latest = useMemo(() => {
-    if (!grocData) return {};
-    const out = {};
-    Object.keys(GROCERY_VECTORS).forEach(k => {
-      const series = grocData[k];
-      if (series?.length) out[k] = series[series.length-1].value;
-    });
-    return out;
-  }, [grocData]);
-
-  const sortedCategories = Object.keys(GROCERY_VECTORS)
-    .filter(k=>k!=="Food from stores"&&k!=="Food from restaurants")
-    .sort((a,b) => (latest[b]||0) - (latest[a]||0));
-
-  const fmtDate2 = iso => { const d=new Date(iso+"T12:00:00"); return `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]} ${d.getFullYear()}`; };
-  const latestDate = grocData ? Object.values(grocData).find(s=>s?.length)?.[Object.values(grocData).find(s=>s?.length)?.length-1]?.date : null;
-
-  return (
-    <div className={`reveal ${vis?"in":""}`}>
-      {loading ? (
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:300, gap:16 }}>
-          <div className="spin" style={{ width:32, height:32 }}/>
-          <p style={{ color:C.textMuted, fontSize:13 }}>Retrieving live data.</p>
-        </div>
-      ) : error ? (
-        <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
-          <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:12 }}/>
-          <div>Statistics Canada grocery data unavailable. Please try again later.</div>
-        </div>
-      ) : (<>
-        {/* Hero */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px", marginBottom:16 }}>
-          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
-            Canadian Food Prices · Year-over-Year · {latestDate}
-          </div>
-          <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,44px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 16px" }}>
-            Canadian Food Price Inflation
-          </h1>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-            {[
-              { label:"Groceries & Food at Home", key:"Food from stores" },
-              { label:"Restaurants & Takeout",     key:"Food from restaurants" },
-            ].map(({label,key},i) => (
-              <div key={i} style={{ background:C.surface2, borderRadius:8, padding:"12px 16px" }}>
-                <div style={{ fontSize:11, color:C.textMuted, fontWeight:600, marginBottom:4 }}>{label}</div>
-                <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:28, fontWeight:700, color:valColor(latest[key]||0), letterSpacing:"-.5px" }}>
-                  {fmt(latest[key])}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop:10, fontSize:11, color:C.textMuted }}>
-            Source: Statistics Canada · Table 18-10-0004-01
-          </div>
-        </div>
-
-        {/* Snapshot cards */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))", gap:8, marginBottom:16 }}>
-          {sortedCategories.map((k,i) => (
-            <div key={i} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:"14px 12px" }}>
-              <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>{k}</div>
-              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:24, fontWeight:700, color:valColor(latest[k]||0), letterSpacing:"-.3px" }}>
-                {fmt(latest[k])}
-              </div>
-              <div style={{ fontSize:11, color:valColor(latest[k]||0), marginTop:3 }}>
-                {(latest[k]||0) > BOC_TARGET ? `${((latest[k]||0) - BOC_TARGET).toFixed(1)}pp above BoC target` : "Within BoC target range"}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Trend chart */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:4 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12, flexWrap:"wrap", gap:12 }}>
-            <div>
-              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Food Price Trends</div>
-              <div style={{ fontSize:11, color:C.textSecondary }}>Year-over-year change · Statistics Canada table 18-10-0004-01</div>
-            </div>
-            <div style={{ display:"flex", gap:8 }}>
-              {["2Y","5Y","10Y"].map(r=><button key={r} className={`rb ${range===r?"on":""}`} onClick={()=>setRange(r)}>{r}</button>)}
-            </div>
-          </div>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:16 }}>
-            {sortedCategories.map(k=><FilterPill key={k} label={k} color={GROCERY_COLORS[k]} active={active[k]} onClick={()=>setActive(p=>({...p,[k]:!p[k]}))}/>)}
-          </div>
-          <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={chartData} margin={{ top:4, right:8, left:-20, bottom:36 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={55} height={36}/>
-              <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
-              <Tooltip content={<MultiTip/>}/>
-              <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3"/>
-              <ReferenceLine y={0} stroke={C.border}/>
-              {sortedCategories.map(k=>active[k]?<Line key={k} type="monotone" dataKey={k} stroke={GROCERY_COLORS[k]} strokeWidth={2} dot={false} activeDot={{r:3}}/>:null)}
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </>)}
-    </div>
-  );
-}
 
 // ── Exchange Rates Tab ────────────────────────────────────────────────────────
 const FX_SERIES = {
@@ -2613,22 +2440,23 @@ function ExchangeRatesTab({ vis }) {
           <div>Bank of Canada exchange rate data unavailable. Please try again later.</div>
         </div>
       ) : (<>
-        {/* Hero */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px", marginBottom:16 }}>
-          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
-            Canadian Dollar Exchange Rates · {latest?.date}
+        {/* Hero — borderless */}
+        <div style={{ marginBottom:24 }}>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16, display:"flex", alignItems:"center", gap:8 }}>
+            <span style={{ width:6, height:6, borderRadius:"50%", background:C.green, display:"inline-block" }}/>
+            CAD Exchange Rates · {latest?.date} · Bank of Canada Valet API
           </div>
-          <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(22px,5vw,38px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 10px" }}>
-            CAD vs Major Currencies
-          </h1>
-          <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>
-            Source: Bank of Canada Valet API · Daily rates published by 16:30 ET
+          <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(48px,10vw,80px)", fontWeight:700, lineHeight:.95, letterSpacing:"-2px", color:C.textPrimary, marginBottom:12 }}>
+            CAD vs World
+          </div>
+          <div style={{ fontSize:13, color:C.textSecondary }}>
+            Live monthly averages · 1 foreign currency = X Canadian dollars
           </div>
         </div>
 
-        {/* Currency rate table */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:16 }}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:16 }}>Live Rates — 1 Foreign Currency = X CAD</div>
+        {/* Currency rate table — borderless */}
+        <div style={{ marginBottom:24 }}>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Live Rates</div>
           <div style={{ overflowX:"auto", WebkitOverflowScrolling:"touch" }}>
             <table style={{ width:"100%", borderCollapse:"collapse", minWidth:360 }}>
               <thead>
@@ -2680,8 +2508,8 @@ function ExchangeRatesTab({ vis }) {
           </div>
         </div>
 
-        {/* Historical chart for selected currency */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:4 }}>
+        {/* Historical chart for selected currency — borderless */}
+        <div style={{ marginBottom:4 }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:12 }}>
             <div>
               <div style={{ fontSize:14, fontWeight:700 }}>{FX_SERIES[selected].flag} {FX_SERIES[selected].label} / CAD History</div>
@@ -2697,7 +2525,7 @@ function ExchangeRatesTab({ vis }) {
             </div>
           )}
           <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={chart} margin={{ top:4, right:8, left:-10, bottom:36 }}>
+            <AreaChart data={chart} margin={{ top:4, right:8, left:-10, bottom:44 }}>
               <defs>
                 <linearGradient id="fxGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%"  stopColor={FX_SERIES[selected].color} stopOpacity={0.2}/>
@@ -2705,7 +2533,7 @@ function ExchangeRatesTab({ vis }) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={55} height={36}/>
+              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:2 }} axisLine={{ stroke:C.border }} tickLine={false} interval="preserveStartEnd" minTickGap={48} height={44}/>
               <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>`$${v.toFixed(2)}`} domain={["auto","auto"]}/>
               <Tooltip formatter={(v,n)=>[`$${v.toFixed(4)} CAD`,`1 ${selected}`]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
               <Area type="monotone" dataKey="rate" stroke={FX_SERIES[selected].color} strokeWidth={2} fill="url(#fxGrad)" dot={false}/>
@@ -2787,40 +2615,35 @@ function RealWagesTab({ vis }) {
           <div>Statistics Canada wage data unavailable. Please try again later.</div>
         </div>
       ) : (<>
-        {/* Hero */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, marginBottom:16, overflow:"hidden" }}>
-          <div style={{ padding:"24px 20px 0" }}>
-            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
-              Canadian Wages vs Inflation · {latest?.date}
-            </div>
-            <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,48px)", fontWeight:700, letterSpacing:"-.5px", margin:"0 0 14px" }}>
-              <span style={{ color:C.white }}>Are wages </span>
-              <span style={{ color: latest?.realGain >= 0 ? C.green : C.red }}>
-                {latest?.realGain >= 0 ? "keeping up" : "falling behind"}
-              </span>
-              <span style={{ color:C.white }}> with inflation?</span>
-            </h1>
-            {latest && (
-              <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:24 }}>
-                <span style={{ fontSize:12, fontWeight:700, color:C.blue, background:C.blueBg, border:`1px solid ${C.blue}25`, borderRadius:6, padding:"4px 10px" }}>
-                  Wages: +{latest.wages.toFixed(1)}% YoY
-                </span>
-                <span style={{ fontSize:12, fontWeight:700, color:valColor(latest.cpi), background:valBg(latest.cpi), border:`1px solid ${valColor(latest.cpi)}25`, borderRadius:6, padding:"4px 10px" }}>
-                  Inflation: +{latest.cpi.toFixed(1)}% YoY
-                </span>
-                <span style={{ fontSize:12, fontWeight:700, color:latest.realGain>=0?C.green:C.red, background:latest.realGain>=0?C.greenBg:C.redBg, border:`1px solid ${latest.realGain>=0?C.green:C.red}25`, borderRadius:6, padding:"4px 10px" }}>
-                  Real gain: {latest.realGain>=0?"+":""}{latest.realGain.toFixed(1)}pp
-                </span>
-              </div>
-            )}
+        {/* Hero — borderless, number dominates */}
+        <div style={{ marginBottom:24 }}>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16, display:"flex", alignItems:"center", gap:8 }}>
+            <span style={{ width:6, height:6, borderRadius:"50%", background:C.green, display:"inline-block" }}/>
+            Canadian Wages vs Inflation · {latest?.date} · Statistics Canada
           </div>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(90px,1fr))", borderTop:`1px solid ${C.border}` }}>
+          <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:12 }}>
+            <div>
+              <div style={{ fontSize:11, color:C.textMuted, marginBottom:4 }}>Real wage change</div>
+              <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(64px,12vw,104px)", fontWeight:700, lineHeight:.9, letterSpacing:"-2.5px", color:latest?.realGain>=0?C.green:C.red }}>
+                {latest?.realGain>=0?"+":""}{latest?.realGain?.toFixed(1)}pp
+              </div>
+            </div>
+            <div style={{ paddingBottom:10, display:"flex", flexDirection:"column", gap:8 }}>
+              <span style={{ fontSize:13, fontWeight:600, color:C.blue }}>
+                Wages +{latest?.wages?.toFixed(1)}%
+              </span>
+              <span style={{ fontSize:13, fontWeight:600, color:valColor(latest?.cpi||0) }}>
+                Inflation +{latest?.cpi?.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+          <div style={{ display:"flex", gap:24, flexWrap:"wrap", paddingTop:16, borderTop:`1px solid ${C.border}` }}>
             {[
-              { label:"Wage Growth",   val:`${latest?.wages?.toFixed(1)}%`,   color:C.blue  },
-              { label:"CPI Inflation", val:`${latest?.cpi?.toFixed(1)}%`,     color:valColor(latest?.cpi||0) },
-              { label:"Real Gain/Loss",val:`${latest?.realGain>=0?"+":""}${latest?.realGain?.toFixed(1)}pp`, color:latest?.realGain>=0?C.green:C.red },
+              { label:"Wage Growth",    val:`${latest?.wages?.toFixed(1)}%`,   color:C.blue },
+              { label:"CPI Inflation",  val:`${latest?.cpi?.toFixed(1)}%`,     color:valColor(latest?.cpi||0) },
+              { label:"Real Gain/Loss", val:`${latest?.realGain>=0?"+":""}${latest?.realGain?.toFixed(1)}pp`, color:latest?.realGain>=0?C.green:C.red },
             ].map((s,i)=>(
-              <div key={i} style={{ padding:"14px 16px", borderRight:"none" }}>
+              <div key={i}>
                 <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
                 <div style={{ fontSize:20, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
               </div>
@@ -2829,10 +2652,10 @@ function RealWagesTab({ vis }) {
         </div>
 
         {/* Wages vs CPI chart */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:16 }}>
+        <div style={{ marginBottom:24 }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:12 }}>
             <div>
-              <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Wage Growth vs CPI Inflation</div>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em" }}>Wage Growth vs CPI Inflation</div>
               <div style={{ fontSize:11, color:C.textSecondary }}>Year-over-year % · Source: Statistics Canada table 14-10-0063-01</div>
             </div>
             <div style={{ display:"flex", gap:8 }}>
@@ -2847,9 +2670,9 @@ function RealWagesTab({ vis }) {
             ))}
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={chart} margin={{ top:4, right:8, left:-20, bottom:36 }}>
+            <LineChart data={chart} margin={{ top:4, right:8, left:-20, bottom:44 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:2 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={48} height={44}/>
               <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
               <Tooltip content={<MultiTip suffix="%"/>}/>
               <ReferenceLine y={0} stroke={C.border}/>
@@ -2861,11 +2684,11 @@ function RealWagesTab({ vis }) {
         </div>
 
         {/* Real wage gain/loss chart */}
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 16px", marginBottom:4 }}>
-          <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Real Wage Gain / Loss</div>
-          <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Wage growth minus inflation — positive means workers are gaining purchasing power</div>
+        <div style={{ marginBottom:4 }}>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Real Wage Gain / Loss</div>
+          <div style={{ fontSize:11, color:C.textMuted, marginBottom:16 }}>Wages minus inflation · positive = gaining purchasing power</div>
           <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={chart} margin={{ top:4, right:8, left:-20, bottom:36 }}>
+            <AreaChart data={chart} margin={{ top:4, right:8, left:-20, bottom:44 }}>
               <defs>
                 <linearGradient id="wageGainGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%"  stopColor={C.green} stopOpacity={0.25}/>
@@ -2877,7 +2700,7 @@ function RealWagesTab({ vis }) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
-              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+              <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:2 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={48} height={44}/>
               <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}pp`}/>
               <Tooltip formatter={(v,n)=>[`${v>0?"+":""}${v.toFixed(2)}pp`,"Real Wage Change"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
               <ReferenceLine y={0} stroke={C.border2} strokeDasharray="4 3" label={{ value:"Break even", fill:C.textMuted, fontSize:11, position:"insideTopRight" }}/>
@@ -2901,7 +2724,6 @@ const PAGE_META = [
   { path:"/",                    title:"Canadianflation — Canada's Independent Inflation Tracker",                              description:"Track Canadian inflation in real time. Live CPI data from Statistics Canada, purchasing power history, exchange rates, food prices, and free financial calculators." },
   { path:"/retirement-calculator",   title:"Canadian Retirement Calculator — How Long Will Your Money Last? | Canadianflation",    description:"Calculate how long your retirement savings will last given inflation, withdrawals, and investment returns. Uses Statistics Canada CPI data." },
   { path:"/contribution-calculator", title:"RRSP & TFSA Contribution Room Calculator Canada | Canadianflation",                    description:"Calculate your RRSP deduction limit and TFSA contribution room for 2024. Free Canadian retirement account calculator." },
-  { path:"/grocery-prices",          title:"Canadian Food Price Tracker — Food Inflation by Category | Canadianflation",          description:"Track Canadian grocery price inflation by category — meat, dairy, bakery, vegetables and more. Live data from Statistics Canada." },
   { path:"/exchange-rates",          title:"CAD Exchange Rates — Canadian Dollar vs Major Currencies | Canadianflation",              description:"Live and historical Canadian dollar exchange rates vs USD, EUR, GBP, JPY and more. Sourced from the Bank of Canada Valet API." },
   { path:"/real-wages",              title:"Canadian Real Wages vs Inflation — Are You Keeping Up? | Canadianflation",               description:"Compare Canadian wage growth against CPI inflation. Are workers keeping up with the cost of living? Live data from Statistics Canada." },
 ];
@@ -2916,7 +2738,6 @@ const ROUTES = {
   "/mortgage-calculator":    4,
   "/retirement-calculator":  6,
   "/contribution-calculator":7,
-  "/grocery-prices":         8,
   "/exchange-rates":         9,
   "/real-wages":             10,
 };
@@ -3032,7 +2853,6 @@ export default function App() {
   const TRACK_PAGES = [
     { label:"Inflation Rates", path:"/inflation-rates",  idx:0,  desc:"CPI by category & province"    },
     { label:"Purchasing Power",path:"/purchasing-power", idx:1,  desc:"Dollar erosion over time"      },
-    { label:"Food Prices",     path:"/grocery-prices",   idx:8,  desc:"Grocery inflation by category" },
     { label:"Real Wages",      path:"/real-wages",       idx:10, desc:"Are wages keeping up?"         },
     { label:"Exchange Rates",  path:"/exchange-rates",   idx:9,  desc:"CAD vs major currencies"       },
   ];
@@ -3044,7 +2864,7 @@ export default function App() {
   ];
     const closeAll = () => { setDataDropOpen(false); setCalcDropOpen(false); setMobileOpen(false); };
 
-  const isTrackActive = [0,1,8,9,10].includes(page);
+  const isTrackActive = [0,1,9,10].includes(page);
   const isToolsActive = [3,4,6,7].includes(page);
 
   return (
@@ -3207,7 +3027,6 @@ export default function App() {
           page === 4 ? <MortgageTab          vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
           page === 6  ? <RetirementTab        vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
           page === 7  ? <ContributionTab      vis={vis}/> :
-          page === 8  ? <GroceryTab           vis={vis}/> :
           page === 9  ? <ExchangeRatesTab     vis={vis}/> :
           page === 10 ? <RealWagesTab         vis={vis}/> :
                         <ContributionTab      vis={vis}/>
