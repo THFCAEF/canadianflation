@@ -341,9 +341,10 @@ function HomepageHero({ navigate, cur }) {
   const LINKS = [
     { label:"Inflation Rates",    desc:"Track CPI by category and province in real time.",         path:"/inflation-rates",     idx:0, icon:"📊" },
     { label:"Purchasing Power",   desc:"How much value has your dollar lost?",                        path:"/purchasing-power",    idx:1, icon:"💸" },
+    { label:"Taylor Rule",        desc:"Is the Bank of Canada ahead or behind the curve?",          path:"/taylor-rule",         idx:2, icon:"📐" },
     { label:"Interest Calculator",desc:"Model how compound interest grows your savings.",           path:"/interest-calculator", idx:3, icon:"📈" },
     { label:"Mortgage Calculator",desc:"Model payments, transfer tax, and borrowing power.",        path:"/mortgage-calculator", idx:4,  icon:"🏠" },
-    { label:"Food Prices",     desc:"Grocery inflation by category — what's getting more expensive.", path:"/grocery-prices",         idx:8,  icon:"🛒" },
+    { label:"Grocery Prices",     desc:"Food inflation by category — what's getting more expensive.", path:"/grocery-prices",         idx:8,  icon:"🛒" },
     { label:"Exchange Rates",     desc:"CAD vs USD, EUR, GBP, JPY and more — live from BoC.",        path:"/exchange-rates",         idx:9,  icon:"💱" },
     { label:"Real Wages",         desc:"Are Canadian wages keeping up with inflation?",               path:"/real-wages",              idx:10, icon:"💼" },
   ];
@@ -796,6 +797,163 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
       </ResponsiveContainer>
     </div>
   </>);
+}
+
+// ── TAB 3: Taylor Rule ────────────────────────────────────────────────────────
+function TaylorTab({ data, vis, rateData }) {
+  const [range, setRange] = useState("10Y");
+
+  const chartData = useMemo(() => {
+    if (!data?.length) return [];
+    const cpiByMonth = {};
+    data.forEach(pt => { cpiByMonth[pt.iso.slice(0,7)] = pt.value; });
+    const rateByMonth = {};
+    rateData.forEach(pt => { rateByMonth[pt.iso.slice(0,7)] = pt.rate; });
+    const allMonths = [...new Set([...Object.keys(cpiByMonth), ...Object.keys(rateByMonth)])].sort();
+    return allMonths.map(ym => {
+      const cpi    = cpiByMonth[ym] ?? null;
+      const actual = rateByMonth[ym] ?? null;
+      const taylor = cpi != null ? taylorRate(cpi) : null;
+      const gap    = actual != null && taylor != null ? +(actual - taylor).toFixed(2) : null;
+      return { date:fmtDate(ym+"-01"), iso:ym+"-01", cpi, actual, taylor, gap };
+    }).filter(r => r.cpi != null || r.actual != null);
+  }, [data, rateData]);
+
+  const sliced  = chartData.slice(-Math.min(RANGES[range], chartData.length));
+  const ti = range==="2Y"?2:range==="5Y"?5:range==="10Y"?11:range==="25Y"?28:Math.max(1,Math.floor(sliced.length/11));
+
+  const noRateData = rateData.length === 0;
+
+  return (<>
+    {/* Main comparison chart */}
+    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"22px 20px 16px", marginBottom:16, transitionDelay:".06s" }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16, flexWrap:"wrap", gap:10 }}>
+        <div>
+          <div style={{ fontSize:14, fontWeight:700 }}>BoC Rate vs Taylor Rule Prescription</div>
+          <div style={{ fontSize:10, color:C.textSecondary, marginTop:2 }}>
+            {noRateData ? "Taylor Rule prescription from live CPI · BoC rate unavailable" : "Actual overnight rate (blue) vs Taylor Rule (purple) · Source: Bank of Canada Valet API"}
+          </div>
+        </div>
+        <div style={{ display:"flex", gap:5, flexWrap:"wrap" }}>
+          {Object.keys(RANGES).map(r => <button key={r} className={`rb ${range===r?"on":""}`} onClick={() => setRange(r)}>{r}</button>)}
+        </div>
+      </div>
+      <div style={{ display:"flex", gap:16, marginBottom:12, flexWrap:"wrap" }}>
+        {[
+          { color:C.blue,   label:"Actual BoC Rate",         show:!noRateData },
+          { color:C.purple, label:"Taylor Rule Prescription", show:true },
+          { color:C.yellow, label:"CPI Inflation",            show:true },
+        ].filter(l => l.show).map((l,i) => (
+          <div key={i} style={{ display:"flex", alignItems:"center", gap:6, fontSize:11, color:C.textSecondary }}>
+            <span style={{ width:20, height:2, background:l.color, borderRadius:1, display:"inline-block" }}/>
+            {l.label}
+          </div>
+        ))}
+      </div>
+      <ResponsiveContainer width="100%" height={260}>
+        <LineChart data={sliced} margin={{ top:4, right:8, left:-20, bottom:0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+          <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+          <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`} domain={["auto","auto"]}/>
+          <Tooltip content={<MultiTip suffix="%"/>}/>
+          <ReferenceLine y={BOC_TARGET} stroke={C.border2} strokeDasharray="4 3" label={{ value:"2% target", fill:C.textMuted, fontSize:9, position:"insideTopRight" }}/>
+          {!noRateData && <Line type="monotone" dataKey="actual" stroke={C.blue}   strokeWidth={2.5} dot={false} name="BoC Rate"     activeDot={{ r:4, fill:C.blue,   stroke:C.surface, strokeWidth:2 }}/>}
+          <Line type="monotone" dataKey="taylor" stroke={C.purple} strokeWidth={2}   dot={false} name="Taylor Rule"  strokeDasharray="5 3" activeDot={{ r:4, fill:C.purple, stroke:C.surface, strokeWidth:2 }}/>
+          <Line type="monotone" dataKey="cpi"    stroke={C.yellow} strokeWidth={1.5} dot={false} name="CPI Inflation" activeDot={{ r:3, fill:C.yellow, stroke:C.surface, strokeWidth:2 }}/>
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+
+    {/* Gap chart */}
+    {!noRateData && (
+      <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:16, transitionDelay:".12s" }}>
+        <div style={{ fontSize:14, fontWeight:700, marginBottom:2 }}>Policy Gap</div>
+        <div style={{ fontSize:10, color:C.textSecondary, marginBottom:16 }}>
+          BoC rate minus Taylor Rule — positive = BoC tighter than Taylor suggests, negative = easier
+        </div>
+        <ResponsiveContainer width="100%" height={180}>
+          <AreaChart data={sliced} margin={{ top:4, right:8, left:-20, bottom:0 }}>
+            <defs>
+              <linearGradient id="gapGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%"  stopColor={C.green} stopOpacity={0.2}/>
+                <stop offset="95%" stopColor={C.green} stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
+            <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:9, fontWeight:500, angle:-35, textAnchor:"end", dy:4 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={55} height={36}/>
+            <YAxis tick={{ fill:C.textMuted, fontSize:9, fontWeight:600 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}pp`}/>
+            <Tooltip content={<SingleTip suffix="pp" note={v => v > 0 ? "BoC tighter than Taylor suggests" : "BoC easier than Taylor suggests"}/>}/>
+            <ReferenceLine y={0} stroke={C.border2} strokeDasharray="4 3"/>
+            <Area type="monotone" dataKey="gap" stroke={C.green} strokeWidth={2} fill="url(#gapGrad)" dot={false} name="Policy Gap" activeDot={{ r:4, fill:C.green, stroke:C.surface, strokeWidth:2 }}/>
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    )}
+
+    {/* Explainer */}
+    <div className={`reveal ${vis?"in":""}`} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"20px 18px", marginBottom:4, transitionDelay:".18s" }}>
+      <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>About the Taylor Rule</div>
+      {[
+        ["Formula used",       "i = 1.5π + 1.0  (simplified from Taylor 1993, output gap = 0)"],
+        ["What it means",      "For every 1pp CPI rises above 2%, the rule suggests raising rates 1.5pp"],
+        ["Neutral real rate",  "r* ≈ 0.5% (Bank of Canada's current estimate for Canada)"],
+        ["Output gap",         "Assumed neutral (0) here — adding real GDP data would sharpen the estimate"],
+        ["Original Taylor '93","r = p + 0.5·y + 0.5·(p − 2%) + 2% — assumes US neutral rate of 2%"],
+        ["Why it differs",     "BoC uses its own models and mandate; Taylor Rule is a useful benchmark, not their actual rule"],
+        ["Rate data source",   "Bank of Canada Valet API · series STATIC_ATABLE_V39079 (overnight target rate)"],
+        ["CPI data source",    "Statistics Canada · table 18-10-0004-01 · vector v41690973"],
+      ].map(([label, val], i, arr) => (
+        <div key={i} style={{ display:"flex", gap:12, padding:"8px 0", borderBottom:i<arr.length-1?`1px solid ${C.border}`:"none", flexWrap:"wrap" }}>
+          <span style={{ fontSize:11, fontWeight:700, color:C.textSecondary, minWidth:150, flexShrink:0 }}>{label}</span>
+          <span style={{ fontSize:11, color:C.textPrimary, flex:1 }}>{val}</span>
+        </div>
+      ))}
+    </div>
+  </>);
+}
+
+// ── Shared input field (defined outside components to avoid remount glitch) ──
+// Format number string progressively with commas as user types
+// Preserves trailing decimal point and decimal digits while typing
+function fmtInput(v) {
+  if (v === "" || v == null) return "";
+  const s = String(v).replace(/,/g, "");
+  const trailingDot = s.endsWith(".");
+  const parts = s.split(".");
+  const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const decPart = parts.length > 1 ? "." + parts[1] : "";
+  const result = intPart + decPart + (trailingDot && parts.length === 1 ? "." : "");
+  return result;
+}
+
+function parseInput(v) {
+  return String(v).replace(/,/g, "");
+}
+
+function CalcField({ label, value, onChange, placeholder, hint, isRate }) {
+  const handleChange = e => {
+    const raw = e.target.value.replace(/,/g, "");
+    // Only allow digits and one decimal point
+    if (raw !== "" && !/^-?\d*\.?\d*$/.test(raw)) return;
+    onChange(raw);
+  };
+  const displayVal = isRate ? value : fmtInput(value);
+  return (
+    <div style={{ marginBottom:16 }}>
+      <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>
+        {label}
+      </div>
+      {hint && <div style={{ fontSize:11, color:C.textSecondary, marginBottom:6 }}>{hint}</div>}
+      <input
+        type="text"
+        inputMode="decimal"
+        value={displayVal}
+        onChange={handleChange}
+        placeholder={placeholder}
+        style={{ width:"100%", background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"10px 14px", fontSize:14, color:C.textPrimary, fontFamily:"inherit", outline:"none" }}
+      />
+    </div>
+  );
 }
 
 // ── TAB 4: Interest Calculator ──────────────────────────────────────
@@ -2276,7 +2434,7 @@ function ContributionTab({ vis }) {
 }
 
 
-// ── Food Prices Tab ────────────────────────────────────────────────────────
+// ── Grocery Prices Tab ────────────────────────────────────────────────────────
 // Data: StatCan table 18-10-0245-01 — food subcategories CPI
 // Series use same WDS pattern as main CPI fetch
 // Food subcategory CPI vectors — table 18-10-0004-01 (same as main CPI)
@@ -2382,7 +2540,7 @@ function GroceryTab({ vis }) {
         {/* Hero */}
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px 20px", marginBottom:16 }}>
           <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:8 }}>
-            Canadian Food Prices · Year-over-Year · {latestDate}
+            Canadian Grocery Prices · Year-over-Year · {latestDate}
           </div>
           <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(28px,5vw,44px)", fontWeight:700, color:C.white, letterSpacing:"-.5px", margin:"0 0 16px" }}>
             Food Inflation by Category
@@ -2821,10 +2979,10 @@ const PAGE_META = [
   { path:"/taylor-rule",         title:"Taylor Rule vs Bank of Canada Rate | Canadianflation",                                  description:"Compare the Bank of Canada overnight rate against the Taylor Rule prescription. Is Canadian monetary policy too tight or too easy?" },
   { path:"/interest-calculator", title:"Canadian Compound Interest Calculator | Canadianflation",                               description:"Calculate how your savings or investments grow with compound interest. Adjust rate, frequency, contributions, and time horizon." },
   { path:"/mortgage-calculator", title:"Canadian Mortgage Calculator — Payment, Tax & Borrowing | Canadianflation",             description:"Calculate Canadian mortgage payments, provincial property transfer tax, and borrowing capacity. Covers all 10 provinces with 2024 tax brackets." },
-  { path:"/",                    title:"Canadianflation — Canada's Independent Inflation Tracker",                              description:"Track Canadian inflation in real time. Live CPI data from Statistics Canada, purchasing power history, exchange rates, food prices, and free financial calculators." },
+  { path:"/",                    title:"Canadianflation — Canada's Independent Inflation Tracker",                              description:"Track Canadian inflation in real time. Live CPI data from Statistics Canada, purchasing power history, Taylor Rule analysis, and free financial calculators." },
   { path:"/retirement-calculator",   title:"Canadian Retirement Calculator — How Long Will Your Money Last? | Canadianflation",    description:"Calculate how long your retirement savings will last given inflation, withdrawals, and investment returns. Uses Statistics Canada CPI data." },
   { path:"/contribution-calculator", title:"RRSP & TFSA Contribution Room Calculator Canada | Canadianflation",                    description:"Calculate your RRSP deduction limit and TFSA contribution room for 2024. Free Canadian retirement account calculator." },
-  { path:"/grocery-prices",          title:"Canadian Food Price Tracker — Food Inflation by Category | Canadianflation",          description:"Track Canadian grocery price inflation by category — meat, dairy, bakery, vegetables and more. Live data from Statistics Canada." },
+  { path:"/grocery-prices",          title:"Canadian Grocery Price Tracker — Food Inflation by Category | Canadianflation",          description:"Track Canadian grocery price inflation by category — meat, dairy, bakery, vegetables and more. Live data from Statistics Canada." },
   { path:"/exchange-rates",          title:"CAD Exchange Rates — Canadian Dollar vs Major Currencies | Canadianflation",              description:"Live and historical Canadian dollar exchange rates vs USD, EUR, GBP, JPY and more. Sourced from the Bank of Canada Valet API." },
   { path:"/real-wages",              title:"Canadian Real Wages vs Inflation — Are You Keeping Up? | Canadianflation",               description:"Compare Canadian wage growth against CPI inflation. Are workers keeping up with the cost of living? Live data from Statistics Canada." },
 ];
@@ -2834,7 +2992,7 @@ const ROUTES = {
   "/":                       5,
   "/inflation-rates":        0,
   "/purchasing-power":       1,
-  "/taylor-rule":            5,
+  "/taylor-rule":            2,
   "/interest-calculator":    3,
   "/mortgage-calculator":    4,
   "/retirement-calculator":  6,
@@ -2850,6 +3008,7 @@ export default function App() {
   const [rawCpi,      setRawCpi]      = useState([]);
   const [catHistory,  setCatHistory]  = useState([]);
   const [provHistory, setProvHistory] = useState([]);
+  const [rateData,    setRateData]    = useState([]);
   const [loading,     setLoading]     = useState(true);
   const [error,       setError]       = useState(false);
   const [vis,         setVis]         = useState(false);
@@ -2885,6 +3044,16 @@ export default function App() {
       return;
     }
 
+    // ── 2. Bank of Canada overnight rate (JSON endpoint) ─────────────────────
+    try {
+      const bocRes = await fetch(BOC_VALET_JSON);
+      if (!bocRes.ok) throw new Error("BoC fetch failed");
+      const bocJson = await bocRes.json();
+      const parsed  = parseBoCValetJSON(bocJson);
+      if (parsed.length > 12) setRateData(parsed);
+    } catch {
+      // BoC unavailable — Taylor tab shows CPI-only mode
+    }
 
     // ── 3. StatCan annual CPI 1914–present (table 18-10-0005-01) ─────────────
     try {
@@ -2951,24 +3120,30 @@ export default function App() {
   const [mobileOpen,   setMobileOpen]   = useState(false);
   const [dataDropOpen, setDataDropOpen] = useState(false);
   const [calcDropOpen, setCalcDropOpen] = useState(false);
+  const [costDropOpen, setCostDropOpen] = useState(false);
 
-  const TRACK_PAGES = [
-    { label:"Inflation Rates", path:"/inflation-rates",  idx:0,  desc:"CPI by category & province"    },
-    { label:"Purchasing Power",path:"/purchasing-power", idx:1,  desc:"Dollar erosion over time"      },
-    { label:"Food Prices",     path:"/grocery-prices",   idx:8,  desc:"Grocery inflation by category" },
-    { label:"Real Wages",      path:"/real-wages",       idx:10, desc:"Are wages keeping up?"         },
-    { label:"Exchange Rates",  path:"/exchange-rates",   idx:9,  desc:"CAD vs major currencies"       },
+  const DATA_PAGES = [
+    { label:"Inflation Rates",   path:"/inflation-rates",  idx:0, desc:"CPI by category & province" },
+    { label:"Purchasing Power",  path:"/purchasing-power", idx:1, desc:"Dollar erosion over time"   },
+    { label:"Taylor Rule",       path:"/taylor-rule",      idx:2, desc:"BoC rate vs prescription"   },
   ];
-  const TOOLS_PAGES = [
-    { label:"Interest Calculator",     path:"/interest-calculator",    idx:3, desc:"Compound growth calculator"     },
-    { label:"Mortgage Calculator",     path:"/mortgage-calculator",    idx:4, desc:"Payments, tax & borrowing"      },
-    { label:"Retirement Calculator",   path:"/retirement-calculator",  idx:6, desc:"How long will your money last?" },
-    { label:"Contribution Calculator", path:"/contribution-calculator",idx:7, desc:"RRSP & TFSA room calculator"    },
+  const CALC_PAGES = [
+    { label:"Interest Calculator",     path:"/interest-calculator",    idx:3,  desc:"Compound growth calculator"     },
+    { label:"Mortgage Calculator",     path:"/mortgage-calculator",    idx:4,  desc:"Payments, tax & borrowing"      },
+    { label:"Retirement Calculator",   path:"/retirement-calculator",  idx:6,  desc:"How long will your money last?" },
+    { label:"Contribution Calculator", path:"/contribution-calculator",idx:7,  desc:"RRSP & TFSA room calculator"    },
   ];
-    const closeAll = () => { setDataDropOpen(false); setCalcDropOpen(false); setMobileOpen(false); };
+  const COST_PAGES = [
+    { label:"Grocery Prices",          path:"/grocery-prices",         idx:8,  desc:"Food inflation by category"     },
+    { label:"Exchange Rates",          path:"/exchange-rates",         idx:9,  desc:"CAD vs major currencies"        },
+    { label:"Real Wages",              path:"/real-wages",             idx:10, desc:"Are wages keeping up?"          },
+  ];
 
-  const isTrackActive = [0,1,8,9,10].includes(page);
-  const isToolsActive = [3,4,6,7].includes(page);
+  const closeAll = () => { setDataDropOpen(false); setCalcDropOpen(false); setCostDropOpen(false); setMobileOpen(false); };
+
+  const isDataActive = page <= 2;
+  const isCalcActive = [3,4,6,7].includes(page);
+  const isCostActive = [8,9,10].includes(page);
 
   return (
     <div style={{ minHeight:"100vh", background:C.bg, color:C.textPrimary, fontFamily:"'Plus Jakarta Sans',sans-serif" }}
@@ -3015,22 +3190,22 @@ export default function App() {
 
         {/* Desktop nav links */}
         <div className="nav-links" style={{ display:"flex", alignItems:"center", gap:4 }}>
-          {/* Track Inflation dropdown */}
+          {/* CPI Data dropdown */}
           <div style={{ position:"relative" }} onClick={e => e.stopPropagation()}>
             <button
               onClick={() => { setDataDropOpen(v => !v); setCalcDropOpen(false); }}
               style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
-                color: isTrackActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
+                color: isDataActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
                 padding:"8px 12px", borderRadius:8, transition:"all .15s",
               }}>
-              Track Inflation
+              CPI &amp; Inflation Data
               <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ transform: dataDropOpen?"rotate(180deg)":"none", transition:"transform .2s" }}>
                 <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </button>
             {dataDropOpen && (
               <div className="nav-drop">
-                {TRACK_PAGES.map(p => (
+                {DATA_PAGES.map(p => (
                   <button key={p.idx} className="nav-drop-item" onClick={() => { navigate(p.path, p.idx); closeAll(); }}>
                     <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
                     <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
@@ -3040,22 +3215,47 @@ export default function App() {
             )}
           </div>
 
-          {/* Financial Tools dropdown */}
+          {/* Calculators dropdown */}
           <div style={{ position:"relative" }} onClick={e => e.stopPropagation()}>
             <button
-              onClick={() => { setCalcDropOpen(v => !v); setDataDropOpen(false); }}
+              onClick={() => { setCalcDropOpen(v => !v); setDataDropOpen(false); setCostDropOpen(false); }}
               style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
-                color: isToolsActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
+                color: isCalcActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
                 padding:"8px 12px", borderRadius:8, transition:"all .15s",
               }}>
-              Financial Tools
+              Financial Calculators
               <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ transform: calcDropOpen?"rotate(180deg)":"none", transition:"transform .2s" }}>
                 <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </button>
             {calcDropOpen && (
+              <div className="nav-drop">
+                {CALC_PAGES.map(p => (
+                  <button key={p.idx} className="nav-drop-item" onClick={() => { navigate(p.path, p.idx); closeAll(); }}>
+                    <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
+                    <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Cost of Living dropdown */}
+          <div style={{ position:"relative" }} onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => { setCostDropOpen(v => !v); setDataDropOpen(false); setCalcDropOpen(false); }}
+              style={{ display:"flex", alignItems:"center", gap:5, background:"none", border:"none", cursor:"pointer",
+                color: isCostActive ? C.yellow : C.textSecondary, fontFamily:"inherit", fontSize:13, fontWeight:600,
+                padding:"8px 12px", borderRadius:8, transition:"all .15s",
+              }}>
+              Cost of Living
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ transform: costDropOpen?"rotate(180deg)":"none", transition:"transform .2s" }}>
+                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              </svg>
+            </button>
+            {costDropOpen && (
               <div className="nav-drop-right">
-                {TOOLS_PAGES.map(p => (
+                {COST_PAGES.map(p => (
                   <button key={p.idx} className="nav-drop-item" onClick={() => { navigate(p.path, p.idx); closeAll(); }}>
                     <div style={{ fontSize:13, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
                     <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
@@ -3076,8 +3276,8 @@ export default function App() {
 
       {/* ── Mobile menu ── */}
       <div className={`mobile-menu${mobileOpen?" open":""}`}>
-        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>Track Inflation</div>
-        {TRACK_PAGES.map(p => (
+        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 }}>CPI &amp; Inflation Data</div>
+        {DATA_PAGES.map(p => (
           <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
             style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
               border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:10, padding:"12px 14px",
@@ -3086,8 +3286,18 @@ export default function App() {
             <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
           </button>
         ))}
-        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 10px" }}>Financial Tools</div>
-        {TOOLS_PAGES.map(p => (
+        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 10px" }}>Financial Calculators</div>
+        {CALC_PAGES.map(p => (
+          <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
+            style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
+              border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:10, padding:"12px 14px",
+              marginBottom:6, cursor:"pointer", fontFamily:"inherit" }}>
+            <div style={{ fontSize:14, fontWeight:600, color: page===p.idx ? C.yellow : C.textPrimary }}>{p.label}</div>
+            <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
+          </button>
+        ))}
+        <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 10px" }}>Cost of Living</div>
+        {COST_PAGES.map(p => (
           <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
             style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
               border:`1px solid ${page===p.idx ? C.border2 : "transparent"}`, borderRadius:10, padding:"12px 14px",
@@ -3121,6 +3331,7 @@ export default function App() {
           page === 5 ? <HomepageHero navigate={navigate} cur={data?.[data.length-1]}/> :
           page === 0 ? <RatesTab data={data} vis={vis} catHistory={catHistory} provHistory={provHistory}/> :
           page === 1 ? <CumulativeTab data={data} vis={vis} rawCpi={rawCpi} catHistory={catHistory} provHistory={provHistory}/> :
+          page === 2 ? <TaylorTab     data={data} vis={vis} rateData={rateData}/> :
           page === 3 ? <CompoundTab          vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
           page === 4 ? <MortgageTab          vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
           page === 6  ? <RetirementTab        vis={vis} liveCpi={data?.[data.length-1]?.value}/> :
