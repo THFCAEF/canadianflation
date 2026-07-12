@@ -540,7 +540,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
           { label:"12-Mo High",     val:`${hi12.toFixed(1)}%`,         color:C.red },
         ].map((s,i) => (
           <div key={i}>
-            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:4 }}>{s.label}</div>
             <div style={{ fontSize:20, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.5px" }}>{s.val}</div>
           </div>
         ))}
@@ -596,7 +596,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
     {/* Snapshot lists */}
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16, marginBottom:16 }}>
       <div className={`reveal ${vis?"in":""}`} style={{ paddingTop:16, borderTop:`1px solid ${C.border}`, transitionDelay:".11s" }}>
-        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:16 }}>By Category</div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>By Category</div>
         {COMPONENTS.map((comp, i) => (
           <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<COMPONENTS.length-1?`1px solid ${C.border}`:"none" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
@@ -610,7 +610,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
         ))}
       </div>
       <div className={`reveal ${vis?"in":""}`} style={{ transitionDelay:".15s" }}>
-        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:16 }}>By Province</div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>By Province</div>
         {PROVINCES.map((p, i) => {
           const clr = valColor(p.value);
           return (
@@ -631,7 +631,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
 
     {/* Category trend chart */}
     <div className={`reveal mobile-hide ${vis?"in":""}`} style={{ marginBottom:24, transitionDelay:".18s" }}>
-      <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Category Trends</div>
+      <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Category Trends</div>
       <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>
         Annual year-over-year % · {catStartYr}–{catEndYr} · Data: Statistics Canada
       </div>
@@ -653,7 +653,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
 
     {/* Province trend chart */}
     <div className={`reveal ${vis?"in":""}`} style={{ paddingTop:16, borderTop:`1px solid ${C.border}`, marginBottom:4, transitionDelay:".22s" }}>
-      <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Provincial Trends</div>
+      <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Provincial Trends</div>
       <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>
         Annual year-over-year % · {provStartYr}–{provEndYr} · Data: Statistics Canada
       </div>
@@ -699,7 +699,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
   return (<>
     <div className={`reveal ${vis?"in":""}`} style={{ marginBottom:24 }}>
       <div style={{ padding:"28px 24px 0" }}>
-        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".12em", marginBottom:12 }}>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:12 }}>
           CAD Purchasing Power · {startYr}–Present · Compound Erosion
         </div>
         <div style={{ display:"flex", alignItems:"flex-end", gap:16, flexWrap:"wrap", marginBottom:24 }}>
@@ -726,7 +726,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
           { label:"Period",           val:`${startYr}–Now`,                   color:C.white  },
         ].map((s,i) => (
           <div key={i} style={{ padding:"14px 16px", borderRight:"none" }}>
-            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:4 }}>{s.label}</div>
             <div style={{ fontSize:18, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px" }}>{s.val}</div>
           </div>
         ))}
@@ -763,7 +763,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
 
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16, marginBottom:16 }}>
       <div className={`reveal ${vis?"in":""}`} style={{ paddingTop:16, borderTop:`1px solid ${C.border}`, transitionDelay:".11s" }}>
-        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative by Category</div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Cumulative by Category</div>
         <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Compound total since {catCumHistory?.[0]?.year}</div>
         {sortedCat.map((comp, i) => (
           <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<sortedCat.length-1?`1px solid ${C.border}`:"none" }}>
@@ -778,7 +778,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
         ))}
       </div>
       <div className={`reveal ${vis?"in":""}`} style={{ transitionDelay:".15s" }}>
-        <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative by Province</div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Cumulative by Province</div>
         <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>Compound total since {provCumHistory?.[0]?.year}</div>
         {sortedProv.map((p, i) => {
           const clr = cumColor(p.cumValue);
@@ -798,7 +798,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
     </div>
 
     <div className={`reveal ${vis?"in":""}`} style={{ marginBottom:24, transitionDelay:".18s" }}>
-      <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative Category Inflation</div>
+      <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Cumulative Category Inflation</div>
       <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Compounded total since {catCumHistory?.[0]?.year} · each year builds on the last</div>
       <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:16 }}>
         {CAT_KEYS.map(k => <FilterPill key={k} label={k} color={CAT_COLORS[k]} active={activeCats[k]} onClick={() => setActiveCats(p => ({ ...p, [k]:!p[k] }))}/>)}
@@ -816,7 +816,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
     </div>
 
     <div className={`reveal ${vis?"in":""}`} style={{ paddingTop:16, borderTop:`1px solid ${C.border}`, marginBottom:4, transitionDelay:".22s" }}>
-      <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Cumulative Provincial Inflation</div>
+      <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Cumulative Provincial Inflation</div>
       <div style={{ fontSize:11, color:C.textSecondary, marginBottom:12 }}>Compounded total since {provCumHistory?.[0]?.year} · each year builds on the last</div>
       <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:16 }}>
         {PROV_META.map(p => <FilterPill key={p.key} label={p.code} color={PROV_COLORS[p.key]} active={activeProvs[p.key]} onClick={() => setActiveProvs(prev => ({ ...prev, [p.key]:!prev[p.key] }))}/>)}
@@ -863,7 +863,7 @@ function CalcField({ label, value, onChange, placeholder, hint, isRate }) {
       <div style={{ fontSize:13, fontWeight:700, color:C.textPrimary, marginBottom:4 }}>
         {label}
       </div>
-      {hint && <div style={{ fontSize:11, color:C.textSecondary, marginBottom:6 }}>{hint}</div>}
+      {hint && <div style={{ fontSize:11, color:C.textMuted, marginBottom:6 }}>{hint}</div>}
       <input
         type="text"
         inputMode="decimal"
@@ -1019,7 +1019,7 @@ function CompoundTab({ vis, liveCpi }) {
 
             {/* Hero result */}
             <div style={{ paddingBottom:8 }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:6 }}>
                 {showReal ? "Real (Today's Dollars)" : "Nominal"} Balance after {years} years
               </div>
               {showReal && result.inf > 0 && (
@@ -1059,7 +1059,7 @@ function CompoundTab({ vis, liveCpi }) {
                   { label:"Interest/Contrib ratio", val:`${(result.interest/Math.max(result.totalContrib,1)).toFixed(2)}×`, color:C.white },
                 ]).map((s,i) => (
                   <div key={i} style={{ padding:"12px 0" }}>
-                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:4 }}>{s.label}</div>
                     <div style={{ fontSize:18, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
                   </div>
                 ))}
@@ -1306,7 +1306,7 @@ function MortgageTab({ vis, liveCpi }) {
                   result.cmhc > 0 ? { label:"CMHC Insurance", val:fmt(result.cmhc), color:C.white } : null,
                 ]).filter(Boolean).map((s,i)=>(
                   <div key={i}>
-                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:4 }}>{s.label}</div>
                     <div style={{ fontSize:15, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
                     {s.note && <div style={{ fontSize:11, color:C.textMuted, marginTop:3, lineHeight:1.4 }}>{s.note}</div>}
                   </div>
@@ -1431,12 +1431,11 @@ function MortgageTab({ vis, liveCpi }) {
         <div style={{ paddingBottom:8 }}>
           {!result ? (
             <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", gap:12, minHeight:180 }}>
-              <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
               <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Select a province and enter a purchase price</div>
             </div>
           ) : (
             <>
-              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:6 }}>{result.prov}</div>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:6 }}>{result.prov}</div>
               <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(36px,7vw,60px)", fontWeight:700, color:C.red, lineHeight:1, letterSpacing:"-1px", marginBottom:12 }}>
                 {fmt(result.base)}
               </div>
@@ -1481,7 +1480,7 @@ function MortgageTab({ vis, liveCpi }) {
     return (
       <div className="calc-grid" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))", gap:32 }}>
         <div style={{ paddingBottom:8 }}>
-          <div style={{ fontSize:15, fontWeight:700, marginBottom:4 }}>Calculate Borrowing Capacity</div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:24 }}>Borrowing Capacity</div>
           <div style={{ fontSize:11, color:C.textSecondary, marginBottom:16 }}>How much can you borrow based on your payment budget?</div>
 
           <MortField label="Payment Amount"           value={payment} set={setPayment} ph="e.g. 2,000"/>
@@ -1503,12 +1502,11 @@ function MortgageTab({ vis, liveCpi }) {
         <div style={{ paddingBottom:8 }}>
           {!result ? (
             <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", height:"100%", gap:12, minHeight:180 }}>
-              <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
               <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your budget to see your maximum mortgage</div>
             </div>
           ) : (
             <>
-              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Maximum Mortgage Amount</div>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Maximum Mortgage Amount</div>
               <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
                 {fmt(result.pv)}
               </div>
@@ -1520,7 +1518,7 @@ function MortgageTab({ vis, liveCpi }) {
                   { label:"Payment Budget",   val:"$"+parseFloat(payment).toFixed(2)+"/"+freq.replace("biweekly","2wk"), color:C.blue },
                 ].map((s,i)=>(
                   <div key={i}>
-                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:4 }}>{s.label}</div>
                     <div style={{ fontSize:15, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
                   </div>
                 ))}
@@ -1675,7 +1673,7 @@ function MortgageTab({ vis, liveCpi }) {
           <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:24 }}>Debt Load Impact</div>
 
           {/* Income & Property */}
-          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:12 }}>Income & Property</div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:12 }}>Income & Property</div>
           <DebtField label="Gross Annual Income *" value={income} set={setIncome} ph="e.g. 120,000"/>
           <DebtField label="Down Payment (%)" value={downPct} set={setDownPct} ph="e.g. 20" isSmall/>
           <DebtField label="Home Price (optional — leave blank to auto-solve)" value={homePrice} set={setHomePrice} ph="Auto-calculated"/>
@@ -1708,7 +1706,7 @@ function MortgageTab({ vis, liveCpi }) {
           </div>
 
           {/* Existing Debt */}
-          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Existing Monthly Debt Payments</div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginTop:24, marginBottom:16 }}>Existing Monthly Debt Payments</div>
           <DebtField label="Student Loans ($/mo)" value={student} set={setStudent} ph="e.g. 400" isSmall/>
           <DebtField label="Car Loans ($/mo)" value={carLoan} set={setCarLoan} ph="e.g. 500" isSmall/>
           <DebtField label="Credit Card Balance ($) — 3% used as min payment" value={ccBal} set={setCcBal} ph="e.g. 10,000"/>
@@ -1716,7 +1714,7 @@ function MortgageTab({ vis, liveCpi }) {
           <DebtField label="Child / Spousal Support ($/mo)" value={support} set={setSupport} ph="e.g. 0" isSmall/>
 
           {/* Credit Score */}
-          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 12px" }}>Credit Score</div>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginTop:24, marginBottom:16 }}>Credit Score</div>
           <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:24 }}>
             {[["excellent","Excellent (760+)","Full capacity"],["good","Good (660–759)","−5% capacity"],["fair","Fair (<660)","−10% capacity"]].map(([val, label, note]) => (
               <button key={val} onClick={() => setCreditScore(val)} style={{
@@ -1772,7 +1770,7 @@ function MortgageTab({ vis, liveCpi }) {
                   { label:"TDS Ratio",      val:`${result.withAll.tds.toFixed(1)}%`,           color:result.withAll.tds > 44 ? C.red : C.green, note:"Limit: 44%" },
                 ].map((s,i) => (
                   <div key={i} style={{ padding:"10px 0" }}>
-                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                    <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:4 }}>{s.label}</div>
                     <div style={{ fontSize:18, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
                     <div style={{ fontSize:11, color:C.textMuted }}>{s.note}</div>
                   </div>
@@ -1983,7 +1981,7 @@ function RetirementTab({ vis, liveCpi }) {
             <div style={{ fontSize:11, color:C.textMuted, marginBottom:8 }}>Quick examples:</div>
             <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
               {EXAMPLES.map((ex,i)=>(
-                <button key={i} onClick={()=>{ setSavings(ex.savings); setMonthly(ex.monthly); }} style={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, padding:"7px 12px", fontSize:11, color:C.textSecondary, cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                <button key={i} onClick={()=>{ setSavings(ex.savings); setMonthly(ex.monthly); }} style={{ background:"transparent", border:`1px solid ${C.border}`, borderRadius:6, padding:"7px 12px", fontSize:11, color:C.textMuted, cursor:"pointer", fontFamily:"inherit", textAlign:"left", transition:"border-color .12s" }}>
                   ↗ {ex.label}
                 </button>
               ))}
@@ -2006,7 +2004,7 @@ function RetirementTab({ vis, liveCpi }) {
             </div>
           ) : result.mode === "howlong" ? (<>
             <div style={{ paddingBottom:8 }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Your money lasts</div>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Your money lasts</div>
               <div style={{ display:"flex", gap:24, flexWrap:"wrap", marginBottom:16 }}>
                 <div>
                   <div style={{ fontSize:11, color:C.textMuted, marginBottom:4 }}>Nominal</div>
@@ -2062,7 +2060,7 @@ function RetirementTab({ vis, liveCpi }) {
             </div>
           </>) : (<>
             <div style={{ paddingBottom:8 }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>
+              <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>
                 Max Monthly Withdrawal over {result.targetYrs} years
               </div>
               <div style={{ display:"flex", gap:24, flexWrap:"wrap", marginBottom:16 }}>
@@ -2171,12 +2169,12 @@ function TFSACalc() {
           </div>
         ) : (<>
           <div style={{ paddingBottom:8 }}>
-            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Available TFSA Room</div>
+            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Available TFSA Room</div>
             <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:result.remaining>=0?C.green:C.red, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
               {result.remaining>=0 ? fmt(result.remaining) : `Over by ${fmt(Math.abs(result.remaining))}`}
             </div>
             {result.remaining < 0 && (
-              <div style={{ fontSize:12, color:C.red, background:C.redBg, borderRadius:8, padding:"10px 16px", marginBottom:16 }}>You may have over-contributed. Contact CRA — penalty is 1%/month on excess.</div>
+              <div style={{ fontSize:12, color:C.red, marginBottom:16, paddingTop:8, borderTop:`1px solid ${C.border}` }}>You may have over-contributed. Contact CRA — penalty is 1%/month on excess.</div>
             )}
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, borderTop:`1px solid ${C.border}`, paddingTop:16 }}>
               {[
@@ -2280,13 +2278,12 @@ function RRSPCalc() {
       </div>
       <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
         {!result ? (
-          <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"40px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, minHeight:220 }}>
-            <div style={{ width:36, height:36, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:4 }}/>
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"center" }}>
             <div style={{ fontSize:14, color:C.textSecondary, textAlign:"center" }}>Enter your income and prior-year limit to calculate your RRSP room</div>
           </div>
         ) : (<>
           <div style={{ paddingBottom:8 }}>
-            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Available RRSP Room (2025)</div>
+            <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Available RRSP Room (2025)</div>
             <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(44px,8vw,72px)", fontWeight:700, color:C.green, lineHeight:1, letterSpacing:"-1px", marginBottom:16 }}>
               {fmt(result.remaining)}
             </div>
@@ -2419,7 +2416,6 @@ function ExchangeRatesTab({ vis }) {
         </div>
       ) : error ? (
         <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
-          <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:12 }}/>
           <div>Bank of Canada exchange rate data unavailable. Please try again later.</div>
         </div>
       ) : (<>
@@ -2594,7 +2590,6 @@ function RealWagesTab({ vis }) {
         </div>
       ) : error ? (
         <div style={{ textAlign:"center", padding:40, color:C.textSecondary }}>
-          <div style={{ width:32, height:32, borderRadius:"50%", background:C.surface2, border:`1px solid ${C.border}`, marginBottom:12 }}/>
           <div>Statistics Canada wage data unavailable. Please try again later.</div>
         </div>
       ) : (<>
@@ -2627,7 +2622,7 @@ function RealWagesTab({ vis }) {
               { label:"Real Gain/Loss", val:`${latest?.realGain>=0?"+":""}${latest?.realGain?.toFixed(1)}pp`, color:latest?.realGain>=0?C.green:C.red },
             ].map((s,i)=>(
               <div key={i}>
-                <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:4 }}>{s.label}</div>
+                <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:4 }}>{s.label}</div>
                 <div style={{ fontSize:20, fontWeight:700, color:s.color, fontFamily:"'Barlow Condensed',sans-serif" }}>{s.val}</div>
               </div>
             ))}
@@ -2961,7 +2956,7 @@ export default function App() {
 
       {/* ── Mobile menu ── */}
       <div className={`mobile-menu${mobileOpen?" open":""}`}>
-        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", marginBottom:8 }}>Track Inflation</div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:8 }}>Track Inflation</div>
         {TRACK_PAGES.map(p => (
           <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
             style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
@@ -2971,7 +2966,7 @@ export default function App() {
             <div style={{ fontSize:11, color:C.textMuted, marginTop:2 }}>{p.desc}</div>
           </button>
         ))}
-        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".1em", margin:"20px 0 10px" }}>Financial Tools</div>
+        <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", margin:"20px 0 10px" }}>Financial Tools</div>
         {TOOLS_PAGES.map(p => (
           <button key={p.idx} onClick={() => { navigate(p.path, p.idx); closeAll(); }}
             style={{ display:"block", width:"100%", textAlign:"left", background: page===p.idx ? C.surface2 : "none",
