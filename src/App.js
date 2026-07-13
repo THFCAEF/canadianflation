@@ -5,7 +5,7 @@ import {
   BarChart, Bar,
 } from "recharts";
 
-// ── Favicon: red dollar sign ─────────────────────────────────────────────────
+// ── Favicon: red percent sign on black ───────────────────────────────────────
 (function setFavicon() {
   if (typeof document === "undefined") return;
   document.title = "Canadianflation — Canadian CPI Tracker";
@@ -13,13 +13,13 @@ import {
     const sz = 64, cv = document.createElement("canvas");
     cv.width = cv.height = sz;
     const ctx = cv.getContext("2d");
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, sz, sz);
     ctx.fillStyle = "#E05A4A";
-    ctx.beginPath(); ctx.arc(32, 32, 32, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#FFFFFF";
     ctx.font = "bold 44px Arial, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("$", 32, 34);
+    ctx.fillText("%", 32, 34);
     const ico = document.querySelector("link[rel~='icon']") || document.createElement("link");
     ico.rel = "icon"; ico.href = cv.toDataURL();
     if (!ico.parentNode) document.head.appendChild(ico);
@@ -2873,7 +2873,7 @@ export default function App() {
         {/* Wordmark */}
         <button onClick={() => { closeAll(); navigate("/", 5); }}
           style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:0 }}>
-          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:15, fontWeight:700, letterSpacing:"-.4px", color:C.white }}>Canadian</span>
+          <span style={{ fontFamily:"'Inter',sans-serif", fontSize:15, fontWeight:400, letterSpacing:"-.2px", color:C.white }}>Canadian</span>
           <span style={{ fontFamily:"'Inter',sans-serif", fontSize:15, fontWeight:700, letterSpacing:"-.4px", color:C.red }}>flation</span>
         </button>
 
