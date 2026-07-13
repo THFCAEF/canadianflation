@@ -709,11 +709,9 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
             <span style={{ display:"inline-flex", alignItems:"center", gap:8, background:C.redBg, color:C.red, borderRadius:6, padding:"4px 10px", fontSize:12, fontWeight:700, border:`1px solid ${C.red}25`, width:"fit-content" }}>
               $1.00 in {startYr} → ${latest?.cadValue.toFixed(2)} today
             </span>
-            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-              {[`${Math.round(totalLost)}¢ lost per dollar`, `Over ${data?.length||0} months`, `Avg ~${cagr}%/yr erosion`].map((t,i) => (
-                <span key={i} style={{ fontSize:11, fontWeight:600, color:C.textMuted, background:C.surface2, border:`1px solid ${C.border}`, borderRadius:5, padding:"3px 8px" }}>{t}</span>
-              ))}
-            </div>
+            <span style={{ fontSize:11, color:C.textMuted }}>
+              Averaging ~{cagr}%/yr over {Math.round((data?.length||0)/12)} years
+            </span>
           </div>
         </div>
       </div>
