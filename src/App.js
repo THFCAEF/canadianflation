@@ -394,7 +394,7 @@ function HomepageHero({ navigate, cur }) {
           </div>
 
           <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(40px,7vw,72px)", fontWeight:700, lineHeight:1.0, letterSpacing:"-1.5px", color:C.textPrimary, margin:"0 0 20px", maxWidth:640 }}>
-            Live Canadian inflation data and financial tools.
+            Live Canadian inflation data and financial tools
           </h1>
 
           <p style={{ fontSize:15, color:C.textSecondary, lineHeight:1.7, maxWidth:520, margin:"0 0 32px", fontWeight:400 }}>
