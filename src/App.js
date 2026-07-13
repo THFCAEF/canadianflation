@@ -440,8 +440,11 @@ function HomepageHero({ navigate, cur }) {
 
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px" }}>
           <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:12 }}>Our Mission</div>
+          <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.75, margin:"0 0 12px" }}>
+            Statistics Canada and the Bank of Canada publish everything Canadians need to understand inflation. It was always public. It was just never presented in a way that was easy to use.
+          </p>
           <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.75, margin:0 }}>
-            Most Canadians feel inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no clear way to see the full picture. We built a free, source-cited tool that presents real data clearly and without spin.
+            Canadianflation brings that data together with free financial tools built for everyday Canadians. Live, source-cited, and updated the moment new data drops.
           </p>
         </div>
 
