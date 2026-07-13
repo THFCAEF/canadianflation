@@ -600,7 +600,7 @@ function RatesTab({ data, vis, catHistory, provHistory }) {
         {COMPONENTS.map((comp, i) => (
           <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<COMPONENTS.length-1?`1px solid ${C.border}`:"none" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ width:8, height:8, borderRadius:"50%", background:CAT_COLORS[comp.key], flexShrink:0, display:"inline-block" }}/>
+              <span style={{ width:8, height:8, borderRadius:"50%", background:CAT_COLORS[comp.key]||C.textMuted, flexShrink:0, display:"inline-block" }}/>
               <span style={{ fontSize:13, fontWeight:500, color:C.textPrimary }}>{comp.label}</span>
             </div>
             <span style={{ fontSize:14, fontWeight:700, color:valColor(comp.value), fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px", flexShrink:0 }}>
@@ -768,7 +768,7 @@ function CumulativeTab({ data, vis, rawCpi, catHistory, provHistory }) {
         {sortedCat.map((comp, i) => (
           <div key={i} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 0", borderBottom:i<sortedCat.length-1?`1px solid ${C.border}`:"none" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ width:28, height:28, borderRadius:8, background:cumBg(comp.cumValue), display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, flexShrink:0 }}>{comp.icon}</span>
+              <span style={{ width:8, height:8, borderRadius:"50%", background:CAT_COLORS[comp.key]||C.textMuted, flexShrink:0, display:"inline-block", marginRight:4 }}/>
               <span style={{ fontSize:12, fontWeight:600, color:C.textPrimary }}>{comp.label}</span>
             </div>
             <span style={{ fontSize:14, fontWeight:700, color:cumColor(comp.cumValue), fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:"-.3px", flexShrink:0 }}>
