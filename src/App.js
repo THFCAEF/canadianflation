@@ -2587,7 +2587,7 @@ function RealWagesTab({ vis }) {
             <div>
               <div style={{ fontSize:11, color:C.textMuted, marginBottom:4 }}>Real wage change</div>
               <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(64px,12vw,104px)", fontWeight:700, lineHeight:.9, letterSpacing:"-2.5px", color:latest?.realGain>=0?C.green:C.red, paddingBottom:16 }}>
-                {latest?.realGain>=0?"+":""}{latest?.realGain?.toFixed(1)}pp
+                {latest?.realGain>=0?"+":""}{latest?.realGain?.toFixed(1)}%
               </div>
             </div>
             <div style={{ paddingBottom:10, display:"flex", flexDirection:"column", gap:8 }}>
@@ -2603,7 +2603,7 @@ function RealWagesTab({ vis }) {
             {[
               { label:"Wage Growth",    val:`${latest?.wages?.toFixed(1)}%`,   color:C.blue },
               { label:"CPI Inflation",  val:`${latest?.cpi?.toFixed(1)}%`,     color:valColor(latest?.cpi||0) },
-              { label:"Real Gain/Loss", val:`${latest?.realGain>=0?"+":""}${latest?.realGain?.toFixed(1)}pp`, color:latest?.realGain>=0?C.green:C.red },
+              { label:"Real Gain/Loss", val:`${latest?.realGain>=0?"+":""}${latest?.realGain?.toFixed(1)}%`, color:latest?.realGain>=0?C.green:C.red },
             ].map((s,i)=>(
               <div key={i}>
                 <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:4 }}>{s.label}</div>
@@ -2663,8 +2663,8 @@ function RealWagesTab({ vis }) {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border} vertical={false}/>
               <XAxis dataKey="date" tick={{ fill:C.textMuted, fontSize:11, fontWeight:500, angle:-35, textAnchor:"end", dy:2 }} axisLine={{ stroke:C.border }} tickLine={false} interval={ti} minTickGap={48} height={44}/>
-              <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}pp`}/>
-              <Tooltip formatter={(v,n)=>[`${v>0?"+":""}${v.toFixed(2)}pp`,"Real Wage Change"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
+              <YAxis tick={{ fill:C.textMuted, fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v=>`${v}%`}/>
+              <Tooltip formatter={(v,n)=>[`${v>0?"+":""}${v.toFixed(2)}%`,"Real Wage Change"]} contentStyle={{ background:C.surface2, border:`1px solid ${C.border2}`, borderRadius:8, fontFamily:"inherit", fontSize:12 }}/>
               <ReferenceLine y={0} stroke={C.border2} strokeDasharray="4 3" label={{ value:"Break even", fill:C.textMuted, fontSize:11, position:"insideTopRight" }}/>
               <Area type="monotone" dataKey="realGain" stroke={C.green} strokeWidth={2} fill="url(#wageGainGrad)" dot={false} name="Real Wage Change"/>
             </AreaChart>
