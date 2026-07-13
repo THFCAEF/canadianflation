@@ -394,7 +394,7 @@ function HomepageHero({ navigate, cur }) {
           </div>
 
           <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(40px,7vw,72px)", fontWeight:700, lineHeight:1.0, letterSpacing:"-1.5px", color:C.textPrimary, margin:"0 0 20px", maxWidth:640 }}>
-            Understand How Inflation<br/>Is Affecting Your Money
+            Live Canadian inflation data<br/>and financial tools, all in one place.
           </h1>
 
           <p style={{ fontSize:15, color:C.textSecondary, lineHeight:1.7, maxWidth:520, margin:"0 0 32px", fontWeight:400 }}>
@@ -441,9 +441,6 @@ function HomepageHero({ navigate, cur }) {
 
         <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"28px 24px" }}>
           <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Our Mission</div>
-          <p style={{ fontSize:15, fontWeight:600, color:C.textPrimary, lineHeight:1.55, margin:"0 0 14px", letterSpacing:"-.1px" }}>
-            Financial literacy is a right, not a privilege.
-          </p>
           <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, margin:0 }}>
             Most Canadians feel inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no clear way to see the full picture. We built a free, source-cited tool that presents real data clearly and without spin.
           </p>
