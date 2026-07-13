@@ -394,12 +394,11 @@ function HomepageHero({ navigate, cur }) {
           </div>
 
           <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(40px,7vw,72px)", fontWeight:700, lineHeight:1.0, letterSpacing:"-1.5px", color:C.textPrimary, margin:"0 0 20px", maxWidth:640 }}>
-            Live Canadian inflation data<br/>and financial tools, all in one place.
+            Live Canadian inflation data and financial tools.
           </h1>
 
           <p style={{ fontSize:15, color:C.textSecondary, lineHeight:1.7, maxWidth:520, margin:"0 0 32px", fontWeight:400 }}>
-            Live data from Statistics Canada and the Bank of Canada —
-            no estimates, no editorializing.
+            Live data from Statistics Canada and the Bank of Canada.
           </p>
 
           <div style={{ display:"flex", alignItems:"center", gap:16, flexWrap:"wrap" }}>
