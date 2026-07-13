@@ -349,15 +349,15 @@ function HomepageHero({ navigate, cur }) {
   const rateBg    = rate != null ? valBg(rate)    : C.greenBg;
 
   const TRACK = [
-    { label:"Inflation Rates",  desc:"Live CPI by category and province",  path:"/inflation-rates",  idx:0  },
-    { label:"Purchasing Power", desc:"How far your dollar goes over time",  path:"/purchasing-power", idx:1  },
-    { label:"Real Wages",       desc:"Are wages keeping up with inflation", path:"/real-wages",       idx:10 },
-    { label:"Exchange Rates",   desc:"CAD vs major world currencies",       path:"/exchange-rates",   idx:9  },
+    { label:"Inflation Rates",  desc:"CPI by category and province",        path:"/inflation-rates",  idx:0  },
+    { label:"Purchasing Power", desc:"Purchasing power over time",          path:"/purchasing-power", idx:1  },
+    { label:"Real Wages",       desc:"Wages vs inflation",                  path:"/real-wages",       idx:10 },
+    { label:"Exchange Rates",   desc:"CAD vs world currencies",             path:"/exchange-rates",   idx:9  },
   ];
   const TOOLS = [
-    { label:"Mortgage Calculator",     desc:"Payments, stress test & debt impact", path:"/mortgage-calculator",    idx:4 },
+    { label:"Mortgage Calculator",     desc:"Payments, stress test & debt",        path:"/mortgage-calculator",    idx:4 },
     { label:"Interest Calculator",     desc:"Compound growth with inflation",       path:"/interest-calculator",    idx:3 },
-    { label:"Retirement Calculator",   desc:"How long will your savings last",      path:"/retirement-calculator",  idx:6 },
+    { label:"Retirement Calculator",   desc:"How long will savings last",           path:"/retirement-calculator",  idx:6 },
     { label:"Contribution Calculator", desc:"RRSP & TFSA room calculator",          path:"/contribution-calculator",idx:7 },
   ];
 
@@ -390,7 +390,7 @@ function HomepageHero({ navigate, cur }) {
           <div style={{ position:"absolute", top:0, right:0, width:400, height:400, background:`radial-gradient(circle at top right, ${rateColor}06, transparent 65%)`, pointerEvents:"none" }}/>
 
           <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".16em", marginBottom:24 }}>
-            Canada's Independent Inflation Tracker
+            Canada's Inflation Tracker
           </div>
 
           <h1 style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:"clamp(40px,7vw,72px)", fontWeight:700, lineHeight:1.0, letterSpacing:"-1.5px", color:C.textPrimary, margin:"0 0 20px", maxWidth:640 }}>
@@ -398,7 +398,7 @@ function HomepageHero({ navigate, cur }) {
           </h1>
 
           <p style={{ fontSize:15, color:C.textSecondary, lineHeight:1.7, maxWidth:520, margin:"0 0 32px", fontWeight:400 }}>
-            Live data from Statistics Canada and the Bank of Canada.
+            Live data. Official sources.
           </p>
 
           <div style={{ display:"flex", alignItems:"center", gap:16, flexWrap:"wrap" }}>
@@ -438,9 +438,9 @@ function HomepageHero({ navigate, cur }) {
       {/* ── Mission + Data sources ── */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:12, marginTop:12 }}>
 
-        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"28px 24px" }}>
-          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:16 }}>Our Mission</div>
-          <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.8, margin:0 }}>
+        <div style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:16, padding:"24px" }}>
+          <div style={{ fontSize:11, fontWeight:600, color:C.textMuted, textTransform:"uppercase", letterSpacing:".14em", marginBottom:12 }}>Our Mission</div>
+          <p style={{ fontSize:13, color:C.textSecondary, lineHeight:1.75, margin:0 }}>
             Most Canadians feel inflation every day — at the grocery store, on their mortgage statement, in their paycheque — but have no clear way to see the full picture. We built a free, source-cited tool that presents real data clearly and without spin.
           </p>
         </div>
@@ -2680,7 +2680,7 @@ const PAGE_META = [
   { path:"/taylor-rule",         title:"Taylor Rule vs Bank of Canada Rate | Canadianflation",                                  description:"Compare the Bank of Canada overnight rate against the Taylor Rule prescription. Is Canadian monetary policy too tight or too easy?" },
   { path:"/interest-calculator", title:"Canadian Compound Interest Calculator | Canadianflation",                               description:"Calculate how your savings or investments grow with compound interest. Adjust rate, frequency, contributions, and time horizon." },
   { path:"/mortgage-calculator", title:"Canadian Mortgage Calculator — Payment, Tax & Borrowing | Canadianflation",             description:"Calculate Canadian mortgage payments, provincial property transfer tax, and borrowing capacity. Covers all 10 provinces with 2024 tax brackets." },
-  { path:"/",                    title:"Canadianflation — Canada's Independent Inflation Tracker",                              description:"Track Canadian inflation in real time. Live CPI data from Statistics Canada, purchasing power history, exchange rates, food prices, and free financial calculators." },
+  { path:"/",                    title:"Canadianflation — Canada's Inflation Tracker",                              description:"Track Canadian inflation in real time. Live CPI data from Statistics Canada, purchasing power history, exchange rates, food prices, and free financial calculators." },
   { path:"/retirement-calculator",   title:"Canadian Retirement Calculator — How Long Will Your Money Last? | Canadianflation",    description:"Calculate how long your retirement savings will last given inflation, withdrawals, and investment returns. Uses Statistics Canada CPI data." },
   { path:"/contribution-calculator", title:"RRSP & TFSA Contribution Room Calculator Canada | Canadianflation",                    description:"Calculate your RRSP deduction limit and TFSA contribution room for 2024. Free Canadian retirement account calculator." },
   { path:"/exchange-rates",          title:"CAD Exchange Rates — Canadian Dollar vs Major Currencies | Canadianflation",              description:"Live and historical Canadian dollar exchange rates vs USD, EUR, GBP, JPY and more. Sourced from the Bank of Canada Valet API." },
@@ -2810,10 +2810,10 @@ export default function App() {
   const [calcDropOpen, setCalcDropOpen] = useState(false);
 
   const TRACK_PAGES = [
-    { label:"Inflation Rates", path:"/inflation-rates",  idx:0,  desc:"CPI by category & province"    },
-    { label:"Purchasing Power",path:"/purchasing-power", idx:1,  desc:"Dollar erosion over time"      },
-    { label:"Real Wages",      path:"/real-wages",       idx:10, desc:"Are wages keeping up?"         },
-    { label:"Exchange Rates",  path:"/exchange-rates",   idx:9,  desc:"CAD vs major currencies"       },
+    { label:"Inflation Rates", path:"/inflation-rates",  idx:0,  desc:"CPI by category and province"  },
+    { label:"Purchasing Power",path:"/purchasing-power", idx:1,  desc:"Purchasing power over time"    },
+    { label:"Real Wages",      path:"/real-wages",       idx:10, desc:"Wages vs inflation"            },
+    { label:"Exchange Rates",  path:"/exchange-rates",   idx:9,  desc:"CAD vs world currencies"       },
   ];
   const TOOLS_PAGES = [
     { label:"Interest Calculator",     path:"/interest-calculator",    idx:3, desc:"Compound growth calculator"     },
